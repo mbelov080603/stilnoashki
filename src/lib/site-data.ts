@@ -1,5 +1,12 @@
 export const siteOrigin = "https://stilno.example";
 
+export const documentLinks = {
+  franchisePresentation:
+    "https://raw.githubusercontent.com/mbelov080603/stilnoashki/90449c9c256513fbf7e85f536914cd618f566285/public/stilno/docs/franchise-presentation.pdf",
+  deviceAndPackage:
+    "https://raw.githubusercontent.com/mbelov080603/stilnoashki/90449c9c256513fbf7e85f536914cd618f566285/public/stilno/docs/device-and-package.pdf",
+};
+
 export type NavItem = {
   label: string;
   href: string;
@@ -198,7 +205,7 @@ export const siteSettings = {
   ] satisfies NavItem[],
   utilityCta: {
     label: "Получить презентацию",
-    href: "/stilno/docs/franchise-presentation.pdf",
+    href: documentLinks.franchisePresentation,
     variant: "secondary",
   } satisfies CtaLink,
   primaryCta: {
@@ -1312,4 +1319,3 @@ export function getAllStaticPaths() {
     ...legalPages.map((page) => ["legal", page.slug]),
   ];
 }
-

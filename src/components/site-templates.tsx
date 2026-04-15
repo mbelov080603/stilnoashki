@@ -10,6 +10,7 @@ import {
   articles,
   brandNarrative,
   cities,
+  documentLinks,
   faqItems,
   featuredProduct,
   franchisePillars,
@@ -548,7 +549,7 @@ export function HomeTemplate() {
                   Где купить
                 </ButtonLink>
                 <ButtonLink
-                  href="/stilno/docs/franchise-presentation.pdf"
+                  href={documentLinks.franchisePresentation}
                   target="_blank"
                   analytics="hero_get_presentation"
                   variant="secondary"
@@ -774,7 +775,7 @@ export function HomeTemplate() {
               Открыть франшизу
             </ButtonLink>
             <ButtonLink
-              href="/stilno/docs/franchise-presentation.pdf"
+              href={documentLinks.franchisePresentation}
               target="_blank"
               analytics="home_franchise_pdf"
               variant="secondary"
@@ -1241,7 +1242,7 @@ function FranchiseTemplate(page: ResolvedPage) {
               <p className="text-xs uppercase tracking-[0.35em] text-white/38">Download</p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <ButtonLink
-                  href="/stilno/docs/franchise-presentation.pdf"
+                  href={documentLinks.franchisePresentation}
                   target="_blank"
                   analytics="franchise_pdf_open"
                   variant="secondary"
@@ -1249,7 +1250,7 @@ function FranchiseTemplate(page: ResolvedPage) {
                   Скачать презентацию
                 </ButtonLink>
                 <ButtonLink
-                  href="/stilno/docs/device-and-package.pdf"
+                  href={documentLinks.deviceAndPackage}
                   target="_blank"
                   analytics="franchise_device_deck"
                   variant="secondary"
