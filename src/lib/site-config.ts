@@ -71,11 +71,6 @@ export const siteSettings = {
     { label: "Вакансии", href: "/careers" },
     { label: "Контакты", href: "/contacts" },
   ] satisfies NavItem[],
-  utilityCta: {
-    label: "Скачать презентацию",
-    href: documentLinks.franchisePresentation,
-    variant: "secondary",
-  } satisfies CtaLink,
   primaryCta: {
     label: "Стать партнёром",
     href: "/franchise",

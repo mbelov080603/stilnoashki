@@ -90,7 +90,7 @@ function SectionHeading({
   body,
   tone = "dark",
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   body: string;
   tone?: "dark" | "light";
@@ -100,15 +100,17 @@ function SectionHeading({
 
   return (
     <div className="max-w-3xl">
-      <div
-        className={classNames(
-          "mb-5 inline-flex items-center gap-3 text-xs uppercase tracking-[0.42em]",
-          tone === "dark" ? "text-white/45" : "text-black/40",
-        )}
-      >
-        <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/30" : "bg-black/20")} />
-        <span>{eyebrow}</span>
-      </div>
+      {eyebrow ? (
+        <div
+          className={classNames(
+            "mb-5 inline-flex items-center gap-3 text-xs uppercase tracking-[0.42em]",
+            tone === "dark" ? "text-white/45" : "text-black/40",
+          )}
+        >
+          <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/30" : "bg-black/20")} />
+          <span>{eyebrow}</span>
+        </div>
+      ) : null}
       <h2 className={classNames("text-4xl font-semibold tracking-[-0.05em] sm:text-5xl", textClass)}>
         {title}
       </h2>
@@ -410,53 +412,71 @@ function MediaTile({
   );
 }
 
-function CoverageMap({ activeCity }: { activeCity?: City }) {
+function CoverageMap({}: { activeCity?: City }) {
   return (
-    <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.15),transparent_42%),linear-gradient(135deg,#060606,#151515)] p-6 text-white sm:p-8">
-      <div className="absolute inset-y-0 left-[14%] w-px bg-white/10" />
-      <div className="absolute inset-y-0 left-[44%] w-px bg-white/10" />
-      <div className="absolute inset-y-0 left-[74%] w-px bg-white/10" />
-      <div className="absolute inset-x-0 top-[22%] h-px bg-white/10" />
-      <div className="absolute inset-x-0 top-[55%] h-px bg-white/10" />
+    <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_34%),linear-gradient(135deg,#07101a_0%,#101826_55%,#0b1119_100%)] p-6 text-white sm:p-8">
+      <div className="absolute inset-y-0 left-[14%] w-px bg-white/8" />
+      <div className="absolute inset-y-0 left-[44%] w-px bg-white/8" />
+      <div className="absolute inset-y-0 left-[74%] w-px bg-white/8" />
+      <div className="absolute inset-x-0 top-[22%] h-px bg-white/8" />
+      <div className="absolute inset-x-0 top-[55%] h-px bg-white/8" />
+      <div className="absolute left-1/2 top-1/2 size-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(129,169,214,0.18),transparent_68%)] blur-3xl" />
 
       <div className="relative min-h-[24rem]">
-        <div className="absolute left-[8%] top-[17%] text-[10rem] font-semibold tracking-[-0.12em] text-white/[0.035]">
-          RU
+        <div className="absolute left-0 top-0 rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.35em] text-white/58">
+          Москва
         </div>
-        {cities.map((city) => {
-          const isActive = activeCity ? city.id === activeCity.id : city.featured;
-          return (
-            <div
-              key={city.id}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: city.networkX, top: city.networkY }}
-            >
-              <div
-                className={classNames(
-                  "relative rounded-full border px-3 py-2 text-xs uppercase tracking-[0.28em] transition",
-                  isActive
-                    ? "border-white/45 bg-white text-black"
-                    : "border-white/16 bg-white/[0.05] text-white/72",
-                )}
-              >
-                <span className="absolute -left-3 top-1/2 size-2 -translate-y-1/2 rounded-full bg-[var(--color-silver)]" />
-                {city.name}
-              </div>
-            </div>
-          );
-        })}
-
-        <div className="absolute bottom-0 left-0 max-w-sm rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur">
-          <p className="text-xs uppercase tracking-[0.38em] text-white/45">Где купить</p>
-          <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">
-            {cities.length
-              ? "Подтверждённые города и точки будут публиковаться по мере запуска."
-              : "Розничная карта STILNO публикуется после подтверждения городов и партнёров."}
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-white/68">
-            Сайт не показывает вымышленные адреса. До публикации розничной карты можно
-            оставить заявку на регион, розничный запрос или партнёрский контакт.
-          </p>
+        <div className="absolute inset-[9%]">
+          <svg
+            viewBox="0 0 760 520"
+            className="h-full w-full"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <defs>
+              <linearGradient id="moscowStroke" x1="100" x2="650" y1="80" y2="440" gradientUnits="userSpaceOnUse">
+                <stop stopColor="rgba(255,255,255,0.42)" />
+                <stop offset="1" stopColor="rgba(180,207,236,0.82)" />
+              </linearGradient>
+              <linearGradient id="moscowFill" x1="180" x2="620" y1="120" y2="390" gradientUnits="userSpaceOnUse">
+                <stop stopColor="rgba(255,255,255,0.09)" />
+                <stop offset="1" stopColor="rgba(130,164,204,0.18)" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M146 252L190 198L178 142L238 124L276 82L348 110L402 92L458 122L520 114L562 160L614 182L596 250L628 304L586 360L522 374L482 428L410 412L348 444L290 412L228 424L194 370L134 338L152 282Z"
+              fill="url(#moscowFill)"
+              stroke="url(#moscowStroke)"
+              strokeWidth="3"
+            />
+            <path
+              d="M228 204L308 184L356 148L438 170L486 224L470 292L404 340L332 330L270 300L238 252Z"
+              fill="none"
+              stroke="rgba(255,255,255,0.18)"
+              strokeWidth="2"
+              strokeDasharray="10 12"
+            />
+            <path
+              d="M316 132L352 208L438 176"
+              fill="none"
+              stroke="rgba(255,255,255,0.14)"
+              strokeWidth="2"
+            />
+            <path
+              d="M254 286L340 256L424 318"
+              fill="none"
+              stroke="rgba(255,255,255,0.14)"
+              strokeWidth="2"
+            />
+            <circle cx="380" cy="258" r="16" fill="rgba(217,226,236,0.12)" />
+            <circle cx="380" cy="258" r="8" fill="rgba(255,255,255,0.88)" />
+            <circle cx="380" cy="258" r="4" fill="rgba(11,17,25,1)" />
+          </svg>
+        </div>
+        <div className="absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2">
+          <div className="rounded-full border border-white/16 bg-black/45 px-4 py-2 text-xs uppercase tracking-[0.32em] text-white/76 shadow-[0_20px_50px_rgba(4,10,18,0.35)] backdrop-blur">
+            Москва
+          </div>
         </div>
       </div>
     </div>
@@ -566,7 +586,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-[var(--color-page)] text-white">
         <SiteHeader
           navItems={siteSettings.primaryNav}
-          utilityCta={siteSettings.utilityCta}
           primaryCta={siteSettings.primaryCta}
         />
         <main>{children}</main>
@@ -604,18 +623,20 @@ export function HomeTemplate() {
                   Открыть продукт
                 </ButtonLink>
                 <ButtonLink
-                  href={documentLinks.franchisePresentation}
-                  target="_blank"
-                  analytics="hero_get_presentation"
+                  href="/franchise"
+                  analytics="hero_partner_open"
                   variant="secondary"
                 >
-                  Получить презентацию
+                  Франчайзинг и опт
                 </ButtonLink>
               </div>
             </div>
             <div className="mt-12 grid gap-3 text-sm text-white/60 sm:grid-cols-2">
               {homeSignals.map((signal) => (
-                <div key={signal} className="rounded-[1.4rem] border border-white/8 bg-white/[0.04] px-4 py-4">
+                <div
+                  key={signal}
+                  className="rounded-[1.4rem] border border-white/14 bg-[#121417]/92 px-4 py-4 text-sm font-medium leading-6 text-white shadow-[0_18px_42px_rgba(4,6,10,0.24)] backdrop-blur"
+                >
                   {signal}
                 </div>
               ))}
@@ -650,7 +671,6 @@ export function HomeTemplate() {
           <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
             <div>
               <SectionHeading
-                eyebrow="Магазины / покрытие"
                 title="Розничный слой запускается честно: без вымышленных адресов и неподтверждённых городов."
                 body="Пока карта магазинов не опубликована, сайт показывает текущую продуктовую линию и принимает запросы по городам, франчайзингу и оптовому сотрудничеству."
                 tone="light"
@@ -713,7 +733,17 @@ export function HomeTemplate() {
           />
           <div className="mt-10 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
             <article className="grid gap-4 rounded-[2rem] border border-black/10 bg-black p-5 text-white">
-              <MediaTile image={featuredProduct.images[0]} title={featuredProduct.title} tone="dark" aspect="wide" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/8 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_34%),linear-gradient(135deg,#0d1218,#182232)] p-4">
+                <div className="relative flex min-h-[20rem] items-center justify-center rounded-[1.65rem] border border-white/10 bg-[linear-gradient(180deg,#dce8f8,#bfd0e5)] px-4 py-6">
+                  <Image
+                    src={featuredProduct.variants[0].image ?? featuredProduct.images[0]}
+                    alt={featuredProduct.title}
+                    width={1400}
+                    height={900}
+                    className="h-auto w-full max-w-[35rem] object-contain"
+                  />
+                </div>
+              </div>
               <div className="flex items-center justify-between gap-4">
                 <span className="text-xs uppercase tracking-[0.35em] text-white/42">
                   {productCategories[0]?.title}
@@ -722,7 +752,10 @@ export function HomeTemplate() {
                   {featuredProduct.highlight}
                 </span>
               </div>
-              <p className="text-sm leading-6 text-white/65">{featuredProduct.shortDescription}</p>
+              <div>
+                <h3 className="text-3xl font-semibold tracking-[-0.05em] text-white">{featuredProduct.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/65">{featuredProduct.shortDescription}</p>
+              </div>
               <div>
                 <ButtonLink href={getProductPath(featuredProduct)} variant="secondary" analytics="home_featured_product">
                   Открыть STILNO CLICK ONE
@@ -817,10 +850,10 @@ export function HomeTemplate() {
             <ButtonLink
               href={documentLinks.franchisePresentation}
               target="_blank"
-              analytics="home_franchise_pdf"
+              analytics="home_partner_materials"
               variant="secondary"
             >
-              Скачать презентацию
+              Материалы для партнёра
             </ButtonLink>
           </div>
         </div>
@@ -1377,10 +1410,10 @@ function FranchiseTemplate(page: ResolvedPage) {
                 <ButtonLink
                   href={documentLinks.franchisePresentation}
                   target="_blank"
-                  analytics="franchise_pdf_open"
+                  analytics="franchise_materials_open"
                   variant="secondary"
                 >
-                  Скачать презентацию
+                  Материалы для партнёра
                 </ButtonLink>
                 <ButtonLink
                   href={documentLinks.deviceAndPackage}
@@ -1388,7 +1421,7 @@ function FranchiseTemplate(page: ResolvedPage) {
                   analytics="franchise_device_deck"
                   variant="secondary"
                 >
-                  PDF: устройство и упаковка
+                  Устройство и упаковка
                 </ButtonLink>
               </div>
             </div>

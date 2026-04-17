@@ -48,10 +48,6 @@ declare global {
   }
 }
 
-function isPdfLink(href: string) {
-  return href.toLowerCase().endsWith(".pdf");
-}
-
 function ctaClassName(variant: "primary" | "secondary" | "ghost" = "primary") {
   if (variant === "secondary") {
     return "border border-white/20 bg-white/6 text-white hover:border-white/40 hover:bg-white/12";
@@ -66,11 +62,9 @@ function ctaClassName(variant: "primary" | "secondary" | "ghost" = "primary") {
 
 export function SiteHeader({
   navItems,
-  utilityCta,
   primaryCta,
 }: {
   navItems: NavItem[];
-  utilityCta: CtaLink;
   primaryCta: CtaLink;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,11 +75,8 @@ export function SiteHeader({
         <Link
           href="/"
           data-analytics="nav_logo"
-          className="inline-flex items-center gap-2 text-[0.82rem] font-semibold uppercase tracking-[0.6em] text-white"
+          className="inline-flex items-center text-[0.82rem] font-semibold uppercase tracking-[0.6em] text-white"
         >
-          <span className="rounded-full border border-white/14 px-2 py-1 text-[0.55rem] tracking-[0.45em] text-white/58">
-            18+
-          </span>
           <span>STILNO</span>
         </Link>
 
@@ -103,17 +94,6 @@ export function SiteHeader({
         </nav>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <Link
-            href={utilityCta.href}
-            target={isPdfLink(utilityCta.href) ? "_blank" : undefined}
-            rel={isPdfLink(utilityCta.href) ? "noreferrer" : undefined}
-            data-analytics="utility_cta"
-            className={`rounded-full px-4 py-2 text-sm transition ${ctaClassName(
-              utilityCta.variant,
-            )}`}
-          >
-            {utilityCta.label}
-          </Link>
           <Link
             href={primaryCta.href}
             data-analytics="primary_cta"
@@ -155,17 +135,6 @@ export function SiteHeader({
             ))}
           </nav>
           <div className="mt-4 grid gap-2">
-          <Link
-            href={utilityCta.href}
-            target={isPdfLink(utilityCta.href) ? "_blank" : undefined}
-            rel={isPdfLink(utilityCta.href) ? "noreferrer" : undefined}
-            data-analytics="mobile_utility_cta"
-            className={`rounded-full px-4 py-3 text-center text-sm transition ${ctaClassName(
-              utilityCta.variant,
-              )}`}
-            >
-              {utilityCta.label}
-            </Link>
             <Link
               href={primaryCta.href}
               data-analytics="mobile_primary_cta"
