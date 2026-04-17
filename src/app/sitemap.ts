@@ -5,6 +5,7 @@ import { siteOrigin } from "@/lib/site-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const excludedSections = new Set(["thank-you"]);
 
   return [
     {
@@ -13,12 +14,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
-    ...getAllStaticPaths().map((slug) => ({
-      url: `${siteOrigin}/${slug.join("/")}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: slug[0] === "franchise" || slug[0] === "products" ? 0.9 : 0.7,
-    })),
+    ...getAllStaticPaths()
+      .filter((slug) => !excludedSections.has(slug[0] ?? ""))
+      .map((slug) => ({
+        url: `${siteOrigin}/${slug.join("/")}`,
+        lastModified: now,
+        changeFrequency: slug[0] === "legal" ? ("yearly" as const) : ("weekly" as const),
+        priority: slug[0] === "franchise" || slug[0] === "products" ? 0.9 : 0.7,
+      })),
   ];
 }
-

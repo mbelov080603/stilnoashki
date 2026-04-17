@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   type FormEvent,
   startTransition,
@@ -29,12 +29,27 @@ function pushAnalytics(event: string, detail?: Record<string, string>) {
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(payload);
+
+  if (typeof window.gtag === "function") {
+    window.gtag("event", event, detail);
+  }
+
+  if (typeof window.ym === "function" && window.stilnoMetrikaId) {
+    window.ym(window.stilnoMetrikaId, "reachGoal", event, detail);
+  }
 }
 
 declare global {
   interface Window {
     dataLayer?: Array<Record<string, string>>;
+    gtag?: (...args: unknown[]) => void;
+    ym?: (...args: unknown[]) => void;
+    stilnoMetrikaId?: number;
   }
+}
+
+function isPdfLink(href: string) {
+  return href.toLowerCase().endsWith(".pdf");
 }
 
 function ctaClassName(variant: "primary" | "secondary" | "ghost" = "primary") {
@@ -90,8 +105,8 @@ export function SiteHeader({
         <div className="hidden items-center gap-3 xl:flex">
           <Link
             href={utilityCta.href}
-            target={utilityCta.href.endsWith(".pdf") ? "_blank" : undefined}
-            rel={utilityCta.href.endsWith(".pdf") ? "noreferrer" : undefined}
+            target={isPdfLink(utilityCta.href) ? "_blank" : undefined}
+            rel={isPdfLink(utilityCta.href) ? "noreferrer" : undefined}
             data-analytics="utility_cta"
             className={`rounded-full px-4 py-2 text-sm transition ${ctaClassName(
               utilityCta.variant,
@@ -140,13 +155,13 @@ export function SiteHeader({
             ))}
           </nav>
           <div className="mt-4 grid gap-2">
-            <Link
-              href={utilityCta.href}
-              target={utilityCta.href.endsWith(".pdf") ? "_blank" : undefined}
-              rel={utilityCta.href.endsWith(".pdf") ? "noreferrer" : undefined}
-              data-analytics="mobile_utility_cta"
-              className={`rounded-full px-4 py-3 text-center text-sm transition ${ctaClassName(
-                utilityCta.variant,
+          <Link
+            href={utilityCta.href}
+            target={isPdfLink(utilityCta.href) ? "_blank" : undefined}
+            rel={isPdfLink(utilityCta.href) ? "noreferrer" : undefined}
+            data-analytics="mobile_utility_cta"
+            className={`rounded-full px-4 py-3 text-center text-sm transition ${ctaClassName(
+              utilityCta.variant,
               )}`}
             >
               {utilityCta.label}
@@ -198,9 +213,11 @@ export function AnalyticsBridge() {
 export function AgeGate({
   version,
   legalHref,
+  exitHref,
 }: {
   version: string;
   legalHref: string;
+  exitHref: string;
 }) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
@@ -223,14 +240,13 @@ export function AgeGate({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/92 px-4">
       <div className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/12 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_45%),linear-gradient(145deg,#090909,#161616)] p-7 text-white shadow-[0_40px_120px_rgba(0,0,0,0.55)] sm:p-10">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
-        <p className="mb-6 text-xs uppercase tracking-[0.45em] text-white/45">Entry layer / 18+</p>
+        <p className="mb-6 text-xs uppercase tracking-[0.45em] text-white/45">18+</p>
         <h2 className="max-w-2xl text-3xl font-semibold tracking-[-0.04em] sm:text-5xl">
           Контент STILNO предназначен только для совершеннолетней аудитории.
         </h2>
         <p className="mt-5 max-w-2xl text-base leading-7 text-white/70 sm:text-lg">
-          Сайт содержит информацию о никотиновых и безникотиновых продуктах, store
-          locator, франчайзинге и партнёрских сценариях. Подтвердите возраст, чтобы
-          продолжить.
+          Сайт содержит информацию о никотиновой продукции, предупреждениях, франчайзинге
+          и партнёрских сценариях. Подтвердите возраст, чтобы продолжить.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <button
@@ -247,15 +263,24 @@ export function AgeGate({
             Мне есть 18
           </button>
           <Link
-            href={legalHref}
+            href={exitHref}
+            target="_blank"
+            rel="noreferrer"
             className={`rounded-full px-6 py-3 text-center text-sm transition ${ctaClassName(
               "secondary",
             )}`}
             onClick={() => pushAnalytics("age_gate_decline", { version })}
           >
-            Выйти
+            Покинуть сайт
           </Link>
         </div>
+        <p className="mt-5 text-sm leading-6 text-white/45">
+          Подробные возрастные ограничения описаны в{" "}
+          <Link href={legalHref} className="underline decoration-white/20 underline-offset-4 transition hover:text-white">
+            правовой информации
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );
@@ -287,10 +312,10 @@ export function CookieBanner({
     <div className="fixed inset-x-0 bottom-4 z-40 px-4">
       <div className="mx-auto flex max-w-4xl flex-col gap-4 rounded-[1.6rem] border border-white/10 bg-black/92 px-5 py-5 text-white shadow-[0_28px_80px_rgba(0,0,0,0.45)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="max-w-2xl">
-          <p className="text-sm font-medium text-white">Cookie consent</p>
+          <p className="text-sm font-medium text-white">Cookie-файлы</p>
           <p className="mt-1 text-sm leading-6 text-white/65">
-            Используем cookies для consent-state, аналитических событий и сервисных
-            сценариев сайта. Политика описана отдельно и версионируется.
+            Используем cookie-файлы для возрастного подтверждения, форм и аналитики сайта. Подробности
+            описаны в отдельной политике.
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -338,10 +363,20 @@ export function LeadForm({
   const pathname = usePathname();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successHint, setSuccessHint] = useState<string | null>(null);
+  const [startedAt] = useState(() => Date.now());
+  const typeLabel =
+    {
+      retail: "Розница",
+      franchise: "Франчайзинг",
+      partner: "Опт и партнёрство",
+      career: "Карьера",
+    }[type] ?? "Обращение";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setSuccessHint(null);
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -353,6 +388,8 @@ export function LeadForm({
       email: String(formData.get("email") ?? ""),
       city: String(formData.get("city") ?? ""),
       comment: String(formData.get("comment") ?? ""),
+      website: String(formData.get("website") ?? ""),
+      startedAt: Number(formData.get("startedAt") ?? 0),
       consent: formData.get("consent") === "on",
       vacancyTitle,
     };
@@ -367,15 +404,21 @@ export function LeadForm({
       });
 
       if (!response.ok) {
-        throw new Error("Lead request failed");
+        const data = (await response.json().catch(() => null)) as { message?: string } | null;
+        throw new Error(data?.message ?? "Не удалось отправить обращение.");
       }
 
+      setSuccessHint("Запрос отправлен. Перенаправляем на страницу подтверждения.");
       pushAnalytics("lead_submit", { type, page: pathname });
       startTransition(() => {
         router.push(`/thank-you/${type}`);
       });
-    } catch {
-      setError("Не удалось отправить форму. Повторите попытку чуть позже.");
+    } catch (submissionError) {
+      setError(
+        submissionError instanceof Error
+          ? submissionError.message
+          : "Не удалось отправить форму. Повторите попытку чуть позже.",
+      );
       setIsSubmitting(false);
     }
   }
@@ -386,10 +429,19 @@ export function LeadForm({
       className="rounded-[2rem] border border-white/10 bg-black/70 p-6 text-white shadow-[0_18px_60px_rgba(0,0,0,0.25)]"
     >
       <div className="mb-6">
-        <p className="text-xs uppercase tracking-[0.45em] text-white/45">{type}</p>
+        <p className="text-xs uppercase tracking-[0.45em] text-white/45">{typeLabel}</p>
         <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em]">{title}</h3>
         <p className="mt-3 text-sm leading-6 text-white/65">{description}</p>
       </div>
+
+      <input type="hidden" name="startedAt" value={startedAt} readOnly />
+      <input
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        name="website"
+        className="hidden"
+      />
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="grid gap-2 text-sm text-white/70">
@@ -417,7 +469,7 @@ export function LeadForm({
             name="email"
             type="email"
             className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-white outline-none placeholder:text-white/32 focus:border-white/32"
-            placeholder="you@example.com"
+            placeholder="name@company.ru"
           />
         </label>
         <label className="grid gap-2 text-sm text-white/70">
@@ -434,14 +486,13 @@ export function LeadForm({
       <label className="mt-3 grid gap-2 text-sm text-white/70">
         Комментарий
         <textarea
-          required
           name="comment"
           rows={4}
           className="rounded-[1.5rem] border border-white/10 bg-white/6 px-4 py-3 text-white outline-none placeholder:text-white/32 focus:border-white/32"
           placeholder={
             vacancyTitle
-              ? `Расскажите, почему вам интересна роль ${vacancyTitle}.`
-              : "Кратко опишите запрос, формат сотрудничества или вопрос."
+              ? `Если хотите, кратко расскажите, почему вам интересна роль ${vacancyTitle}.`
+              : "При желании уточните запрос, формат сотрудничества или вопрос."
           }
         />
       </label>
@@ -450,11 +501,12 @@ export function LeadForm({
         <input type="checkbox" required name="consent" className="mt-1 size-4 rounded border-white/20 bg-transparent" />
         <span>
           Даю согласие на обработку персональных данных и понимаю, что сайт работает
-          как lead-generation платформа бренда.
+          как официальный сайт бренда и форма обратной связи.
         </span>
       </label>
 
       {error ? <p className="mt-4 text-sm text-red-300">{error}</p> : null}
+      {successHint ? <p className="mt-4 text-sm text-emerald-300">{successHint}</p> : null}
 
       <button
         type="submit"
@@ -470,7 +522,12 @@ export function LeadForm({
 }
 
 export function VariantPicker({ product }: { product: Product }) {
-  const [activeVariant, setActiveVariant] = useState<ProductVariant>(product.variants[0]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeVariant: ProductVariant =
+    product.variants.find((variant) => variant.id === searchParams.get("flavor")) ??
+    product.variants[0];
 
   const activeImage = activeVariant.image ?? product.images[0];
 
@@ -485,26 +542,17 @@ export function VariantPicker({ product }: { product: Product }) {
             height={1400}
             className="mx-auto w-full max-w-[36rem] object-contain"
           />
-        ) : (
-          <div className="grid min-h-[25rem] place-items-center rounded-[1.5rem] border border-black/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.9),rgba(186,190,196,0.55))] text-center">
-            <div className="max-w-md px-6">
-              <p className="text-xs uppercase tracking-[0.45em] text-black/45">Template ready</p>
-              <h3 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-black">
-                Графический слот под будущий product render.
-              </h3>
-            </div>
-          </div>
-        )}
+        ) : null}
       </div>
 
       <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_48px_rgba(15,15,15,0.08)]">
-        <p className="text-xs uppercase tracking-[0.4em] text-black/38">Variant selector</p>
+        <p className="text-xs uppercase tracking-[0.4em] text-black/38">Вкусы</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">
           {activeVariant.title}
         </h3>
         <p className="mt-3 text-sm leading-6 text-black/62">
-          В текущем шаблоне вариативность строится на вкусе, nicotine strength и
-          стабильной модульной упаковке.
+          Выбранный вкус сохраняется в ссылке на продукт, поэтому страницу можно сразу
+          открыть в нужном варианте без отдельных маршрутов для каждого вкуса.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.25em] text-black/55">
@@ -525,17 +573,19 @@ export function VariantPicker({ product }: { product: Product }) {
                   : "border-black/10 bg-black/[0.02] text-black/70 hover:border-black/24"
               }`}
               onClick={() => {
-                setActiveVariant(variant);
+                const nextSearch = new URLSearchParams(searchParams.toString());
+                nextSearch.set("flavor", variant.id);
+                router.replace(`${pathname}?${nextSearch.toString()}`, { scroll: false });
                 pushAnalytics("product_variant_select", { product: product.slug, variant: variant.id });
               }}
             >
               <div className="flex items-center justify-between gap-4">
                 <span className="font-medium">{variant.title}</span>
-                <span className="text-xs uppercase tracking-[0.22em] opacity-60">
-                  {variant.nicotineStrength}
-                </span>
-              </div>
-            </button>
+              <span className="text-xs uppercase tracking-[0.22em] opacity-60">
+                {variant.nicotineStrength}
+              </span>
+            </div>
+          </button>
           ))}
         </div>
       </div>
@@ -568,7 +618,7 @@ export function FaqAccordion({
             >
               <span className="text-lg font-medium tracking-[-0.02em]">{item.question}</span>
               <span className="text-xs uppercase tracking-[0.28em] opacity-55">
-                {isOpen ? "Close" : "Open"}
+                {isOpen ? "Свернуть" : "Открыть"}
               </span>
             </button>
             {isOpen ? (

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import {
   type City,
@@ -10,6 +11,7 @@ import {
   articles,
   brandNarrative,
   cities,
+  companyDetails,
   documentLinks,
   faqItems,
   featuredProduct,
@@ -25,8 +27,8 @@ import {
   getStorePath,
   getVacancyPath,
   homeSignals,
-  homeStats,
-  partners,
+  launchMetrics,
+  partnershipScenarios,
   productCategories,
   products,
   qualityStandards,
@@ -122,23 +124,24 @@ function Footer() {
         <div>
           <p className="text-xs uppercase tracking-[0.45em] text-white/42">STILNO</p>
           <h2 className="mt-4 max-w-md text-3xl font-semibold tracking-[-0.04em] text-white">
-            Premium-tech бренд с digital-системой под магазины, продукт и franchise.
+            Официальный сайт STILNO с текущей линией STILNO CLICK ONE, партнёрским потоком и правовой информацией.
           </h2>
           <p className="mt-5 max-w-xl text-sm leading-6 text-white/60">
-            {siteSettings.demoNote}
+            18+. Никотин вызывает зависимость. Сайт публикует подтверждённые сведения о продукте и
+            не подменяет инструкцию к продукту.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/12 px-3 py-1 text-xs uppercase tracking-[0.25em] text-white/58">
               18+
             </span>
             <span className="rounded-full border border-white/12 px-3 py-1 text-xs uppercase tracking-[0.25em] text-white/58">
-              Nicotine / Nicotine-free split
+              STILNO CLICK ONE
             </span>
           </div>
         </div>
 
         <div className="grid gap-4">
-          <p className="text-xs uppercase tracking-[0.35em] text-white/38">Navigation</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-white/38">Навигация</p>
           <div className="grid gap-2">
             {siteSettings.primaryNav.map((item) => (
               <Link key={item.href} href={item.href} className="text-sm text-white/68 transition hover:text-white">
@@ -150,17 +153,23 @@ function Footer() {
 
         <div className="grid gap-8">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Contacts</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Контакты</p>
             <div className="mt-3 grid gap-2 text-sm">
               {siteSettings.contactLines.map((line) => (
-                <Link key={line.label} href={line.href} className="text-white/68 transition hover:text-white">
-                  {line.value}
-                </Link>
+                line.href ? (
+                  <Link key={line.label} href={line.href} className="text-white/68 transition hover:text-white">
+                    {line.value}
+                  </Link>
+                ) : (
+                  <p key={line.label} className="text-white/68">
+                    {line.value}
+                  </p>
+                )
               ))}
             </div>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Legal</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Правовая информация</p>
             <div className="mt-3 grid gap-2 text-sm">
               {siteSettings.footerLinks.map((item) => (
                 <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
@@ -174,14 +183,16 @@ function Footer() {
 
       <div className="border-t border-white/8">
         <div className="mx-auto flex max-w-[90rem] flex-col gap-3 px-5 py-5 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
-          <p>© 2026 STILNO. All rights reserved.</p>
-          <div className="flex flex-wrap gap-4">
-            {siteSettings.socialLinks.map((link) => (
-              <Link key={link.label} href={link.href} className="transition hover:text-white">
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          <p>© 2026 STILNO. {companyDetails.companyName}.</p>
+          {siteSettings.socialLinks.length ? (
+            <div className="flex flex-wrap gap-4">
+              {siteSettings.socialLinks.map((link) => (
+                <Link key={link.label} href={link.href} className="transition hover:text-white">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </footer>
@@ -205,8 +216,14 @@ function buildJsonLd(page?: ResolvedPage) {
         "@context": "https://schema.org",
         "@type": "Organization",
         name: siteSettings.brandName,
+        legalName: companyDetails.companyName,
         description: siteSettings.description,
         url: siteOrigin,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: companyDetails.legalAddress,
+          addressCountry: "RU",
+        },
       },
       {
         "@context": "https://schema.org",
@@ -226,7 +243,14 @@ function buildJsonLd(page?: ResolvedPage) {
         "@type": "Product",
         name: page.product?.title,
         description: page.product?.shortDescription,
-        brand: siteSettings.brandName,
+        brand: {
+          "@type": "Brand",
+          name: siteSettings.brandName,
+        },
+        manufacturer: {
+          "@type": "Organization",
+          name: companyDetails.companyName,
+        },
         image: page.product?.images[0] ? `${siteOrigin}${page.product.images[0]}` : undefined,
         url: canonicalUrl,
         additionalProperty: page.product?.specs.map((spec) => ({
@@ -423,13 +447,15 @@ function CoverageMap({ activeCity }: { activeCity?: City }) {
         })}
 
         <div className="absolute bottom-0 left-0 max-w-sm rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur">
-          <p className="text-xs uppercase tracking-[0.38em] text-white/45">Coverage / demo-ready</p>
+          <p className="text-xs uppercase tracking-[0.38em] text-white/45">Где купить</p>
           <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">
-            Система городов уже заложена как future route map.
+            {cities.length
+              ? "Подтверждённые города и точки будут публиковаться по мере запуска."
+              : "Розничная карта STILNO публикуется после подтверждения городов и партнёров."}
           </h3>
           <p className="mt-3 text-sm leading-6 text-white/68">
-            Карту можно заменить на Yandex Maps или 2GIS слой без смены секции, потому что
-            здесь уже отделены network data, UI и legal-safe пояснения.
+            Сайт не показывает вымышленные адреса. До публикации розничной карты можно
+            оставить заявку на регион, розничный запрос или партнёрский контакт.
           </p>
         </div>
       </div>
@@ -503,11 +529,39 @@ function RichText({ paragraphs, tone = "light" }: { paragraphs: string[]; tone?:
   );
 }
 
+function VariantPickerFallback({ product }: { product: Product }) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="relative overflow-hidden rounded-[2rem] border border-black/8 bg-[linear-gradient(135deg,#f3f4f6,#d3d6da)] p-5">
+        {product.images[0] ? (
+          <Image
+            src={product.images[0]}
+            alt={product.title}
+            width={1400}
+            height={1400}
+            className="mx-auto w-full max-w-[36rem] object-contain"
+          />
+        ) : null}
+      </div>
+      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_48px_rgba(15,15,15,0.08)]">
+        <p className="text-xs uppercase tracking-[0.4em] text-black/38">Вкусы</p>
+        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">
+          {product.variants[0]?.title}
+        </h3>
+      </div>
+    </div>
+  );
+}
+
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AnalyticsBridge />
-      <AgeGate version={siteSettings.ageGateVersion} legalHref="/legal/age-18" />
+      <AgeGate
+        version={siteSettings.ageGateVersion}
+        legalHref="/legal/age-18"
+        exitHref={siteSettings.exitHref}
+      />
       <CookieBanner version={siteSettings.consentVersion} legalHref="/legal/cookies" />
       <div className="min-h-screen bg-[var(--color-page)] text-white">
         <SiteHeader
@@ -535,18 +589,19 @@ export function HomeTemplate() {
             <div>
               <p className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.45em] text-white/45">
                 <span className="h-px w-12 bg-white/24" />
-                STILNO v2 / premium electronics
+                Официальный сайт STILNO
               </p>
               <h1 className="mt-8 max-w-xl text-5xl font-semibold leading-[0.95] tracking-[-0.08em] text-white sm:text-7xl">
-                Премиальная digital-система бренда электронных устройств.
+                STILNO CLICK ONE
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-white/68">
-                Строгий контроль качества, product-first подача, отдельная логика для
-                nicotine и nicotine-free категорий и инфраструктура под федеральную сеть.
+                Текущая линия STILNO с фактическими параметрами по упаковке: 10 мл, 850 мАч,
+                Type-C, 10-22 Вт, 20 мг/см3 и до 15000 затяжек. Для партнёрских,
+                франчайзинговых и розничных запросов работает единый сайт бренда.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <ButtonLink href="/stores" analytics="hero_where_to_buy">
-                  Где купить
+                <ButtonLink href="/products/stilno-click-one" analytics="hero_product_open">
+                  Открыть продукт
                 </ButtonLink>
                 <ButtonLink
                   href={documentLinks.franchisePresentation}
@@ -570,7 +625,7 @@ export function HomeTemplate() {
           <div className="relative min-h-[28rem] overflow-hidden rounded-[2.6rem] border border-black/10 bg-black/10 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.2)] sm:min-h-[38rem] lg:min-h-[44rem]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.75),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.18),rgba(17,17,19,0.04))]" />
             <div className="absolute right-4 top-4 rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs uppercase tracking-[0.35em] text-black/62">
-              Hero / product-first
+              Текущая модель
             </div>
             <div className="absolute left-[5%] top-[16%] text-[22vw] font-semibold leading-none tracking-[-0.12em] text-black/[0.05] lg:text-[10rem]">
               STILNO
@@ -596,20 +651,23 @@ export function HomeTemplate() {
             <div>
               <SectionHeading
                 eyebrow="Магазины / покрытие"
-                title="Сетевой блок идёт сразу после hero, чтобы бренд считывался как федеральная система."
-                body="Цифры ниже не фальсифицируются: они собраны из demo-ready dataset и готовы к прямой замене на production data."
+                title="Розничный слой запускается честно: без вымышленных адресов и неподтверждённых городов."
+                body="Пока карта магазинов не опубликована, сайт показывает текущую продуктовую линию и принимает запросы по городам, франчайзингу и оптовому сотрудничеству."
                 tone="light"
               />
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                <MetricCard value={String(homeStats.cities)} label="Городов в модели" note="Все city pages уже маршрутизированы." />
-                <MetricCard value={String(homeStats.stores)} label="Точек в структуре" note="Store pages и locator готовы к наполнению." />
-                <MetricCard value={String(homeStats.featuredCities)} label="Приоритетных кластеров" note="Маршруты под rollout и franchise scouting." />
-                <MetricCard value={String(homeStats.partnerMarks)} label="B2B marks" note="Тёмный партнёрский слой заложен отдельно." />
+                {launchMetrics.map((metric) => (
+                  <MetricCard
+                    key={metric.label}
+                    value={metric.value}
+                    label={metric.label}
+                    note={metric.note}
+                  />
+                ))}
               </div>
-              <p className="mt-6 text-sm leading-6 text-black/55">{homeStats.note}</p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <ButtonLink href="/stores" variant="ghost" analytics="home_open_stores">
-                  Смотреть магазины
+                  Где купить
                 </ButtonLink>
                 <ButtonLink href="/franchise" variant="ghost" analytics="home_open_franchise">
                   Открыть точку в регионе
@@ -626,20 +684,19 @@ export function HomeTemplate() {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
               eyebrow="Партнёры"
-              title="Отдельный тёмный блок для B2B, отраслевого доверия и будущих интеграций."
-              body="Вместо чужих логотипов используются demo-ready partner marks. Блок уже умеет жить как полноценная grid-секция большого бренда."
+              title="Партнёрский раздел описывает форматы сотрудничества без вымышленных логотипов и неподтверждённых кейсов."
+              body="Сайт собирает оптовые и франчайзинговые заявки, не имитируя уже существующую сеть партнёров."
               tone="dark"
             />
             <ButtonLink href="/partners" analytics="home_partners_open" variant="secondary">
               Партнёрский сценарий
             </ButtonLink>
           </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {partners.map((partner) => (
-              <article key={partner.id} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-                <p className="text-[1.55rem] font-semibold tracking-[-0.05em] text-white">{partner.name}</p>
-                <p className="mt-3 text-sm leading-6 text-white/58">{partner.note}</p>
-                <div className="mt-5 text-xs uppercase tracking-[0.3em] text-white/36">{partner.region}</div>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {partnershipScenarios.map((scenario) => (
+              <article key={scenario.title} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
+                <p className="text-[1.55rem] font-semibold tracking-[-0.05em] text-white">{scenario.title}</p>
+                <p className="mt-3 text-sm leading-6 text-white/58">{scenario.body}</p>
               </article>
             ))}
           </div>
@@ -650,56 +707,39 @@ export function HomeTemplate() {
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
           <SectionHeading
             eyebrow="Продукция"
-            title="На главной не маркетплейс, а премиальный preview product-матрицы."
-            body="Категории разделены заранее: nicotine devices, nicotine-free architecture и future line. Это даёт чистый рост без визуального шума."
+            title="На главной показана текущая опубликованная линия без каталожного шума и вымышленных SKU."
+            body="Публичный релиз сайта строится вокруг STILNO CLICK ONE и вкусовых вариантов, подтверждённых упаковочными материалами."
             tone="light"
           />
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {productCategories.map((category, index) => (
-              <article
-                key={category.id}
-                className={classNames(
-                  "grid gap-4 rounded-[2rem] border p-5",
-                  index === 0
-                    ? "border-black/10 bg-black text-white"
-                    : "border-black/10 bg-white text-black shadow-[0_18px_48px_rgba(10,10,10,0.06)]",
-                )}
-              >
-                <MediaTile
-                  image={category.heroImage}
-                  title={category.title}
-                  tone={index === 0 ? "dark" : "light"}
-                  aspect="wide"
-                />
-                <div className="flex items-center justify-between gap-4">
-                  <span className={classNames("text-xs uppercase tracking-[0.35em]", index === 0 ? "text-white/42" : "text-black/38")}>
-                    {category.status}
-                  </span>
-                  <span
-                    className={classNames(
-                      "rounded-full border px-3 py-1 text-xs uppercase tracking-[0.22em]",
-                      index === 0
-                        ? "border-white/14 text-white/62"
-                        : "border-black/10 text-black/52",
-                    )}
-                  >
-                    {category.type}
-                  </span>
-                </div>
-                <p className={classNames("text-sm leading-6", index === 0 ? "text-white/65" : "text-black/62")}>
-                  {category.shortDescription}
-                </p>
-                <div>
-                  <ButtonLink
-                    href={getProductCategoryPath(category)}
-                    variant={index === 0 ? "secondary" : "ghost"}
-                    analytics={`category_${category.slug}`}
-                  >
-                    Подробнее
-                  </ButtonLink>
-                </div>
-              </article>
-            ))}
+          <div className="mt-10 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+            <article className="grid gap-4 rounded-[2rem] border border-black/10 bg-black p-5 text-white">
+              <MediaTile image={featuredProduct.images[0]} title={featuredProduct.title} tone="dark" aspect="wide" />
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs uppercase tracking-[0.35em] text-white/42">
+                  {productCategories[0]?.title}
+                </span>
+                <span className="rounded-full border border-white/14 px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/62">
+                  {featuredProduct.highlight}
+                </span>
+              </div>
+              <p className="text-sm leading-6 text-white/65">{featuredProduct.shortDescription}</p>
+              <div>
+                <ButtonLink href={getProductPath(featuredProduct)} variant="secondary" analytics="home_featured_product">
+                  Открыть STILNO CLICK ONE
+                </ButtonLink>
+              </div>
+            </article>
+            <article className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.06)]">
+              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Технические параметры</p>
+              <div className="mt-5 grid gap-3">
+                {featuredProduct.specs.slice(0, 6).map((spec) => (
+                  <div key={spec.label} className="flex items-center justify-between gap-4 rounded-[1.4rem] border border-black/8 bg-black/[0.03] px-4 py-4">
+                    <span className="text-sm text-black/54">{spec.label}</span>
+                    <span className="text-sm font-medium text-black">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -710,7 +750,7 @@ export function HomeTemplate() {
             <SectionHeading
               eyebrow="Качество и стандарты"
               title="Один из базовых смысловых блоков STILNO: дисциплина исполнения, контроль и инженерный подход."
-              body="Без медицинских claims и без хаотичного vapeshop UI. Только product facts, упаковка и прозрачное разделение категорий."
+              body="Без медицинских заявлений и без хаотичной эстетики вейп-шопа. Только фактические данные о продукте, упаковка и прозрачное разделение категорий."
               tone="dark"
             />
             <div className="mt-10 grid gap-4">
@@ -723,8 +763,8 @@ export function HomeTemplate() {
             </div>
           </div>
           <div className="grid gap-5">
-            <MediaTile image="/stilno/products/barbaris.jpg" title="Device renders / premium-tech surface" tone="dark" aspect="wide" />
-            <MediaTile image="/stilno/products/fruktoviy-chay.jpg" title="Packaging flats / warning discipline" tone="dark" aspect="wide" />
+            <MediaTile image="/stilno/products/barbaris.jpg" title="Устройство как главный объект" tone="dark" aspect="wide" />
+            <MediaTile image="/stilno/products/fruktoviy-chay.jpg" title="Упаковка и предупреждение" tone="dark" aspect="wide" />
           </div>
         </div>
       </section>
@@ -734,8 +774,8 @@ export function HomeTemplate() {
           <div>
             <SectionHeading
               eyebrow="О бренде"
-              title="STILNO — это не случайный шаблонный магазин, а база для масштабируемой product и retail сети."
-              body="Бренд строится вокруг качества, форм-фактора устройства и чистого визуального языка. В digital это выражается через крупные поверхности, ритм секций и отсутствие декоративного шума."
+              title="STILNO — бренд со строгой упаковкой, продуктовой точностью и взрослой визуальной дисциплиной."
+              body="В публичной версии сайта бренд говорит через устройство, упаковочные материалы и правдивые сведения о продукте, а не через агрессивный рекламный шум."
               tone="light"
             />
             <div className="mt-8 flex flex-wrap gap-3">
@@ -758,8 +798,8 @@ export function HomeTemplate() {
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <SectionHeading
               eyebrow="Франчайзинг"
-              title="Сильный конверсионный блок без выдуманных финансовых показателей."
-              body="Value proposition собирается из брендового потенциала, стандартов запуска, retail playbook и готовой digital-архитектуры под новые регионы."
+              title="Франчайзинговый раздел собран как инструмент продаж без обещаний по окупаемости и выручке."
+              body="Сайт объясняет формат партнёрства, документы, текущую продуктовую линию и способ первичного контакта с брендом."
               tone="dark"
             />
             <div className="grid gap-4 md:grid-cols-2">
@@ -791,8 +831,8 @@ export function HomeTemplate() {
           <div>
             <SectionHeading
               eyebrow="Ответственное потребление"
-              title="Смысловой аналог educational-блока, но в зрелом и юридически безопасном формате."
-              body="STILNO не прячет предупреждения и не драматизирует их. Бренд спокойно разделяет категории и не делает псевдонаучных заявлений."
+              title="Предупреждения и сведения о продукте вынесены в отдельный слой, а не спрятаны под рекламным текстом."
+              body="STILNO показывает действующие ограничения для никотиновой категории и не смешивает их с неподтверждёнными продуктами."
               tone="light"
             />
           </div>
@@ -810,22 +850,22 @@ export function HomeTemplate() {
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
           <SectionHeading
             eyebrow="Обратная связь"
-            title="Два основных form-сценария: retail feedback и franchise / partner lead."
-            body="Lead capture встроен в бренд-сайт как системная часть продукта, а не как случайный блок внизу страницы."
+            title="Основные формы сайта: розничный запрос и франчайзинговый / партнёрский контакт."
+            body="Формы подключены к серверной обработке с валидацией, защитой от спама и отдельными страницами подтверждения."
             tone="dark"
           />
           <div className="mt-10 grid gap-5 xl:grid-cols-2">
             <LeadForm
               type="retail"
-              title="Retail feedback"
-              description="Вопросы о магазинах, ассортименте, доступности и сервисных сценариях."
-              submitLabel="Отправить retail запрос"
+              title="Розничный запрос"
+              description="Вопросы о доступности продукта, городах запуска, наличии и розничных сценариях."
+              submitLabel="Отправить запрос"
             />
             <LeadForm
               type="franchise"
-              title="Franchise / partner lead"
-              description="Запрос на франшизу, запуск точки, B2B или региональное партнёрство."
-              submitLabel="Запросить партнёрский контакт"
+              title="Франчайзинг и партнёрство"
+              description="Форма для франчайзинга, опта, запуска региона и первичного партнёрского контакта."
+              submitLabel="Запросить контакт"
             />
           </div>
         </div>
@@ -835,25 +875,26 @@ export function HomeTemplate() {
         <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
           <SectionHeading
             eyebrow="Вакансии"
-            title="Recruitment-сценарий заложен как самостоятельный ростовой слой бренда."
-            body="У STILNO есть отдельная вакансийная витрина, detail templates и формы отклика, чтобы найм не выглядел вторичным приложением к маркетинговой странице."
+            title="Карьерный поток работает отдельно от маркетинговых призывов и принимает общий отклик на будущие роли."
+            body="Если открытые позиции ещё не опубликованы, сайт всё равно принимает резюме и общие карьерные обращения."
             tone="dark"
           />
           <div className="grid gap-4">
-            {vacancies.map((vacancy) => (
-              <article key={vacancy.id} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-5">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-white/36">{vacancy.department}</p>
-                    <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">{vacancy.title}</h3>
-                    <p className="mt-2 text-sm text-white/60">{vacancy.salaryText}</p>
-                  </div>
-                  <ButtonLink href={getVacancyPath(vacancy)} analytics="vacancy_open" variant="secondary">
-                    Откликнуться
-                  </ButtonLink>
-                </div>
-              </article>
-            ))}
+            <article className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/36">Карьера</p>
+              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">
+                Общий отклик в команду STILNO
+              </h3>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60">
+                Для операционных, брендовых и розничных ролей сайт принимает общий карьерный
+                отклик без публикации вымышленных вакансий.
+              </p>
+              <div className="mt-6">
+                <ButtonLink href="/careers" analytics="careers_open" variant="secondary">
+                  Перейти в раздел вакансий
+                </ButtonLink>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -862,13 +903,52 @@ export function HomeTemplate() {
 }
 
 function StoresIndexTemplate(page: ResolvedPage) {
+  if (cities.length === 0) {
+    return (
+      <section className="bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
+          <SectionHeading
+            eyebrow="Где купить"
+            title="Розничная карта будет опубликована после подтверждения городов и точек."
+            body={page.description}
+            tone="light"
+          />
+          <div className="mt-10 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="grid gap-4">
+              <article className="rounded-[1.8rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+                <p className="text-xs uppercase tracking-[0.35em] text-black/38">Розничный запуск</p>
+                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">
+                  Список точек публикуется без вымышленных адресов и неподтверждённых городов.
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-black/62">
+                  Пока карта не открыта публично, можно отправить запрос по городу,
+                  наличию продукта или партнёрскому запуску.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <ButtonLink href="/contacts" variant="ghost" analytics="stores_contact_open">
+                    Отправить запрос
+                  </ButtonLink>
+                  <ButtonLink href="/franchise" variant="ghost" analytics="stores_franchise_open">
+                    Запросить партнёрство
+                  </ButtonLink>
+                </div>
+              </article>
+            </div>
+            <CoverageMap />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <SectionHeading
-          eyebrow="Stores list"
-          title="Store locator как часть федеральной структуры, а не как отдельная микро-страница."
+          eyebrow="Где купить"
+          title="Подтверждённые города и точки STILNO."
           body={page.description}
           tone="light"
         />
@@ -914,13 +994,13 @@ function CityTemplate(page: ResolvedPage) {
         <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <SectionHeading
-              eyebrow="City template"
-              title={`${city.name} как самостоятельный узел сети STILNO.`}
+              eyebrow="Город"
+              title={`${city.name} в розничной карте STILNO.`}
               body={city.spotlight}
               tone="light"
             />
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <MetricCard value={String(getCityStoreCount(city.id))} label="Точек в городе" note="Store pages подключены к общему locator flow." />
+              <MetricCard value={String(getCityStoreCount(city.id))} label="Точек в городе" note="Все подтверждённые точки подключаются к общей карте и карточкам городов." />
               <MetricCard value={city.featured ? "Flagship" : "Growth"} label="Роль в сети" note="Определяет глубину открытия и локального маркетинга." />
             </div>
           </div>
@@ -950,10 +1030,10 @@ function StoreTemplate(page: ResolvedPage) {
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <SectionHeading eyebrow="Store page" title={store.title} body={store.address} tone="light" />
+            <SectionHeading eyebrow="Точка" title={store.title} body={store.address} tone="light" />
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <MetricCard value={store.hours} label="График" note="Работает как store fact в CMS." />
-              <MetricCard value={store.phone} label="Телефон" note="Контакт уходит в routing и schema layer." />
+              <MetricCard value={store.hours} label="График" note="Подтверждённый график работы точки." />
+              <MetricCard value={store.phone} label="Телефон" note="Контакт публикуется в карточке подтверждённой точки." />
             </div>
             <div className="mt-6 flex flex-wrap gap-2">
               {store.services.map((service) => (
@@ -994,13 +1074,13 @@ function AboutTemplate(page: ResolvedPage) {
       <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
         <div>
           <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading eyebrow="About STILNO" title="Бренд, который ставит форму, контроль и системность выше шума." body={page.description} tone="light" />
+          <SectionHeading eyebrow="О бренде" title="STILNO держит в центре продукт, упаковку и аккуратную визуальную систему." body={page.description} tone="light" />
           <div className="mt-8">
             <RichText paragraphs={brandNarrative} />
           </div>
         </div>
         <div className="grid gap-5">
-          <MediaTile image="/stilno/products/myata.jpg" title="Device as hero object" aspect="wide" />
+          <MediaTile image="/stilno/products/myata.jpg" title="Устройство как главный объект" aspect="wide" />
           <MediaTile image="/stilno/products/chernika-klyukva-vishnya.jpg" title="Серийность вкусов и упаковки" aspect="wide" />
         </div>
       </div>
@@ -1009,21 +1089,45 @@ function AboutTemplate(page: ResolvedPage) {
 }
 
 function GalleryTemplate(page: ResolvedPage) {
+  const galleryGroups = [
+    ["device", "Устройство"],
+    ["packaging", "Упаковка"],
+    ["technical-flat", "Техническая плоскость"],
+    ["close-up", "Крупный план"],
+  ] as const;
+
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Gallery" title="Галерея построена вокруг объекта, упаковки и close-up деталей." body={page.description} tone="light" />
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {galleryItems.map((item) => (
-            <article key={item.id} className="grid gap-3 rounded-[2rem] border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <MediaTile image={item.media} title={item.title} aspect="square" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-black/38">{item.type}</p>
-                <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
-              </div>
-            </article>
-          ))}
+        <SectionHeading eyebrow="Галерея" title="Редакционная подборка строится вокруг устройства, упаковки и технических плоскостей." body={page.description} tone="light" />
+        <div className="mt-10 grid gap-10">
+          {galleryGroups.map(([type, label]) => {
+            const items = galleryItems.filter((item) => item.type === type);
+            if (!items.length) {
+              return null;
+            }
+
+            return (
+              <section key={type}>
+                <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-black/38">
+                  <span className="h-px w-10 bg-black/18" />
+                  <span>{label}</span>
+                </div>
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {items.map((item) => (
+                    <article key={item.id} className="grid gap-3 rounded-[2rem] border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+                      <MediaTile image={item.media} title={item.title} aspect="square" />
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.35em] text-black/38">{label}</p>
+                        <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1035,7 +1139,7 @@ function ProductsIndexTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Products" title="Каталог STILNO строится как система категорий и product templates." body={page.description} tone="light" />
+        <SectionHeading eyebrow="Продукция" title="В публичной версии показана подтверждённая текущая линия STILNO." body={page.description} tone="light" />
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {productCategories.map((category) => (
             <article key={category.id} className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
@@ -1043,7 +1147,7 @@ function ProductsIndexTemplate(page: ResolvedPage) {
               <div className="flex items-center justify-between gap-4">
                 <span className="text-xs uppercase tracking-[0.35em] text-black/38">{category.status}</span>
                 <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
-                  {getCategoryProducts(category.id).length || "Template"}
+                  {getCategoryProducts(category.id).length}
                 </span>
               </div>
               <p className="text-sm leading-6 text-black/62">{category.shortDescription}</p>
@@ -1076,7 +1180,7 @@ function ProductCategoryTemplate(page: ResolvedPage) {
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <div className="grid gap-8 lg:grid-cols-[0.86fr_1.14fr]">
           <div>
-            <SectionHeading eyebrow="Product category" title={category.heroTitle} body={category.heroBody} tone="light" />
+            <SectionHeading eyebrow="Категория" title={category.heroTitle} body={category.heroBody} tone="light" />
             <div className="mt-6 rounded-[1.7rem] border border-black/10 bg-white p-5 text-sm leading-6 text-black/62 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
               {category.disclaimer}
             </div>
@@ -1095,6 +1199,9 @@ function ProductCategoryTemplate(page: ResolvedPage) {
 
 function ProductTemplate(page: ResolvedPage) {
   const product = page.product;
+  const productFaq = faqItems.filter(
+    (item) => item.scope === "products" || item.scope === "responsible" || item.scope === "general",
+  );
 
   if (!product) {
     notFound();
@@ -1107,7 +1214,7 @@ function ProductTemplate(page: ResolvedPage) {
         <StructuredData data={buildJsonLd(page)} />
         <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
-            <SectionHeading eyebrow="Product detail" title={product.title} body={product.shortDescription} tone="light" />
+            <SectionHeading eyebrow="Продукт" title={product.title} body={product.shortDescription} tone="light" />
             <div className="mt-6 flex flex-wrap gap-2">
               <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
                 {product.availability}
@@ -1118,14 +1225,24 @@ function ProductTemplate(page: ResolvedPage) {
             </div>
             <div className="mt-8 rounded-[1.8rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
               <RichText paragraphs={[product.longDescription]} />
+              <div className="mt-6 flex flex-wrap gap-3">
+                <ButtonLink href="/contacts" variant="ghost" analytics="product_contacts_open">
+                  Уточнить доступность
+                </ButtonLink>
+                <ButtonLink href={documentLinks.deviceAndPackage} target="_blank" variant="ghost" analytics="product_device_pack_pdf">
+                  PDF: устройство и упаковка
+                </ButtonLink>
+              </div>
             </div>
           </div>
-          <VariantPicker product={product} />
+          <Suspense fallback={<VariantPickerFallback product={product} />}>
+            <VariantPicker product={product} />
+          </Suspense>
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Specs</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Характеристики</p>
             <div className="mt-5 grid gap-3">
               {product.specs.map((spec) => (
                 <div key={spec.label} className="flex items-center justify-between gap-4 rounded-[1.4rem] border border-black/8 bg-black/[0.03] px-4 py-4">
@@ -1136,7 +1253,7 @@ function ProductTemplate(page: ResolvedPage) {
             </div>
           </div>
           <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Warnings & facts</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Предупреждения и сведения</p>
             <div className="mt-5 grid gap-4">
               {product.facts.map((fact) => (
                 <div key={fact} className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/68">
@@ -1151,6 +1268,23 @@ function ProductTemplate(page: ResolvedPage) {
             </div>
           </div>
         </div>
+
+        <div className="mt-12 grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Упаковка и серия</p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {product.packagingImages.slice(0, 4).map((image) => (
+                <MediaTile key={image} image={image} title={product.title} aspect="square" />
+              ))}
+            </div>
+          </div>
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Вопросы и ответы</p>
+            <div className="mt-5">
+              <FaqAccordion items={productFaq} />
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -1161,22 +1295,21 @@ function PartnersTemplate(page: ResolvedPage) {
     <section className="bg-black">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Partners" title="B2B и отраслевой слой сайта STILNO." body={page.description} tone="dark" />
+        <SectionHeading eyebrow="Партнёры" title="Оптовый и отраслевой слой STILNO без фальшивых логотипов и формальной сетки партнёров." body={page.description} tone="dark" />
         <div className="mt-10 grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="grid gap-4 md:grid-cols-2">
-            {partners.map((partner) => (
-              <article key={partner.id} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-                <p className="text-[1.6rem] font-semibold tracking-[-0.05em] text-white">{partner.name}</p>
-                <p className="mt-3 text-sm leading-6 text-white/60">{partner.note}</p>
-                <div className="mt-4 text-xs uppercase tracking-[0.3em] text-white/35">{partner.type}</div>
+            {partnershipScenarios.map((scenario) => (
+              <article key={scenario.title} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
+                <p className="text-[1.6rem] font-semibold tracking-[-0.05em] text-white">{scenario.title}</p>
+                <p className="mt-3 text-sm leading-6 text-white/60">{scenario.body}</p>
               </article>
             ))}
           </div>
           <LeadForm
             type="partner"
-            title="B2B / partner lead"
-            description="Запуск региона, оптовый контакт, real estate sourcing или distribution partnership."
-            submitLabel="Отправить B2B запрос"
+            title="Опт и дистрибуция"
+            description="Оптовый контакт, запуск региона, розничное партнёрство или франчайзинговый запрос."
+            submitLabel="Отправить запрос"
           />
         </div>
       </div>
@@ -1194,18 +1327,18 @@ function ResponsibleTemplate(page: ResolvedPage) {
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading eyebrow="Responsible consumption" title="Отдельная страница для зрелой и legal-safe позиции бренда." body={page.description} tone="light" />
+          <SectionHeading eyebrow="Ответственное потребление" title="Отдельная страница для предупреждений, состава и возрастного ограничения доступа." body={page.description} tone="light" />
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Nicotine</p>
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Текущая линия</p>
               <p className="mt-4 text-sm leading-7 text-white/70">
-                Отдельная категория с предупреждениями, product pages и 18+ логикой.
+                STILNO CLICK ONE публикуется как никотиновая категория с отдельными предупреждениями, составом и 18+ логикой.
               </p>
             </div>
             <div className="rounded-[2rem] border border-black/10 bg-white p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Nicotine-free</p>
+              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Публикация новых категорий</p>
               <p className="mt-4 text-sm leading-7 text-black/65">
-                Независимый раздел с собственной терминологией, FAQ и планом наполнения.
+                Безникотиновые продукты, если будут опубликованы, должны получить отдельные страницы, предупреждения и самостоятельную коммуникацию.
               </p>
             </div>
           </div>
@@ -1230,7 +1363,7 @@ function FranchiseTemplate(page: ResolvedPage) {
     <section className="bg-black">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Franchise landing" title="Франчайзинговый сценарий собирает value proposition, support layer и lead capture." body={page.description} tone="dark" />
+        <SectionHeading eyebrow="Франчайзинг" title="Страница франчайзинга объясняет формат партнёрства, документы и способ первого контакта." body={page.description} tone="dark" />
         <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-4">
             {franchisePillars.map((pillar) => (
@@ -1239,7 +1372,7 @@ function FranchiseTemplate(page: ResolvedPage) {
               </div>
             ))}
             <div className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Download</p>
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Документы</p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <ButtonLink
                   href={documentLinks.franchisePresentation}
@@ -1255,16 +1388,16 @@ function FranchiseTemplate(page: ResolvedPage) {
                   analytics="franchise_device_deck"
                   variant="secondary"
                 >
-                  Device & package deck
+                  PDF: устройство и упаковка
                 </ButtonLink>
               </div>
             </div>
           </div>
           <LeadForm
             type="franchise"
-            title="Franchise lead"
-            description="Город, формат помещения, опыт в retail и ожидаемый таймлайн запуска."
-            submitLabel="Запросить контакт"
+            title="Франчайзинговый запрос"
+            description="Укажите город, опыт в рознице, формат помещения и желаемый срок запуска."
+            submitLabel="Отправить запрос"
           />
         </div>
         <div className="mt-10">
@@ -1276,11 +1409,40 @@ function FranchiseTemplate(page: ResolvedPage) {
 }
 
 function CareersTemplate(page: ResolvedPage) {
+  if (!vacancies.length) {
+    return (
+      <section className="bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
+          <SectionHeading eyebrow="Вакансии" title="Открытые роли публикуются по мере расширения команды и запусков STILNO." body={page.description} tone="light" />
+          <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Карьера</p>
+              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">
+                Можно отправить общий отклик в команду STILNO.
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-black/62">
+                Это подходит для будущих ролей в рознице, операционном управлении, развитии сети и
+                операционных задачах запуска.
+              </p>
+            </div>
+            <LeadForm
+              type="career"
+              title="Общий карьерный отклик"
+              description="Оставьте контакты и коротко расскажите о своём опыте."
+              submitLabel="Отправить резюме"
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Careers" title="Сценарий найма встроен в общую brand system." body={page.description} tone="light" />
+        <SectionHeading eyebrow="Вакансии" title="Карьерный поток STILNO." body={page.description} tone="light" />
         <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-4">
             {vacancies.map((vacancy) => (
@@ -1300,7 +1462,7 @@ function CareersTemplate(page: ResolvedPage) {
           </div>
           <LeadForm
             type="career"
-            title="General talent form"
+              title="Общий карьерный отклик"
             description="Если роль ещё не опубликована, можно отправить общий карьерный отклик."
             submitLabel="Отправить резюме"
           />
@@ -1324,7 +1486,7 @@ function VacancyTemplate(page: ResolvedPage) {
         <StructuredData data={buildJsonLd(page)} />
         <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-5">
-            <SectionHeading eyebrow="Vacancy page" title={vacancy.title} body={vacancy.description[0]} tone="light" />
+            <SectionHeading eyebrow="Вакансия" title={vacancy.title} body={vacancy.description[0]} tone="light" />
             <div className="grid gap-5 lg:grid-cols-2">
               <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
                 <p className="text-xs uppercase tracking-[0.35em] text-black/38">Что предстоит делать</p>
@@ -1355,7 +1517,7 @@ function VacancyTemplate(page: ResolvedPage) {
           <LeadForm
             type="career"
             title="Отклик на вакансию"
-            description="Форма отклика с thank-you route и analytics hook."
+            description="Форма отклика направляет заявку в карьерный поток STILNO."
             submitLabel="Отправить отклик"
             vacancyTitle={vacancy.title}
           />
@@ -1372,13 +1534,20 @@ function ContactsTemplate(page: ResolvedPage) {
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <div className="grid gap-8 xl:grid-cols-[0.85fr_1.15fr]">
           <div>
-            <SectionHeading eyebrow="Contacts" title="Общий контактный слой бренда и сервисных сценариев." body={page.description} tone="light" />
+            <SectionHeading eyebrow="Контакты" title="Общий контактный слой бренда, продукта и партнёрских сценариев." body={page.description} tone="light" />
             <div className="mt-8 grid gap-3">
               {siteSettings.contactLines.map((item) => (
-                <Link key={item.label} href={item.href} className="rounded-[1.5rem] border border-black/10 bg-white px-5 py-4 text-black shadow-[0_10px_30px_rgba(10,10,10,0.05)]">
-                  <div className="text-xs uppercase tracking-[0.35em] text-black/38">{item.label}</div>
-                  <div className="mt-2 text-lg font-medium">{item.value}</div>
-                </Link>
+                item.href ? (
+                  <Link key={item.label} href={item.href} className="rounded-[1.5rem] border border-black/10 bg-white px-5 py-4 text-black shadow-[0_10px_30px_rgba(10,10,10,0.05)]">
+                    <div className="text-xs uppercase tracking-[0.35em] text-black/38">{item.label}</div>
+                    <div className="mt-2 text-lg font-medium">{item.value}</div>
+                  </Link>
+                ) : (
+                  <div key={item.label} className="rounded-[1.5rem] border border-black/10 bg-white px-5 py-4 text-black shadow-[0_10px_30px_rgba(10,10,10,0.05)]">
+                    <div className="text-xs uppercase tracking-[0.35em] text-black/38">{item.label}</div>
+                    <div className="mt-2 text-lg font-medium">{item.value}</div>
+                  </div>
+                )
               ))}
             </div>
             <div className="mt-8">
@@ -1388,14 +1557,14 @@ function ContactsTemplate(page: ResolvedPage) {
           <div className="grid gap-5 xl:grid-cols-2">
             <LeadForm
               type="retail"
-              title="Retail / support"
-              description="Наличие, сервис, вопросы по магазинам и общие обращения."
+              title="Розница и поддержка"
+              description="Наличие продукта, города запуска, вопросы по сайту и общие обращения."
               submitLabel="Отправить обращение"
             />
             <LeadForm
               type="partner"
-              title="B2B / partner"
-              description="Оптовый контакт, franchise scouting, real estate и партнёрские запросы."
+              title="Опт и партнёрство"
+              description="Оптовый контакт, франчайзинг и запуск региона."
               submitLabel="Отправить запрос"
             />
           </div>
@@ -1406,11 +1575,28 @@ function ContactsTemplate(page: ResolvedPage) {
 }
 
 function ArticlesIndexTemplate(page: ResolvedPage) {
+  if (!articles.length) {
+    return (
+      <section className="bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-10">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
+          <SectionHeading eyebrow="Новости" title="Редакционный раздел будет пополняться по мере публикации новых материалов STILNO." body={page.description} tone="light" />
+          <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <p className="text-base leading-7 text-black/68">
+              Сейчас сайт сфокусирован на продукте, партнёрском потоке и правовой
+              информации. Новые материалы появятся здесь после их утверждения.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Articles" title="Редакционный слой про brand system, rollout и compliance." body={page.description} tone="light" />
+        <SectionHeading eyebrow="Новости" title="Материалы и публикации STILNO." body={page.description} tone="light" />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {articles.map((article) => (
             <article key={article.id} className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
@@ -1466,7 +1652,7 @@ function FaqTemplate(page: ResolvedPage) {
       <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <StructuredData data={buildJsonLd(page)} />
-        <SectionHeading eyebrow="FAQ" title="Частые вопросы по продукции, сети, franchise и legal-safe логике." body={page.description} tone="light" />
+        <SectionHeading eyebrow="Вопросы и ответы" title="Частые вопросы о продукте, правовых ограничениях и партнёрских сценариях." body={page.description} tone="light" />
         <div className="mt-10">
           <FaqAccordion items={faqItems} />
         </div>
@@ -1477,17 +1663,17 @@ function FaqTemplate(page: ResolvedPage) {
 
 function ThankYouTemplate(page: ResolvedPage) {
   const labels: Record<string, string> = {
-    retail: "Retail запрос принят.",
+    retail: "Розничное обращение принято.",
     franchise: "Франчайзинговый запрос принят.",
-    partner: "B2B запрос принят.",
+    partner: "Партнёрский запрос принят.",
     career: "Карьерный отклик принят.",
   };
 
   const nextSteps: Record<string, string> = {
     retail: "Команда свяжется по указанным контактам после первичной маршрутизации обращения.",
-    franchise: "Запрос попадёт в franchise pipeline и будет сопоставлен с городом, форматом и стадией запуска.",
-    partner: "B2B команда вернётся с дальнейшим шагом после первичной квалификации.",
-    career: "HR и hiring manager просмотрят отклик и вернутся со следующим этапом.",
+    franchise: "Запрос попадёт во франчайзинговую обработку и будет сопоставлен с городом, форматом и стадией запуска.",
+    partner: "Команда по партнёрству вернётся с дальнейшим шагом после первичной квалификации.",
+    career: "Команда по подбору просмотрит отклик и вернётся со следующим этапом.",
   };
 
   const key = page.thankYouType ?? "retail";
@@ -1495,7 +1681,7 @@ function ThankYouTemplate(page: ResolvedPage) {
   return (
     <section className="grid min-h-[70svh] place-items-center bg-black px-5 py-16 sm:px-6 lg:px-10">
       <div className="w-full max-w-3xl rounded-[2.6rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_42%),linear-gradient(145deg,#0a0a0a,#17181b)] p-8 text-white shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-10">
-        <p className="text-xs uppercase tracking-[0.45em] text-white/38">Thank-you page</p>
+        <p className="text-xs uppercase tracking-[0.45em] text-white/38">Спасибо</p>
         <h1 className="mt-6 text-5xl font-semibold tracking-[-0.06em]">{labels[key]}</h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-white/68">{nextSteps[key]}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -1523,7 +1709,7 @@ function LegalTemplate(page: ResolvedPage) {
       <div className="mx-auto max-w-[68rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <p className="text-xs uppercase tracking-[0.35em] text-black/38">
-          Version {legalPage.version} / {legalPage.effectiveDate}
+          Версия {legalPage.version} / {legalPage.effectiveDate}
         </p>
         <h1 className="mt-5 text-5xl font-semibold tracking-[-0.06em] text-black">{legalPage.title}</h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-black/65">{legalPage.summary}</p>
@@ -1587,7 +1773,7 @@ export function getStaticParams() {
 export function getMetadataPayload(page?: ResolvedPage) {
   if (!page) {
     return {
-      title: `${siteSettings.brandName} v2`,
+      title: siteSettings.brandName,
       description: siteSettings.description,
       canonical: siteOrigin,
       image: `${siteOrigin}${featuredProduct.variants[0].image ?? featuredProduct.images[0]}`,
@@ -1602,7 +1788,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
     featuredProduct.images[0];
 
   return {
-    title: `${page.title} — ${siteSettings.brandName}`,
+    title: page.title,
     description: page.description,
     canonical: `${siteOrigin}/${page.pathname.join("/")}`,
     image: image ? `${siteOrigin}${image}` : undefined,

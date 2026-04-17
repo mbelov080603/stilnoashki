@@ -6,7 +6,7 @@ import {
   getMetadataPayload,
   getStaticParams,
 } from "@/components/site-templates";
-import { resolvePage } from "@/lib/site-data";
+import { isIndexableDeployment, resolvePage } from "@/lib/site-data";
 
 export const dynamicParams = false;
 
@@ -31,6 +31,10 @@ export async function generateMetadata({
   return {
     title: metadata.title,
     description: metadata.description,
+    robots: {
+      index: isIndexableDeployment && page.kind !== "thank-you",
+      follow: isIndexableDeployment && page.kind !== "thank-you",
+    },
     alternates: {
       canonical: metadata.canonical,
     },
@@ -72,4 +76,3 @@ export default async function DynamicPage({
 
   return <PageRenderer page={page} />;
 }
-

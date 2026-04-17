@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 
+import { siteSettings } from "@/lib/site-data";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "STILNO v2",
+    name: siteSettings.brandName,
     short_name: "STILNO",
-    description: "Премиальная digital-система бренда электронных устройств.",
+    description: siteSettings.description,
     start_url: "/",
     display: "standalone",
     background_color: "#050505",
@@ -18,4 +20,3 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
   };
 }
-
