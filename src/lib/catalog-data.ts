@@ -8,15 +8,15 @@ export const productCategories: ProductCategory[] = [
     title: "Никотиновая линия",
     type: "nicotine",
     shortDescription:
-      "Текущая опубликованная линия STILNO построена вокруг модели STILNO CLICK ONE и вкусовых вариантов в единой упаковочной системе.",
+      "STILNO CLICK ONE — подтверждённая никотинсодержащая линия бренда STILNO для совершеннолетних пользователей.",
     longDescription:
-      "В публичной версии сайта опубликованы только подтверждённые данные текущей никотиновой линии. Никотиновые и безникотиновые продукты не смешиваются в одной смысловой категории.",
-    status: "Актуальная линия",
+      "На сайте публикуются только подтверждённые данные текущей никотинсодержащей линии. Никотиновые и безникотиновые продукты не смешиваются в одной смысловой категории.",
+    status: "Подтверждённая линия",
     disclaimer:
       "18+. Никотин вызывает зависимость. Информация на сайте не заменяет инструкцию и не является медицинской рекомендацией.",
     heroTitle: "STILNO CLICK ONE",
     heroBody:
-      "Перезаряжаемая электронная система доставки никотина одноразового использования с чёткими техническими параметрами, упаковочной дисциплиной и текущими вкусовыми вариантами.",
+      "Никотинсодержащая линия STILNO для совершеннолетних пользователей. Характеристики и вкусовые варианты опубликованы по подтверждённым упаковочным материалам.",
     heroImage: "/stilno/products/ananas-mango.jpg",
   },
 ];
@@ -26,7 +26,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "ananas-mango",
     title: "Ананас Манго",
     flavor: "Ананас Манго",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/ananas-mango.jpg",
     packaging: "/stilno/products/ananas-mango.jpg",
     status: "Текущий вкус",
@@ -35,7 +35,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "barbaris",
     title: "Барбарис",
     flavor: "Барбарис",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/barbaris.jpg",
     packaging: "/stilno/products/barbaris.jpg",
     status: "Текущий вкус",
@@ -44,7 +44,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "vishnya-limon-persik",
     title: "Вишня Лимон Персик",
     flavor: "Вишня Лимон Персик",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/vishnya-limon-persik.jpg",
     packaging: "/stilno/products/vishnya-limon-persik.jpg",
     status: "Текущий вкус",
@@ -53,7 +53,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "zemlyanika-dragonfruit",
     title: "Земляника Драгонфрут",
     flavor: "Земляника Драгонфрут",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/zemlyanika-dragonfruit.jpg",
     packaging: "/stilno/products/zemlyanika-dragonfruit.jpg",
     status: "Текущий вкус",
@@ -62,7 +62,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "myata",
     title: "Мята",
     flavor: "Мята",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/myata.jpg",
     packaging: "/stilno/products/myata.jpg",
     status: "Текущий вкус",
@@ -71,7 +71,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "slivochnaya-klubnika-mango",
     title: "Сливочная Клубника Манго",
     flavor: "Сливочная Клубника Манго",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/slivochnaya-klubnika-mango.jpg",
     packaging: "/stilno/products/slivochnaya-klubnika-mango.jpg",
     status: "Текущий вкус",
@@ -80,7 +80,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "smorodina-malina-ezhevika",
     title: "Смородина Малина Ежевика",
     flavor: "Смородина Малина Ежевика",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/smorodina-malina-ezhevika.jpg",
     packaging: "/stilno/products/smorodina-malina-ezhevika.jpg",
     status: "Текущий вкус",
@@ -89,7 +89,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "fruktoviy-chay",
     title: "Фруктовый Чай",
     flavor: "Фруктовый Чай",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/fruktoviy-chay.jpg",
     packaging: "/stilno/products/fruktoviy-chay.jpg",
     status: "Текущий вкус",
@@ -98,7 +98,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "chernika-klyukva-vishnya",
     title: "Черника Клюква Вишня",
     flavor: "Черника Клюква Вишня",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/chernika-klyukva-vishnya.jpg",
     packaging: "/stilno/products/chernika-klyukva-vishnya.jpg",
     status: "Текущий вкус",
@@ -107,7 +107,7 @@ const clickOneVariants: ProductVariant[] = [
     id: "yagodniy-energetik",
     title: "Ягодный Энергетик",
     flavor: "Ягодный Энергетик",
-    nicotineStrength: "20 мг/см3",
+    nicotineStrength: "20 мг/см³",
     image: "/stilno/products/yagodniy-energetik.jpg",
     packaging: "/stilno/products/yagodniy-energetik.jpg",
     status: "Текущий вкус",
@@ -122,20 +122,24 @@ export const products: Product[] = [
     title: "STILNO CLICK ONE",
     nicotineType: "nicotine",
     shortDescription:
-      "Перезаряжаемая электронная система доставки никотина одноразового использования. Многоразовое устройство и картридж в текущей вкусовой линии STILNO.",
+      "STILNO CLICK ONE — никотинсодержащая продуктовая линия для совершеннолетних пользователей. Характеристики указаны по подтверждённым упаковочным материалам.",
     longDescription:
-      "Публичная продуктовая страница STILNO CLICK ONE собрана по текущим упаковочным материалам: 10 мл, 850 мАч, Type-C, 10-22 Вт, 20 мг/см3, 15000 затяжек, состав, условия хранения, срок годности и сведения об изготовителе.",
-    availability: "Доступность уточняется через подтверждённые партнёрские каналы и формы сайта.",
-    highlight: "Актуальная модель",
+      "STILNO CLICK ONE — никотинсодержащая продуктовая линия для совершеннолетних пользователей. Характеристики указаны по подтверждённым упаковочным материалам. Показатель количества затяжек зависит от режима использования.",
+    availability: "Наличие и партнёрские условия уточняются через формы сайта и подтверждённые каналы STILNO.",
+    highlight: "Основная линия бренда",
     specs: [
       { label: "Модель", value: "STILNO CLICK ONE" },
-      { label: "Формат", value: "Многоразовое устройство + картридж" },
-      { label: "Мощность", value: "10-22 Вт" },
-      { label: "Объём жидкости", value: "10 см3 (10 мл)" },
-      { label: "Аккумулятор", value: "850 мАч" },
+      {
+        label: "Формат",
+        value:
+          "Перезаряжаемое устройство STILNO CLICK ONE. Точная формулировка формата должна быть сверена с упаковкой и документацией перед релизом.",
+      },
+      { label: "Объём жидкости", value: "10 мл / 10 см³" },
+      { label: "Концентрация никотина", value: "20 мг/см³" },
+      { label: "Аккумулятор", value: "850 мА·ч" },
       { label: "Порт", value: "Type-C" },
-      { label: "Массовая концентрация никотина", value: "20 мг/см3" },
-      { label: "Ресурс", value: "До 15000 затяжек" },
+      { label: "Мощность", value: "10–22 Вт" },
+      { label: "Ресурс", value: "До 15 000 затяжек*" },
     ],
     facts: [
       "Состав: глицерин, пропиленгликоль, ароматизаторы, никотин, бензойная кислота.",
@@ -148,6 +152,7 @@ export const products: Product[] = [
       "18+. Никотин вызывает зависимость.",
       "Запрещено использовать лицам младше 18 лет.",
       "Не рекомендуется беременным и кормящим женщинам, а также людям с индивидуальной непереносимостью компонентов.",
+      "Показатель количества затяжек зависит от режима использования.",
       "Материалы сайта не заменяют инструкцию и не содержат медицинских обещаний.",
     ],
     images: clickOneVariants.slice(0, 4).map((variant) => variant.image ?? "").filter(Boolean),
@@ -182,7 +187,7 @@ export const galleryItems: GalleryItem[] = [
     type: "technical-flat",
     media: "/stilno/products/vishnya-limon-persik.jpg",
     alt: "Техническая плоскость STILNO CLICK ONE",
-    caption: "Технические данные выведены без маркетингового шума: 10 мл, 850 мАч, Type-C, 10-22 Вт и 20 мг/см3.",
+    caption: "Технические данные выведены без маркетингового шума: 10 мл, 850 мА·ч, Type-C, 10–22 Вт и 20 мг/см³.",
   },
   {
     id: "gallery-logotype-closeup",
@@ -245,7 +250,7 @@ export const galleryItems: GalleryItem[] = [
 export const qualityStandards = [
   {
     title: "Фактические данные о продукте",
-    body: "В интерфейсе используются параметры из актуальных упаковочных материалов: 10 мл, 850 мАч, Type-C, 10-22 Вт, 20 мг/см3 и до 15000 затяжек.",
+    body: "В интерфейсе используются параметры из подтверждённых упаковочных материалов: 10 мл, 850 мА·ч, Type-C, 10–22 Вт, 20 мг/см³ и до 15 000 затяжек*.",
   },
   {
     title: "Упаковочная дисциплина",
@@ -257,20 +262,20 @@ export const qualityStandards = [
   },
   {
     title: "Чистая архитектура линейки",
-    body: "Публичная версия сайта показывает только подтверждённую текущую линию и не смешивает её с непубликованными направлениями.",
+    body: "Сайт показывает только подтверждённую линию STILNO CLICK ONE и не смешивает её с непубликованными направлениями.",
   },
 ];
 
 export const responsibilityNotes = [
   "18+ доступ обязателен для всего сайта и применяется до просмотра продуктового контента.",
-  "Текущая опубликованная линейка STILNO относится к никотиновой категории и маркируется отдельно.",
+  "STILNO CLICK ONE относится к никотинсодержащей категории и маркируется отдельно.",
   "Безникотиновые продукты, если они будут опубликованы, должны иметь собственные предупреждения, маршруты и самостоятельную подачу.",
   "Сайт не использует медицинские обещания и не подменяет инструкцию по использованию продукта.",
 ];
 
 export const homeSignals = [
   "STILNO CLICK ONE",
-  "10 мл / 20 мг/см3 / до 15000 затяжек",
-  "850 мАч / Type-C / 10-22 Вт",
-  "Франчайзинг, опт и ответственное потребление",
+  "10 мл · 20 мг/см³ · до 15 000 затяжек*",
+  "850 мА·ч · Type-C · 10–22 Вт",
+  "Партнёрство · франчайзинг · розничные запросы",
 ];

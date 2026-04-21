@@ -1,20 +1,15 @@
-import { mkdir, appendFile } from "node:fs/promises";
+import { appendFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
 import { NextResponse } from "next/server";
 
 type LeadPayload = {
   type?: string;
-  name?: string;
-  phone?: string;
-  email?: string;
-  city?: string;
-  comment?: string;
+  pageUrl?: string;
   website?: string;
   startedAt?: number;
-  consent?: boolean;
-  pageUrl?: string;
-  vacancyTitle?: string;
+  fields?: Record<string, string>;
+  consents?: Record<string, boolean>;
 };
 
 const MIN_SUBMIT_DELAY_MS = 1500;
@@ -72,8 +67,7 @@ async function sendLeadByEmail(lead: Record<string, unknown>) {
   }
 
   const lines = Object.entries(lead)
-    .filter(([, value]) => value)
-    .map(([key, value]) => `<p><strong>${key}:</strong> ${String(value)}</p>`)
+    .map(([key, value]) => `<p><strong>${key}:</strong> ${typeof value === "string" ? value : JSON.stringify(value)}</p>`)
     .join("");
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -98,6 +92,77 @@ async function sendLeadByEmail(lead: Record<string, unknown>) {
   return true;
 }
 
+function validateLead(type: string, fields: Record<string, string>, consents: Record<string, boolean>) {
+  const name = normalizeField(fields.name);
+  const phone = normalizeField(fields.phone);
+  const email = normalizeField(fields.email);
+  const city = normalizeField(fields.city);
+  const requestType = normalizeField(fields.requestType);
+  const businessStatus = normalizeField(fields.businessStatus);
+  const retailExperience = normalizeField(fields.retailExperience);
+  const interestFormat = normalizeField(fields.interestFormat);
+  const projectStage = normalizeField(fields.projectStage);
+
+  if (!consents.personalData) {
+    return "Нужно согласие на обработку персональных данных.";
+  }
+
+  if ((type === "retail" || type === "partner" || type === "franchise") && !consents.ageConfirmed) {
+    return "Нужно подтвердить возраст 18+.";
+  }
+
+  if (!name) {
+    return "Укажите имя.";
+  }
+
+  if (!city) {
+    return "Укажите город или регион.";
+  }
+
+  if (type === "retail") {
+    if (!phone && !email) {
+      return "Укажите телефон или email.";
+    }
+    if (!requestType) {
+      return "Выберите тип запроса.";
+    }
+  }
+
+  if (type === "partner") {
+    if (!phone || !email) {
+      return "Укажите телефон и email.";
+    }
+    if (!requestType) {
+      return "Выберите направление запроса.";
+    }
+  }
+
+  if (type === "franchise") {
+    if (!phone || !email) {
+      return "Укажите телефон и email.";
+    }
+    if (!businessStatus || !retailExperience || !interestFormat || !projectStage) {
+      return "Заполните статус, опыт, формат и стадию проекта.";
+    }
+  }
+
+  if (type === "career") {
+    if (!email) {
+      return "Укажите email.";
+    }
+  }
+
+  if (email && !isValidEmail(email)) {
+    return "Укажите корректный email.";
+  }
+
+  if (phone && !isValidPhone(phone)) {
+    return "Укажите корректный телефон.";
+  }
+
+  return null;
+}
+
 export async function POST(request: Request) {
   let payload: LeadPayload;
 
@@ -118,35 +183,14 @@ export async function POST(request: Request) {
   }
 
   const type = LEAD_TYPES.has(payload.type ?? "") ? payload.type! : "retail";
-  const name = normalizeField(payload.name);
-  const phone = normalizeField(payload.phone);
-  const email = normalizeField(payload.email);
-  const city = normalizeField(payload.city);
-  const comment = normalizeField(payload.comment);
+  const fields = Object.fromEntries(
+    Object.entries(payload.fields ?? {}).map(([key, value]) => [key, normalizeField(value)]),
+  );
+  const consents = Object.fromEntries(
+    Object.entries(payload.consents ?? {}).map(([key, value]) => [key, Boolean(value)]),
+  );
   const pageUrl = normalizeField(payload.pageUrl) || "/";
-  const vacancyTitle = normalizeField(payload.vacancyTitle);
   const startedAt = Number(payload.startedAt ?? 0);
-
-  if (!name || !phone || !email || !city) {
-    return NextResponse.json(
-      { ok: false, message: "Заполните имя, телефон, email и город." },
-      { status: 400 },
-    );
-  }
-
-  if (!isValidEmail(email)) {
-    return NextResponse.json(
-      { ok: false, message: "Укажите корректный email." },
-      { status: 400 },
-    );
-  }
-
-  if (!isValidPhone(phone)) {
-    return NextResponse.json(
-      { ok: false, message: "Укажите корректный телефон." },
-      { status: 400 },
-    );
-  }
 
   if (startedAt && Date.now() - startedAt < MIN_SUBMIT_DELAY_MS) {
     return NextResponse.json(
@@ -155,24 +199,18 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!payload.consent) {
-    return NextResponse.json(
-      { ok: false, message: "Нужно согласие на обработку персональных данных." },
-      { status: 400 },
-    );
+  const validationError = validateLead(type, fields, consents);
+  if (validationError) {
+    return NextResponse.json({ ok: false, message: validationError }, { status: 400 });
   }
 
   const lead = {
     leadId: crypto.randomUUID(),
     receivedAt: new Date().toISOString(),
     type,
-    name,
-    phone,
-    email,
-    city,
-    comment,
     pageUrl,
-    vacancyTitle: vacancyTitle || null,
+    fields,
+    consents,
   };
 
   const deliveryResults = await Promise.allSettled([
@@ -200,6 +238,5 @@ export async function POST(request: Request) {
     receivedAt: lead.receivedAt,
     type: lead.type,
     pageUrl: lead.pageUrl,
-    vacancyTitle: lead.vacancyTitle,
   });
 }

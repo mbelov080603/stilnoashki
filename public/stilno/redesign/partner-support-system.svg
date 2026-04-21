@@ -1,0 +1,39 @@
+<svg width="1440" height="820" viewBox="0 0 1440 820" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">STILNO partner support system</title>
+<desc id="desc">A clean B2B support matrix for franchise and partners page.</desc>
+<rect width="1440" height="820" fill="#F5F7FA"/>
+<text x="110" y="122" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="700" letter-spacing="-1.5">Что получает партнёр</text>
+<text x="110" y="164" fill="#64707E" font-family="Inter, Arial, sans-serif" font-size="21">Состав пакета описывать только подтверждёнными пунктами. Без гарантий доходности.</text>
+<g font-family="Inter, Arial, sans-serif">
+  <g transform="translate(110 230)">
+    <rect width="378" height="220" rx="28" fill="#FFFFFF" stroke="#0B1018" stroke-opacity="0.08"/>
+    <circle cx="54" cy="58" r="22" fill="#0B1018"/><text x="94" y="66" fill="#0B1018" font-size="24" font-weight="650">Бренд-материалы</text>
+    <text x="34" y="116" fill="#64707E" font-size="18">Гайд, визуалы, макеты, стандарты коммуникации и оформления точки.</text>
+  </g>
+  <g transform="translate(520 230)">
+    <rect width="378" height="220" rx="28" fill="#FFFFFF" stroke="#0B1018" stroke-opacity="0.08"/>
+    <circle cx="54" cy="58" r="22" fill="#0B1018"/><text x="94" y="66" fill="#0B1018" font-size="24" font-weight="650">Продуктовая база</text>
+    <text x="34" y="116" fill="#64707E" font-size="18">Характеристики, упаковка, предупреждения, регламенты подачи 18+.</text>
+  </g>
+  <g transform="translate(930 230)">
+    <rect width="378" height="220" rx="28" fill="#FFFFFF" stroke="#0B1018" stroke-opacity="0.08"/>
+    <circle cx="54" cy="58" r="22" fill="#0B1018"/><text x="94" y="66" fill="#0B1018" font-size="24" font-weight="650">Запуск</text>
+    <text x="34" y="116" fill="#64707E" font-size="18">Этапы, чек-листы, консультации, подготовка точки или региона.</text>
+  </g>
+  <g transform="translate(110 486)">
+    <rect width="378" height="220" rx="28" fill="#0B1018"/>
+    <text x="34" y="66" fill="#F5F7FA" font-size="24" font-weight="650">Документы</text>
+    <text x="34" y="116" fill="#AAB3BE" font-size="18">Презентация, правовая информация, согласия, дисклеймеры и договорная база.</text>
+  </g>
+  <g transform="translate(520 486)">
+    <rect width="378" height="220" rx="28" fill="#0B1018"/>
+    <text x="34" y="66" fill="#F5F7FA" font-size="24" font-weight="650">Контакт</text>
+    <text x="34" y="116" fill="#AAB3BE" font-size="18">Единая форма заявки, менеджер, уточнение города и формата запуска.</text>
+  </g>
+  <g transform="translate(930 486)">
+    <rect width="378" height="220" rx="28" fill="#0B1018"/>
+    <text x="34" y="66" fill="#F5F7FA" font-size="24" font-weight="650">18+ дисциплина</text>
+    <text x="34" y="116" fill="#AAB3BE" font-size="18">Возрастное ограничение, предупреждения, отсутствие дистанционной розничной продажи.</text>
+  </g>
+</g>
+</svg>

@@ -60,10 +60,10 @@ export function getBreadcrumbs(pathname: string[], title: string) {
   }
 
   const labelMap = new Map<string, string>([
-    ["stores", "Магазины"],
+    ["stores", "Где купить"],
     ["about", "О бренде"],
     ["gallery", "Галерея"],
-    ["products", "Продукция"],
+    ["products", "Продукт"],
     ["partners", "Партнёры"],
     ["responsible", "Ответственное потребление"],
     ["franchise", "Франчайзинг"],
@@ -94,7 +94,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
         kind: "stores-index",
         title: "Где купить STILNO",
         description:
-          "Розничная карта STILNO публикуется по мере подтверждения городов и точек. До этого сайт принимает запросы по регионам и запуску.",
+          "Розничная карта STILNO публикуется после подтверждения городов и партнёрских точек. До публикации списка можно оставить запрос по вашему городу.",
         pathname: slug,
         stores,
       };
@@ -192,9 +192,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
   if (section === "partners") {
     return {
       kind: "partners",
-      title: "Партнёры STILNO",
+      title: "Партнёрам STILNO",
       description:
-        "Оптовые, партнёрские и франчайзинговые сценарии STILNO без публикации неподтверждённых логотипов и адресов.",
+        "Оптовые, региональные и партнёрские запросы по бренду STILNO принимаются через форму сайта и обсуждаются индивидуально.",
       pathname: slug,
     };
   }
@@ -214,7 +214,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "franchise",
       title: "Франчайзинг STILNO",
       description:
-        "Запуск партнёрства, документация, маршрутизация лидов и брендовые стандарты без финансовых обещаний.",
+        "Партнёрский запуск бренда STILNO в регионах. Условия обсуждаются индивидуально после заявки и не являются публичной офертой.",
       pathname: slug,
     };
   }

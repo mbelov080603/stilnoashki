@@ -58,18 +58,14 @@ export const companyDetails = {
 
 export const siteSettings = {
   brandName: companyDetails.brandName,
-  title: "STILNO",
+  title: "STILNO CLICK ONE | официальный сайт бренда 18+",
   description:
-    "Официальный сайт STILNO. STILNO CLICK ONE: 10 мл, 850 мАч, Type-C, 10-22 Вт, 20 мг/см3 и до 15000 затяжек. Франчайзинг, оптовые запросы и ответственное потребление.",
+    "STILNO CLICK ONE: официальный сайт бренда 18+ с информацией о продукте, партнёрстве, франчайзинге, розничных запросах и правовых ограничениях категории.",
   primaryNav: [
-    { label: "Магазины", href: "/stores" },
-    { label: "О бренде", href: "/about" },
-    { label: "Галерея", href: "/gallery" },
-    { label: "Продукция", href: "/products" },
+    { label: "Продукт", href: "/products/stilno-click-one" },
     { label: "Партнёры", href: "/partners" },
-    { label: "Ответственное потребление", href: "/responsible" },
+    { label: "Где купить", href: "/stores" },
     { label: "Франчайзинг", href: "/franchise" },
-    { label: "Вакансии", href: "/careers" },
     { label: "Контакты", href: "/contacts" },
   ] satisfies NavItem[],
   primaryCta: {
@@ -78,22 +74,30 @@ export const siteSettings = {
     variant: "primary",
   } satisfies CtaLink,
   footerLinks: [
-    { label: "Политика конфиденциальности", href: "/legal/privacy" },
-    { label: "Пользовательское соглашение", href: "/legal/terms" },
-    { label: "Политика cookies", href: "/legal/cookies" },
-    { label: "Согласие на обработку данных", href: "/legal/consent" },
-    { label: "Вопросы и ответы", href: "/faq" },
+    { label: "Галерея", href: "/gallery" },
+    { label: "Вакансии", href: "/careers" },
     { label: "Материалы", href: "/articles" },
+    { label: "Вопросы и ответы", href: "/faq" },
+    { label: "Политика обработки данных", href: "/legal/privacy" },
+    { label: "Согласие на обработку данных", href: "/legal/consent" },
+    { label: "Политика cookies", href: "/legal/cookies" },
+    { label: "Пользовательское соглашение", href: "/legal/terms" },
+    { label: "Не является публичной офертой", href: "/legal/not-public-offer" },
   ] satisfies NavItem[],
   contactLines: [
     { label: "Компания", value: companyDetails.companyName },
     { label: "Юридический адрес", value: companyDetails.legalAddress },
     { label: "Производство", value: companyDetails.productionAddress },
-    { label: "Обращения", value: "Розничные, оптовые и франчайзинговые запросы принимаются через формы сайта.", href: "/contacts" },
+    {
+      label: "Обращения",
+      value:
+        "Розничные, партнёрские и франчайзинговые запросы принимаются через формы сайта.",
+      href: "/contacts",
+    },
   ] satisfies ContactLine[],
   socialLinks: [] as SocialLink[],
-  ageGateVersion: "1.1",
-  consentVersion: "1.1",
+  ageGateVersion: "2.0",
+  consentVersion: "2.0",
   mapProvider: "manual-launch-map",
   exitHref: "https://ya.ru",
 };

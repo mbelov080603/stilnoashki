@@ -4,13 +4,10 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import {
-  type City,
   type Product,
   type ResolvedPage,
-  type Store,
   articles,
   brandNarrative,
-  cities,
   companyDetails,
   documentLinks,
   faqItems,
@@ -21,17 +18,14 @@ import {
   getArticlePath,
   getBreadcrumbs,
   getCategoryProducts,
-  getCityStoreCount,
   getProductCategoryPath,
   getProductPath,
-  getStorePath,
   getVacancyPath,
   homeSignals,
   launchMetrics,
   partnershipScenarios,
   productCategories,
   products,
-  qualityStandards,
   responsibilityNotes,
   siteOrigin,
   siteSettings,
@@ -40,11 +34,15 @@ import {
 import {
   AgeGate,
   AnalyticsBridge,
+  AnalyticsLoader,
   CookieBanner,
   FaqAccordion,
   LeadForm,
   SiteHeader,
   VariantPicker,
+  VariantPickerFallback,
+  type LeadCheckbox,
+  type LeadField,
 } from "@/components/site-client";
 
 function classNames(...values: Array<string | false | undefined>) {
@@ -57,19 +55,21 @@ function ButtonLink({
   variant = "primary",
   analytics,
   target,
+  tone = "dark",
 }: {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary";
   analytics?: string;
   target?: string;
+  tone?: "dark" | "light";
 }) {
   const style =
     variant === "primary"
       ? "border-transparent bg-[var(--color-silver)] text-black hover:bg-white"
-      : variant === "secondary"
-        ? "border-white/16 bg-white/[0.05] text-white hover:border-white/36 hover:bg-white/[0.1]"
-        : "border-black/10 bg-black/[0.03] text-black hover:border-black/18 hover:bg-black/[0.06]";
+      : tone === "dark"
+        ? "border-white/16 bg-white/[0.04] text-white hover:border-white/30 hover:bg-white/[0.08]"
+        : "border-black/12 bg-black/[0.03] text-black hover:border-black/22 hover:bg-black/[0.06]";
 
   return (
     <Link
@@ -88,7 +88,7 @@ function SectionHeading({
   eyebrow,
   title,
   body,
-  tone = "dark",
+  tone = "light",
 }: {
   eyebrow?: string;
   title: string;
@@ -96,7 +96,7 @@ function SectionHeading({
   tone?: "dark" | "light";
 }) {
   const textClass = tone === "dark" ? "text-white" : "text-black";
-  const bodyClass = tone === "dark" ? "text-white/65" : "text-black/65";
+  const bodyClass = tone === "dark" ? "text-white/68" : "text-black/66";
 
   return (
     <div className="max-w-3xl">
@@ -107,7 +107,7 @@ function SectionHeading({
             tone === "dark" ? "text-white/45" : "text-black/40",
           )}
         >
-          <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/30" : "bg-black/20")} />
+          <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/26" : "bg-black/20")} />
           <span>{eyebrow}</span>
         </div>
       ) : null}
@@ -116,88 +116,6 @@ function SectionHeading({
       </h2>
       <p className={classNames("mt-5 max-w-2xl text-base leading-7 sm:text-lg", bodyClass)}>{body}</p>
     </div>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-white/8 bg-black">
-      <div className="mx-auto grid max-w-[90rem] gap-12 px-5 py-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr_0.85fr] lg:px-10">
-        <div>
-          <p className="text-xs uppercase tracking-[0.45em] text-white/42">STILNO</p>
-          <h2 className="mt-4 max-w-md text-3xl font-semibold tracking-[-0.04em] text-white">
-            Официальный сайт STILNO с текущей линией STILNO CLICK ONE, партнёрским потоком и правовой информацией.
-          </h2>
-          <p className="mt-5 max-w-xl text-sm leading-6 text-white/60">
-            18+. Никотин вызывает зависимость. Сайт публикует подтверждённые сведения о продукте и
-            не подменяет инструкцию к продукту.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <span className="rounded-full border border-white/12 px-3 py-1 text-xs uppercase tracking-[0.25em] text-white/58">
-              18+
-            </span>
-            <span className="rounded-full border border-white/12 px-3 py-1 text-xs uppercase tracking-[0.25em] text-white/58">
-              STILNO CLICK ONE
-            </span>
-          </div>
-        </div>
-
-        <div className="grid gap-4">
-          <p className="text-xs uppercase tracking-[0.35em] text-white/38">Навигация</p>
-          <div className="grid gap-2">
-            {siteSettings.primaryNav.map((item) => (
-              <Link key={item.href} href={item.href} className="text-sm text-white/68 transition hover:text-white">
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid gap-8">
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Контакты</p>
-            <div className="mt-3 grid gap-2 text-sm">
-              {siteSettings.contactLines.map((line) => (
-                line.href ? (
-                  <Link key={line.label} href={line.href} className="text-white/68 transition hover:text-white">
-                    {line.value}
-                  </Link>
-                ) : (
-                  <p key={line.label} className="text-white/68">
-                    {line.value}
-                  </p>
-                )
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Правовая информация</p>
-            <div className="mt-3 grid gap-2 text-sm">
-              {siteSettings.footerLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/8">
-        <div className="mx-auto flex max-w-[90rem] flex-col gap-3 px-5 py-5 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
-          <p>© 2026 STILNO. {companyDetails.companyName}.</p>
-          {siteSettings.socialLinks.length ? (
-            <div className="flex flex-wrap gap-4">
-              {siteSettings.socialLinks.map((link) => (
-                <Link key={link.label} href={link.href} className="transition hover:text-white">
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </footer>
   );
 }
 
@@ -261,29 +179,18 @@ function buildJsonLd(page?: ResolvedPage) {
           value: spec.value,
         })),
       };
-    case "store":
+    case "faq":
       return {
         "@context": "https://schema.org",
-        "@type": "Store",
-        name: page.store?.title,
-        address: page.store?.address,
-        telephone: page.store?.phone,
-        url: canonicalUrl,
-      };
-    case "vacancy":
-      return {
-        "@context": "https://schema.org",
-        "@type": "JobPosting",
-        title: page.vacancy?.title,
-        description: page.vacancy?.description.join(" "),
-        hiringOrganization: {
-          "@type": "Organization",
-          name: siteSettings.brandName,
-        },
-        jobLocation: {
-          "@type": "Place",
-          address: page.city?.name,
-        },
+        "@type": "FAQPage",
+        mainEntity: faqItems.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        })),
       };
     case "article":
       return {
@@ -297,19 +204,6 @@ function buildJsonLd(page?: ResolvedPage) {
           name: page.article?.author,
         },
         mainEntityOfPage: canonicalUrl,
-      };
-    case "faq":
-      return {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faqItems.map((item) => ({
-          "@type": "Question",
-          name: item.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: item.answer,
-          },
-        })),
       };
     default:
       return {
@@ -351,195 +245,15 @@ function BreadcrumbTrail({ pathname, title }: { pathname: string[]; title: strin
 
 function MetricCard({ value, label, note }: { value: string; label: string; note: string }) {
   return (
-    <div className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-      <div className="text-4xl font-semibold tracking-[-0.05em] text-black">{value}</div>
+    <div className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+      <div className="text-3xl font-semibold tracking-[-0.05em] text-black">{value}</div>
       <div className="mt-2 text-sm font-medium text-black/76">{label}</div>
       <div className="mt-3 text-sm leading-6 text-black/56">{note}</div>
     </div>
   );
 }
 
-function MediaTile({
-  image,
-  title,
-  tone = "light",
-  aspect = "square",
-}: {
-  image?: string;
-  title: string;
-  tone?: "light" | "dark";
-  aspect?: "square" | "wide";
-}) {
-  const isDark = tone === "dark";
-  return (
-    <div
-      className={classNames(
-        "relative overflow-hidden rounded-[2rem] border",
-        isDark ? "border-white/8 bg-white/[0.04]" : "border-black/8 bg-black/[0.03]",
-        aspect === "wide" ? "min-h-[20rem]" : "min-h-[18rem]",
-      )}
-    >
-      {image ? (
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
-        />
-      ) : (
-        <div
-          className={classNames(
-            "absolute inset-0",
-            isDark
-              ? "bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_46%),linear-gradient(135deg,#090909,#1d1d1d)]"
-              : "bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.85),transparent_44%),linear-gradient(135deg,#f5f6f7,#d8dbe0)]",
-          )}
-        />
-      )}
-      <div
-        className={classNames(
-          "absolute inset-0 bg-gradient-to-t from-black/55 via-black/12 to-transparent",
-          !image && !isDark && "from-black/20 via-transparent",
-        )}
-      />
-      <div className="absolute bottom-0 left-0 right-0 p-5">
-        <p className={classNames("text-base font-medium", isDark || image ? "text-white" : "text-black")}>
-          {title}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function CoverageMap({}: { activeCity?: City }) {
-  return (
-    <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_34%),linear-gradient(135deg,#07101a_0%,#101826_55%,#0b1119_100%)] p-6 text-white sm:p-8">
-      <div className="absolute inset-y-0 left-[14%] w-px bg-white/8" />
-      <div className="absolute inset-y-0 left-[44%] w-px bg-white/8" />
-      <div className="absolute inset-y-0 left-[74%] w-px bg-white/8" />
-      <div className="absolute inset-x-0 top-[22%] h-px bg-white/8" />
-      <div className="absolute inset-x-0 top-[55%] h-px bg-white/8" />
-      <div className="absolute left-1/2 top-1/2 size-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(129,169,214,0.18),transparent_68%)] blur-3xl" />
-
-      <div className="relative min-h-[24rem]">
-        <div className="absolute left-0 top-0 rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.35em] text-white/58">
-          Москва
-        </div>
-        <div className="absolute inset-[9%]">
-          <svg
-            viewBox="0 0 760 520"
-            className="h-full w-full"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <defs>
-              <linearGradient id="moscowStroke" x1="100" x2="650" y1="80" y2="440" gradientUnits="userSpaceOnUse">
-                <stop stopColor="rgba(255,255,255,0.42)" />
-                <stop offset="1" stopColor="rgba(180,207,236,0.82)" />
-              </linearGradient>
-              <linearGradient id="moscowFill" x1="180" x2="620" y1="120" y2="390" gradientUnits="userSpaceOnUse">
-                <stop stopColor="rgba(255,255,255,0.09)" />
-                <stop offset="1" stopColor="rgba(130,164,204,0.18)" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M146 252L190 198L178 142L238 124L276 82L348 110L402 92L458 122L520 114L562 160L614 182L596 250L628 304L586 360L522 374L482 428L410 412L348 444L290 412L228 424L194 370L134 338L152 282Z"
-              fill="url(#moscowFill)"
-              stroke="url(#moscowStroke)"
-              strokeWidth="3"
-            />
-            <path
-              d="M228 204L308 184L356 148L438 170L486 224L470 292L404 340L332 330L270 300L238 252Z"
-              fill="none"
-              stroke="rgba(255,255,255,0.18)"
-              strokeWidth="2"
-              strokeDasharray="10 12"
-            />
-            <path
-              d="M316 132L352 208L438 176"
-              fill="none"
-              stroke="rgba(255,255,255,0.14)"
-              strokeWidth="2"
-            />
-            <path
-              d="M254 286L340 256L424 318"
-              fill="none"
-              stroke="rgba(255,255,255,0.14)"
-              strokeWidth="2"
-            />
-            <circle cx="380" cy="258" r="16" fill="rgba(217,226,236,0.12)" />
-            <circle cx="380" cy="258" r="8" fill="rgba(255,255,255,0.88)" />
-            <circle cx="380" cy="258" r="4" fill="rgba(11,17,25,1)" />
-          </svg>
-        </div>
-        <div className="absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2">
-          <div className="rounded-full border border-white/16 bg-black/45 px-4 py-2 text-xs uppercase tracking-[0.32em] text-white/76 shadow-[0_20px_50px_rgba(4,10,18,0.35)] backdrop-blur">
-            Москва
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StoreCard({ store }: { store: Store }) {
-  return (
-    <article className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-      <p className="text-xs uppercase tracking-[0.35em] text-black/38">
-        {store.featured ? "Flagship" : "Store"}
-      </p>
-      <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">{store.title}</h3>
-      <p className="mt-3 text-sm leading-6 text-black/62">{store.address}</p>
-      <div className="mt-4 grid gap-2 text-sm text-black/65">
-        <p>{store.hours}</p>
-        <p>{store.phone}</p>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {store.categories.map((category) => (
-          <span key={category} className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
-            {category}
-          </span>
-        ))}
-      </div>
-      <div className="mt-6">
-        <ButtonLink href={getStorePath(store)} variant="ghost" analytics="store_card_open">
-          Открыть страницу точки
-        </ButtonLink>
-      </div>
-    </article>
-  );
-}
-
-function ProductCard({ product }: { product: Product }) {
-  const category = productCategories.find((item) => item.id === product.categoryId);
-
-  return (
-    <article className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.06)]">
-      <MediaTile image={product.images[0]} title={product.title} aspect="wide" />
-      <div className="flex items-center justify-between gap-4">
-        <span className="text-xs uppercase tracking-[0.35em] text-black/40">
-          {category?.title ?? "Product"}
-        </span>
-        <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.25em] text-black/55">
-          {product.highlight}
-        </span>
-      </div>
-      <div>
-        <h3 className="text-3xl font-semibold tracking-[-0.04em] text-black">{product.title}</h3>
-        <p className="mt-3 text-sm leading-6 text-black/62">{product.shortDescription}</p>
-      </div>
-      <div className="mt-2 flex items-center justify-between gap-4">
-        <span className="text-sm text-black/42">{product.availability}</span>
-        <ButtonLink href={getProductPath(product)} variant="ghost" analytics="product_card_open">
-          Подробнее
-        </ButtonLink>
-      </div>
-    </article>
-  );
-}
-
-function RichText({ paragraphs, tone = "light" }: { paragraphs: string[]; tone?: "light" | "dark" }) {
+function RichText({ paragraphs, tone = "light" }: { paragraphs: string[]; tone?: "dark" | "light" }) {
   return (
     <div className={classNames("grid gap-4 text-base leading-7", tone === "dark" ? "text-white/68" : "text-black/68")}>
       {paragraphs.map((paragraph) => (
@@ -549,117 +263,450 @@ function RichText({ paragraphs, tone = "light" }: { paragraphs: string[]; tone?:
   );
 }
 
-function VariantPickerFallback({ product }: { product: Product }) {
+function SvgAsset({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
+  return <Image src={src} alt={alt} width={1600} height={900} unoptimized className={className} />;
+}
+
+function ProductPhotoCard({
+  src,
+  alt,
+  aspect = "wide",
+}: {
+  src: string;
+  alt: string;
+  aspect?: "square" | "wide";
+}) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-      <div className="relative overflow-hidden rounded-[2rem] border border-black/8 bg-[linear-gradient(135deg,#f3f4f6,#d3d6da)] p-5">
-        {product.images[0] ? (
-          <Image
-            src={product.images[0]}
-            alt={product.title}
-            width={1400}
-            height={1400}
-            className="mx-auto w-full max-w-[36rem] object-contain"
-          />
-        ) : null}
-      </div>
-      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_48px_rgba(15,15,15,0.08)]">
-        <p className="text-xs uppercase tracking-[0.4em] text-black/38">Вкусы</p>
-        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">
-          {product.variants[0]?.title}
-        </h3>
-      </div>
+    <div
+      className={classNames(
+        "overflow-hidden rounded-[2rem] border border-black/10 bg-[linear-gradient(180deg,#f7f7f6,#e3e5e8)] p-5",
+        aspect === "wide" ? "min-h-[18rem]" : "min-h-[16rem]",
+      )}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        width={1600}
+        height={1200}
+        className="mx-auto h-full w-full object-contain"
+      />
     </div>
   );
 }
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+function Footer() {
   return (
-    <>
-      <AnalyticsBridge />
-      <AgeGate
-        version={siteSettings.ageGateVersion}
-        legalHref="/legal/age-18"
-        exitHref={siteSettings.exitHref}
-      />
-      <CookieBanner version={siteSettings.consentVersion} legalHref="/legal/cookies" />
-      <div className="min-h-screen bg-[var(--color-page)] text-white">
-        <SiteHeader
-          navItems={siteSettings.primaryNav}
-          primaryCta={siteSettings.primaryCta}
-        />
-        <main>{children}</main>
-        <Footer />
+    <footer className="border-t border-white/8 bg-black">
+      <div className="border-b border-white/8">
+        <div className="mx-auto max-w-[90rem] px-5 py-5 sm:px-6 lg:px-10">
+          <SvgAsset
+            src="/stilno/redesign/legal-18-footer-strip.svg"
+            alt="18+ и правовые предупреждения STILNO"
+            className="w-full rounded-[1.4rem] border border-white/8 bg-white/[0.02]"
+          />
+        </div>
       </div>
-    </>
+
+      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-14 sm:px-6 lg:grid-cols-5 lg:px-10">
+        <div>
+          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Бренд</p>
+          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">STILNO</h2>
+          <p className="mt-4 text-sm leading-6 text-white/60">
+            Официальный сайт бренда STILNO. Информация предназначена для лиц старше 18 лет.
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Предупреждение</p>
+          <p className="mt-4 text-sm leading-6 text-white/60">
+            18+. Никотин вызывает зависимость. Продажа несовершеннолетним запрещена. Дистанционная розничная продажа никотинсодержащей продукции не осуществляется.
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Навигация</p>
+          <div className="mt-4 grid gap-2 text-sm">
+            <Link href="/products/stilno-click-one" className="text-white/68 transition hover:text-white">
+              Продукт
+            </Link>
+            <Link href="/partners" className="text-white/68 transition hover:text-white">
+              Партнёрам
+            </Link>
+            <Link href="/franchise" className="text-white/68 transition hover:text-white">
+              Франчайзинг
+            </Link>
+            <Link href="/stores" className="text-white/68 transition hover:text-white">
+              Где купить
+            </Link>
+            <Link href="/responsible" className="text-white/68 transition hover:text-white">
+              Ответственное потребление
+            </Link>
+            <Link href="/faq" className="text-white/68 transition hover:text-white">
+              FAQ
+            </Link>
+            <Link href="/contacts" className="text-white/68 transition hover:text-white">
+              Контакты
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Контакты</p>
+          <div className="mt-4 grid gap-3 text-sm text-white/68">
+            <p>{companyDetails.companyName}</p>
+            <p>{companyDetails.legalAddress}</p>
+            <p>{companyDetails.productionAddress}</p>
+            <p>Обращения принимаются через формы сайта.</p>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Legal</p>
+          <div className="mt-4 grid gap-2 text-sm">
+            <Link href="/legal/privacy" className="text-white/68 transition hover:text-white">
+              Политика обработки персональных данных
+            </Link>
+            <Link href="/legal/consent" className="text-white/68 transition hover:text-white">
+              Согласие на обработку персональных данных
+            </Link>
+            <Link href="/legal/cookies" className="text-white/68 transition hover:text-white">
+              Политика cookies
+            </Link>
+            <Link href="/legal/terms" className="text-white/68 transition hover:text-white">
+              Пользовательское соглашение
+            </Link>
+            <Link href="/legal/not-public-offer" className="text-white/68 transition hover:text-white">
+              Не является публичной офертой
+            </Link>
+            <Link href="/gallery" className="text-white/68 transition hover:text-white">
+              Галерея
+            </Link>
+            <Link href="/careers" className="text-white/68 transition hover:text-white">
+              Вакансии
+            </Link>
+            <Link href="/articles" className="text-white/68 transition hover:text-white">
+              Материалы
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/8">
+        <div className="mx-auto flex max-w-[90rem] flex-col gap-3 px-5 py-5 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
+          <p>© 2026 STILNO. Все права защищены.</p>
+          <p>Информация на сайте носит справочный характер.</p>
+        </div>
+      </div>
+    </footer>
   );
 }
 
+const retailFields: LeadField[] = [
+  {
+    name: "city",
+    label: "Город",
+    required: true,
+    placeholder: "Укажите ваш город",
+    autoComplete: "address-level2",
+  },
+  {
+    name: "name",
+    label: "Имя",
+    required: true,
+    placeholder: "Как к вам обращаться",
+    autoComplete: "name",
+  },
+  {
+    name: "phone",
+    label: "Телефон",
+    type: "tel",
+    placeholder: "+7 (___) ___-__-__",
+    autoComplete: "tel",
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "name@company.ru",
+    autoComplete: "email",
+  },
+  {
+    name: "requestType",
+    label: "Тип запроса",
+    type: "select",
+    required: true,
+    options: [
+      { value: "availability", label: "наличие в городе" },
+      { value: "retail-point", label: "розничная точка" },
+      { value: "partnership", label: "партнёрство" },
+      { value: "other", label: "другое" },
+    ],
+    halfWidth: false,
+  },
+  {
+    name: "comment",
+    label: "Комментарий",
+    type: "textarea",
+    placeholder: "При необходимости уточните запрос.",
+    halfWidth: false,
+  },
+];
+
+const retailCheckboxes: LeadCheckbox[] = [
+  {
+    name: "ageConfirmed",
+    required: true,
+    label: "Подтверждаю, что мне исполнилось 18 лет.",
+  },
+  {
+    name: "personalData",
+    required: true,
+    label:
+      "Даю согласие ООО “ВОСТОК ИМПОРТ ПРОМ” на обработку персональных данных в соответствии с Политикой обработки персональных данных и Согласием на обработку персональных данных.",
+  },
+];
+
+const franchiseFields: LeadField[] = [
+  {
+    name: "name",
+    label: "Имя / ФИО",
+    required: true,
+    placeholder: "Как к вам обращаться",
+    autoComplete: "name",
+  },
+  {
+    name: "phone",
+    label: "Телефон",
+    type: "tel",
+    required: true,
+    placeholder: "+7 (___) ___-__-__",
+    autoComplete: "tel",
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    required: true,
+    placeholder: "name@company.ru",
+    autoComplete: "email",
+  },
+  {
+    name: "city",
+    label: "Город / регион",
+    required: true,
+    placeholder: "Москва / Московская область",
+  },
+  {
+    name: "businessStatus",
+    label: "Статус",
+    type: "select",
+    required: true,
+    options: [
+      { value: "legal-entity", label: "есть ИП/юрлицо" },
+      { value: "planning", label: "планирую открыть" },
+      { value: "existing-store", label: "действующий магазин" },
+      { value: "distributor", label: "дистрибьютор" },
+      { value: "other", label: "другое" },
+    ],
+  },
+  {
+    name: "retailExperience",
+    label: "Опыт в рознице",
+    type: "select",
+    required: true,
+    options: [
+      { value: "yes", label: "есть" },
+      { value: "no", label: "нет" },
+      { value: "other", label: "другое" },
+    ],
+  },
+  {
+    name: "interestFormat",
+    label: "Интересующий формат",
+    type: "select",
+    required: true,
+    options: [
+      { value: "franchise", label: "франчайзинг" },
+      { value: "wholesale", label: "опт" },
+      { value: "regional", label: "региональное партнёрство" },
+      { value: "retail", label: "розничная точка" },
+      { value: "other", label: "другое" },
+    ],
+  },
+  {
+    name: "projectStage",
+    label: "Стадия проекта",
+    type: "select",
+    required: true,
+    options: [
+      { value: "research", label: "изучаю" },
+      { value: "location", label: "есть помещение" },
+      { value: "ready", label: "готов к запуску" },
+      { value: "existing-business", label: "действующий бизнес" },
+    ],
+  },
+  {
+    name: "comment",
+    label: "Комментарий",
+    type: "textarea",
+    placeholder: "Опишите запрос, город или формат сотрудничества.",
+    halfWidth: false,
+  },
+];
+
+const franchiseCheckboxes: LeadCheckbox[] = [
+  {
+    name: "ageConfirmed",
+    required: true,
+    label: "Подтверждаю, что мне исполнилось 18 лет.",
+  },
+  {
+    name: "personalData",
+    required: true,
+    label:
+      "Даю согласие ООО “ВОСТОК ИМПОРТ ПРОМ” на обработку персональных данных в соответствии с Политикой обработки персональных данных и Согласием на обработку персональных данных.",
+  },
+  {
+    name: "marketing",
+    label: "Согласен получать информационные сообщения по моему запросу о партнёрстве.",
+  },
+];
+
+const partnerFields: LeadField[] = [
+  {
+    name: "name",
+    label: "Имя / ФИО",
+    required: true,
+    placeholder: "Как к вам обращаться",
+    autoComplete: "name",
+  },
+  {
+    name: "phone",
+    label: "Телефон",
+    type: "tel",
+    required: true,
+    placeholder: "+7 (___) ___-__-__",
+    autoComplete: "tel",
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    required: true,
+    placeholder: "name@company.ru",
+    autoComplete: "email",
+  },
+  {
+    name: "city",
+    label: "Город / регион",
+    required: true,
+    placeholder: "Укажите регион работы",
+  },
+  {
+    name: "requestType",
+    label: "Направление",
+    type: "select",
+    required: true,
+    options: [
+      { value: "wholesale", label: "опт" },
+      { value: "regional", label: "регион" },
+      { value: "retail", label: "розница" },
+      { value: "franchise", label: "франчайзинг" },
+      { value: "other", label: "другое" },
+    ],
+  },
+  {
+    name: "comment",
+    label: "Комментарий",
+    type: "textarea",
+    placeholder: "Опишите формат сотрудничества или задачу.",
+    halfWidth: false,
+  },
+];
+
+const careerFields: LeadField[] = [
+  { name: "name", label: "Имя / ФИО", required: true, placeholder: "Как к вам обращаться" },
+  { name: "phone", label: "Телефон", type: "tel", placeholder: "+7 (___) ___-__-__", autoComplete: "tel" },
+  { name: "email", label: "Email", type: "email", required: true, placeholder: "name@company.ru", autoComplete: "email" },
+  { name: "city", label: "Город", required: true, placeholder: "Город проживания" },
+  {
+    name: "comment",
+    label: "Комментарий",
+    type: "textarea",
+    placeholder: "Кратко расскажите о своём опыте и интересе к STILNO.",
+    halfWidth: false,
+  },
+];
+
+const careerCheckboxes: LeadCheckbox[] = [
+  {
+    name: "personalData",
+    required: true,
+    label:
+      "Даю согласие ООО “ВОСТОК ИМПОРТ ПРОМ” на обработку персональных данных в соответствии с Политикой обработки персональных данных и Согласием на обработку персональных данных.",
+  },
+];
+
 export function HomeTemplate() {
+  const homeFaq = faqItems.filter((item) => item.scope === "general" || item.scope === "products" || item.scope === "franchise");
+
   return (
     <>
       <StructuredData data={buildJsonLd()} />
-      <section
-        className="relative isolate overflow-hidden border-b border-white/8 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_36%),linear-gradient(130deg,#050505_0%,#111214_42%,#dedfe1_42%,#f4f4f3_100%)]"
-        style={{ minHeight: "calc(100svh - 5rem)" }}
-      >
-        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-20">
-          <div className="flex flex-col justify-between">
-            <div>
-              <p className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.45em] text-white/45">
-                <span className="h-px w-12 bg-white/24" />
-                Официальный сайт STILNO
-              </p>
-              <h1 className="mt-8 max-w-xl text-5xl font-semibold leading-[0.95] tracking-[-0.08em] text-white sm:text-7xl">
-                STILNO CLICK ONE
-              </h1>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-white/68">
-                Текущая линия STILNO с фактическими параметрами по упаковке: 10 мл, 850 мАч,
-                Type-C, 10-22 Вт, 20 мг/см3 и до 15000 затяжек. Для партнёрских,
-                франчайзинговых и розничных запросов работает единый сайт бренда.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <ButtonLink href="/products/stilno-click-one" analytics="hero_product_open">
-                  Открыть продукт
-                </ButtonLink>
-                <ButtonLink
-                  href="/franchise"
-                  analytics="hero_partner_open"
-                  variant="secondary"
-                >
-                  Франчайзинг и опт
-                </ButtonLink>
-              </div>
+      <section className="border-b border-white/8 bg-[linear-gradient(180deg,#050505_0%,#101113_54%,#f4f3f1_54%,#f4f3f1_100%)]">
+        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-20">
+          <div className="flex flex-col justify-center">
+            <p className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.45em] text-white/45">
+              <span className="h-px w-12 bg-white/24" />
+              Официальный сайт STILNO · 18+
+            </p>
+            <h1 className="mt-8 max-w-xl text-5xl font-semibold leading-[0.95] tracking-[-0.08em] text-white sm:text-7xl">
+              STILNO CLICK ONE
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-white/70">
+              Никотинсодержащая линия для совершеннолетних пользователей. Сайт содержит справочную информацию о продукте, партнёрстве и франчайзинге.
+            </p>
+            <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-5 text-sm leading-7 text-white/78">
+              10 мл · 850 мА·ч · Type-C · 10–22 Вт · 20 мг/см³ · до 15 000 затяжек*
+              <div className="mt-2 text-white/48">*Показатель зависит от режима использования.</div>
             </div>
-            <div className="mt-12 grid gap-3 text-sm text-white/60 sm:grid-cols-2">
-              {homeSignals.map((signal) => (
-                <div
-                  key={signal}
-                  className="rounded-[1.4rem] border border-white/14 bg-[#121417]/92 px-4 py-4 text-sm font-medium leading-6 text-white shadow-[0_18px_42px_rgba(4,6,10,0.24)] backdrop-blur"
-                >
-                  {signal}
-                </div>
-              ))}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="/products/stilno-click-one" analytics="home_product_open">
+                Смотреть продукт
+              </ButtonLink>
+              <ButtonLink href="/franchise" analytics="home_franchise_open" variant="secondary" tone="dark">
+                Стать партнёром
+              </ButtonLink>
+              <ButtonLink
+                href={documentLinks.franchisePresentation}
+                target="_blank"
+                analytics="home_presentation_open"
+                variant="secondary"
+                tone="dark"
+              >
+                Скачать презентацию для партнёров
+              </ButtonLink>
             </div>
           </div>
 
-          <div className="relative min-h-[28rem] overflow-hidden rounded-[2.6rem] border border-black/10 bg-black/10 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.2)] sm:min-h-[38rem] lg:min-h-[44rem]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.75),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.18),rgba(17,17,19,0.04))]" />
-            <div className="absolute right-4 top-4 rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs uppercase tracking-[0.35em] text-black/62">
-              Текущая модель
-            </div>
-            <div className="absolute left-[5%] top-[16%] text-[22vw] font-semibold leading-none tracking-[-0.12em] text-black/[0.05] lg:text-[10rem]">
-              STILNO
-            </div>
-            <div className="relative z-10 mx-auto flex h-full max-w-[46rem] items-end justify-center">
+          <div className="rounded-[2.4rem] border border-black/10 bg-[#ecebea] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-5">
               <Image
                 src={featuredProduct.variants[0].image ?? featuredProduct.images[0]}
-                alt={featuredProduct.title}
+                alt="STILNO CLICK ONE"
                 width={1600}
                 height={1600}
                 priority
                 loading="eager"
-                className="w-full max-w-[42rem] object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.28)]"
+                className="mx-auto w-full max-w-[42rem] object-contain"
               />
             </div>
           </div>
@@ -668,213 +715,148 @@ export function HomeTemplate() {
 
       <section className="bg-[var(--color-page)]">
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
+          <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr]">
             <div>
               <SectionHeading
-                title="Розничный слой запускается честно: без вымышленных адресов и неподтверждённых городов."
-                body="Пока карта магазинов не опубликована, сайт показывает текущую продуктовую линию и принимает запросы по городам, франчайзингу и оптовому сотрудничеству."
+                eyebrow="Продукт"
+                title="Подтверждённая линия STILNO CLICK ONE без каталожного шума и спорных заявлений."
+                body="Сайт показывает только ту продуктовую информацию, которая подтверждена текущими упаковочными материалами и документами бренда."
                 tone="light"
               />
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 {launchMetrics.map((metric) => (
-                  <MetricCard
-                    key={metric.label}
-                    value={metric.value}
-                    label={metric.label}
-                    note={metric.note}
-                  />
+                  <MetricCard key={metric.label} value={metric.value} label={metric.label} note={metric.note} />
                 ))}
               </div>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href="/stores" variant="ghost" analytics="home_open_stores">
-                  Где купить
-                </ButtonLink>
-                <ButtonLink href="/franchise" variant="ghost" analytics="home_open_franchise">
-                  Открыть точку в регионе
-                </ButtonLink>
-              </div>
             </div>
-            <CoverageMap />
+            <div className="grid gap-5">
+              <article className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+                <ProductPhotoCard src={featuredProduct.images[0]} alt={featuredProduct.title} />
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {homeSignals.map((signal) => (
+                    <span key={signal} className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
+                      {signal}
+                    </span>
+                  ))}
+                </div>
+                <h3 className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-black">{featuredProduct.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-black/64">{featuredProduct.longDescription}</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <ButtonLink href="/products/stilno-click-one" analytics="home_product_detail" variant="secondary" tone="light">
+                    Смотреть продукт
+                  </ButtonLink>
+                  <ButtonLink
+                    href={documentLinks.deviceAndPackage}
+                    target="_blank"
+                    analytics="home_packaging_pdf"
+                    variant="secondary"
+                    tone="light"
+                  >
+                    Скачать презентацию для партнёров
+                  </ButtonLink>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="border-y border-white/8 bg-black">
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr]">
             <SectionHeading
-              eyebrow="Партнёры"
-              title="Партнёрский раздел описывает форматы сотрудничества без вымышленных логотипов и неподтверждённых кейсов."
-              body="Сайт собирает оптовые и франчайзинговые заявки, не имитируя уже существующую сеть партнёров."
+              eyebrow="Партнёрам"
+              title="Отдельный сценарий для опта, регионального сотрудничества и франчайзинга."
+              body="STILNO не обещает доходность и не заменяет переговоры витринными цифрами. Сайт помогает быстро понять формат сотрудничества и отправить корректный запрос."
               tone="dark"
             />
-            <ButtonLink href="/partners" analytics="home_partners_open" variant="secondary">
-              Партнёрский сценарий
-            </ButtonLink>
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <SvgAsset
+                src="/stilno/redesign/partner-support-system.svg"
+                alt="Система поддержки партнёра STILNO"
+                className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+              />
+            </div>
           </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
             {partnershipScenarios.map((scenario) => (
               <article key={scenario.title} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-                <p className="text-[1.55rem] font-semibold tracking-[-0.05em] text-white">{scenario.title}</p>
-                <p className="mt-3 text-sm leading-6 text-white/58">{scenario.body}</p>
+                <p className="text-[1.45rem] font-semibold tracking-[-0.05em] text-white">{scenario.title}</p>
+                <p className="mt-3 text-sm leading-6 text-white/60">{scenario.body}</p>
               </article>
             ))}
           </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <ButtonLink href="/partners" analytics="home_partners_page" variant="secondary" tone="dark">
+              Партнёрам STILNO
+            </ButtonLink>
+            <ButtonLink href="/franchise" analytics="home_franchise_page" variant="secondary" tone="dark">
+              Франчайзинг STILNO
+            </ButtonLink>
+          </div>
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <SectionHeading
-            eyebrow="Продукция"
-            title="На главной показана текущая опубликованная линия без каталожного шума и вымышленных SKU."
-            body="Публичный релиз сайта строится вокруг STILNO CLICK ONE и вкусовых вариантов, подтверждённых упаковочными материалами."
-            tone="light"
-          />
-          <div className="mt-10 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-            <article className="grid gap-4 rounded-[2rem] border border-black/10 bg-black p-5 text-white">
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/8 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_34%),linear-gradient(135deg,#0d1218,#182232)] p-4">
-                <div className="relative flex min-h-[20rem] items-center justify-center rounded-[1.65rem] border border-white/10 bg-[linear-gradient(180deg,#dce8f8,#bfd0e5)] px-4 py-6">
-                  <Image
-                    src={featuredProduct.variants[0].image ?? featuredProduct.images[0]}
-                    alt={featuredProduct.title}
-                    width={1400}
-                    height={900}
-                    className="h-auto w-full max-w-[35rem] object-contain"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs uppercase tracking-[0.35em] text-white/42">
-                  {productCategories[0]?.title}
-                </span>
-                <span className="rounded-full border border-white/14 px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/62">
-                  {featuredProduct.highlight}
-                </span>
-              </div>
-              <div>
-                <h3 className="text-3xl font-semibold tracking-[-0.05em] text-white">{featuredProduct.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/65">{featuredProduct.shortDescription}</p>
-              </div>
-              <div>
-                <ButtonLink href={getProductPath(featuredProduct)} variant="secondary" analytics="home_featured_product">
-                  Открыть STILNO CLICK ONE
+          <div className="grid gap-10 lg:grid-cols-[0.84fr_1.16fr]">
+            <div>
+              <SectionHeading
+                eyebrow="Где купить"
+                title="Розничная карта публикуется после подтверждения городов и партнёрских точек."
+                body="До публикации списка можно отправить запрос по вашему городу, уточнить наличие или обсудить партнёрский запуск."
+                tone="light"
+              />
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <ButtonLink href="/stores#stores-request" analytics="home_stores_request" variant="secondary" tone="light">
+                  Оставить запрос
+                </ButtonLink>
+                <ButtonLink href="/franchise" analytics="home_stores_partner" variant="secondary" tone="light">
+                  Стать партнёром
                 </ButtonLink>
               </div>
-            </article>
-            <article className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.06)]">
-              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Технические параметры</p>
-              <div className="mt-5 grid gap-3">
-                {featuredProduct.specs.slice(0, 6).map((spec) => (
-                  <div key={spec.label} className="flex items-center justify-between gap-4 rounded-[1.4rem] border border-black/8 bg-black/[0.03] px-4 py-4">
-                    <span className="text-sm text-black/54">{spec.label}</span>
-                    <span className="text-sm font-medium text-black">{spec.value}</span>
-                  </div>
-                ))}
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-white/8 bg-black">
-        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-20 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-10">
-          <div>
-            <SectionHeading
-              eyebrow="Качество и стандарты"
-              title="Один из базовых смысловых блоков STILNO: дисциплина исполнения, контроль и инженерный подход."
-              body="Без медицинских заявлений и без хаотичной эстетики вейп-шопа. Только фактические данные о продукте, упаковка и прозрачное разделение категорий."
-              tone="dark"
-            />
-            <div className="mt-10 grid gap-4">
-              {qualityStandards.map((item) => (
-                <article key={item.title} className="rounded-[1.7rem] border border-white/8 bg-white/[0.03] p-5">
-                  <h3 className="text-xl font-medium tracking-[-0.03em] text-white">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/62">{item.body}</p>
-                </article>
-              ))}
             </div>
-          </div>
-          <div className="grid gap-5">
-            <MediaTile image="/stilno/products/barbaris.jpg" title="Устройство как главный объект" tone="dark" aspect="wide" />
-            <MediaTile image="/stilno/products/fruktoviy-chay.jpg" title="Упаковка и предупреждение" tone="dark" aspect="wide" />
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-20 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
-          <div>
-            <SectionHeading
-              eyebrow="О бренде"
-              title="STILNO — бренд со строгой упаковкой, продуктовой точностью и взрослой визуальной дисциплиной."
-              body="В публичной версии сайта бренд говорит через устройство, упаковочные материалы и правдивые сведения о продукте, а не через агрессивный рекламный шум."
-              tone="light"
-            />
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/about" analytics="home_about_open" variant="ghost">
-                О бренде
-              </ButtonLink>
-              <ButtonLink href="/gallery" analytics="home_gallery_open" variant="ghost">
-                Смотреть галерею
-              </ButtonLink>
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+              <SvgAsset
+                src="/stilno/redesign/stores-coverage-empty.svg"
+                alt="Статус покрытия STILNO"
+                className="w-full rounded-[1.4rem] border border-black/8"
+              />
             </div>
-          </div>
-          <div className="rounded-[2.4rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-            <RichText paragraphs={brandNarrative} />
           </div>
         </div>
       </section>
 
       <section className="border-y border-white/8 bg-black">
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr]">
             <SectionHeading
-              eyebrow="Франчайзинг"
-              title="Франчайзинговый раздел собран как инструмент продаж без обещаний по окупаемости и выручке."
-              body="Сайт объясняет формат партнёрства, документы, текущую продуктовую линию и способ первичного контакта с брендом."
+              eyebrow="Ответственное потребление"
+              title="Сайт отделяет продуктовую информацию от правовых ограничений и не маскирует предупреждения рекламным текстом."
+              body="Информация о STILNO CLICK ONE адресована совершеннолетним пользователям и не заменяет инструкцию к продукту."
               tone="dark"
             />
-            <div className="grid gap-4 md:grid-cols-2">
-              {franchisePillars.map((pillar) => (
-                <div key={pillar} className="rounded-[1.7rem] border border-white/8 bg-white/[0.03] p-5 text-white/68">
-                  {pillar}
+            <div className="grid gap-4">
+              {responsibilityNotes.map((item) => (
+                <div key={item} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] px-5 py-4 text-sm leading-6 text-white/70">
+                  {item}
                 </div>
               ))}
             </div>
-          </div>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/franchise" analytics="home_franchise_open" variant="secondary">
-              Открыть франшизу
-            </ButtonLink>
-            <ButtonLink
-              href={documentLinks.franchisePresentation}
-              target="_blank"
-              analytics="home_partner_materials"
-              variant="secondary"
-            >
-              Материалы для партнёра
-            </ButtonLink>
           </div>
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-          <div>
-            <SectionHeading
-              eyebrow="Ответственное потребление"
-              title="Предупреждения и сведения о продукте вынесены в отдельный слой, а не спрятаны под рекламным текстом."
-              body="STILNO показывает действующие ограничения для никотиновой категории и не смешивает их с неподтверждёнными продуктами."
-              tone="light"
-            />
-          </div>
-          <div className="grid gap-4">
-            {responsibilityNotes.map((item) => (
-              <div key={item} className="rounded-[1.6rem] border border-black/10 bg-white px-5 py-4 text-sm leading-6 text-black/64 shadow-[0_10px_36px_rgba(15,15,15,0.04)]">
-                {item}
-              </div>
-            ))}
+        <div className="mx-auto max-w-[76rem] px-5 py-20 sm:px-6 lg:px-10">
+          <SectionHeading
+            eyebrow="FAQ"
+            title="Частые вопросы о продукте, розничных запросах и партнёрстве."
+            body="Краткие ответы на базовые вопросы, которые должен закрывать официальный сайт STILNO."
+            tone="light"
+          />
+          <div className="mt-10">
+            <FaqAccordion items={homeFaq} />
           </div>
         </div>
       </section>
@@ -882,52 +864,32 @@ export function HomeTemplate() {
       <section id="forms" className="border-y border-white/8 bg-black">
         <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
           <SectionHeading
-            eyebrow="Обратная связь"
-            title="Основные формы сайта: розничный запрос и франчайзинговый / партнёрский контакт."
-            body="Формы подключены к серверной обработке с валидацией, защитой от спама и отдельными страницами подтверждения."
+            eyebrow="Форма заявки"
+            title="Основные обращения принимаются через сайт: розничный запрос и заявка на партнёрство."
+            body="Формы разделены по сценариям и не смешивают розничный запрос с партнёрским запуском."
             tone="dark"
           />
           <div className="mt-10 grid gap-5 xl:grid-cols-2">
             <LeadForm
               type="retail"
               title="Розничный запрос"
-              description="Вопросы о доступности продукта, городах запуска, наличии и розничных сценариях."
+              description="Запрос о наличии в городе, розничной точке или партнёрском контакте."
               submitLabel="Отправить запрос"
+              successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
+              fields={retailFields}
+              checkboxes={retailCheckboxes}
+              disclaimer="Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
             />
             <LeadForm
               type="franchise"
-              title="Франчайзинг и партнёрство"
-              description="Форма для франчайзинга, опта, запуска региона и первичного партнёрского контакта."
-              submitLabel="Запросить контакт"
+              title="Заявка на франчайзинг"
+              description="Форма для франчайзинга, опта и партнёрского запуска в регионе."
+              submitLabel="Отправить заявку"
+              successMessage="Заявка отправлена. Мы свяжемся с вами по указанным контактам. Обращаем внимание: условия партнёрства обсуждаются индивидуально и не являются публичной офертой."
+              fields={franchiseFields}
+              checkboxes={franchiseCheckboxes}
+              disclaimer="Информация на сайте носит справочный характер. Условия партнёрства обсуждаются индивидуально."
             />
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-black">
-        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-          <SectionHeading
-            eyebrow="Вакансии"
-            title="Карьерный поток работает отдельно от маркетинговых призывов и принимает общий отклик на будущие роли."
-            body="Если открытые позиции ещё не опубликованы, сайт всё равно принимает резюме и общие карьерные обращения."
-            tone="dark"
-          />
-          <div className="grid gap-4">
-            <article className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/36">Карьера</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">
-                Общий отклик в команду STILNO
-              </h3>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60">
-                Для операционных, брендовых и розничных ролей сайт принимает общий карьерный
-                отклик без публикации вымышленных вакансий.
-              </p>
-              <div className="mt-6">
-                <ButtonLink href="/careers" analytics="careers_open" variant="secondary">
-                  Перейти в раздел вакансий
-                </ButtonLink>
-              </div>
-            </article>
           </div>
         </div>
       </section>
@@ -936,78 +898,77 @@ export function HomeTemplate() {
 }
 
 function StoresIndexTemplate(page: ResolvedPage) {
-  if (cities.length === 0) {
-    return (
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
-          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading
-            eyebrow="Где купить"
-            title="Розничная карта будет опубликована после подтверждения городов и точек."
-            body={page.description}
-            tone="light"
-          />
-          <div className="mt-10 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="grid gap-4">
-              <article className="rounded-[1.8rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                <p className="text-xs uppercase tracking-[0.35em] text-black/38">Розничный запуск</p>
-                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">
-                  Список точек публикуется без вымышленных адресов и неподтверждённых городов.
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-black/62">
-                  Пока карта не открыта публично, можно отправить запрос по городу,
-                  наличию продукта или партнёрскому запуску.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <ButtonLink href="/contacts" variant="ghost" analytics="stores_contact_open">
-                    Отправить запрос
-                  </ButtonLink>
-                  <ButtonLink href="/franchise" variant="ghost" analytics="stores_franchise_open">
-                    Запросить партнёрство
-                  </ButtonLink>
-                </div>
-              </article>
-            </div>
-            <CoverageMap />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading
-          eyebrow="Где купить"
-          title="Подтверждённые города и точки STILNO."
-          body={page.description}
-          tone="light"
-        />
-        <div className="mt-10 grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
-          <div className="grid gap-4">
-            {cities.map((city) => (
-              <article key={city.id} className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-black/38">{city.region}</p>
-                    <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">{city.name}</h3>
-                    <p className="mt-3 text-sm leading-6 text-black/62">{city.spotlight}</p>
-                  </div>
-                  <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.25em] text-black/55">
-                    {getCityStoreCount(city.id)} точки
-                  </span>
-                </div>
-                <div className="mt-5">
-                  <ButtonLink href={`/stores/${city.slug}`} variant="ghost" analytics="city_page_open">
-                    Открыть город
-                  </ButtonLink>
-                </div>
-              </article>
-            ))}
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <h1 className="text-5xl font-semibold tracking-[-0.06em] text-black sm:text-6xl">
+              Где купить STILNO
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-black/66">
+              Розничная карта STILNO будет опубликована после подтверждения городов и партнёрских точек. До публикации списка вы можете оставить запрос по вашему городу или обсудить партнёрский запуск.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="#stores-request" analytics="stores_request_anchor" variant="secondary" tone="light">
+                Оставить запрос
+              </ButtonLink>
+              <ButtonLink href="/franchise" analytics="stores_franchise_open" variant="secondary" tone="light">
+                Стать партнёром
+              </ButtonLink>
+            </div>
           </div>
-          <CoverageMap />
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+            <SvgAsset
+              src="/stilno/redesign/stores-empty-illustration.svg"
+              alt="Иллюстрация пустой розничной карты STILNO"
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-[0.84fr_1.16fr]">
+          <div>
+            <SectionHeading
+              eyebrow="Статус"
+              title="Текущий статус покрытия"
+              body="Мы не публикуем неподтверждённые адреса. Если вы хотите уточнить наличие в городе или предложить партнёрский запуск, отправьте запрос через форму."
+              tone="light"
+            />
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <MetricCard value="Розничные точки" label="список готовится к публикации" note="Публикация происходит только после подтверждения." />
+            <MetricCard value="Города" label="публикуются только после подтверждения" note="Сайт не показывает неподтверждённые локации." />
+            <MetricCard value="Запросы" label="город · розница · опт · партнёрство" note="Все обращения маршрутизируются через единую форму." />
+          </div>
+        </div>
+
+        <div id="stores-request" className="mt-16 grid gap-6 lg:grid-cols-[1.04fr_0.96fr]">
+          <LeadForm
+            type="retail"
+            title="Оставить розничный запрос"
+            description="Уточните наличие в городе, розничную точку или оставьте запрос на партнёрский запуск."
+            submitLabel="Отправить запрос"
+            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
+            fields={retailFields}
+            checkboxes={retailCheckboxes}
+            disclaimer="Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции. Информация предназначена для лиц старше 18 лет."
+          />
+          <div className="grid gap-4">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Розничные запросы</p>
+              <p className="mt-4 text-sm leading-7 text-black/65">
+                Эта страница не заменяет карту подтверждённых точек. Она помогает собрать корректный запрос по городу и не вводит посетителя в заблуждение фейковыми адресами.
+              </p>
+            </div>
+            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_14px_40px_rgba(10,10,10,0.12)]">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Дисклеймер</p>
+              <p className="mt-4 text-sm leading-7 text-white/72">
+                Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции. Информация предназначена для лиц старше 18 лет.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1024,25 +985,21 @@ function CityTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Город"
-              title={`${city.name} в розничной карте STILNO.`}
-              body={city.spotlight}
-              tone="light"
-            />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <MetricCard value={String(getCityStoreCount(city.id))} label="Точек в городе" note="Все подтверждённые точки подключаются к общей карте и карточкам городов." />
-              <MetricCard value={city.featured ? "Flagship" : "Growth"} label="Роль в сети" note="Определяет глубину открытия и локального маркетинга." />
-            </div>
+        <SectionHeading
+          eyebrow="Город"
+          title={`${city.name}`}
+          body="Страница города публикуется только после подтверждения розничных точек и контактных данных."
+          tone="light"
+        />
+        <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+          <p className="text-sm leading-7 text-black/65">
+            Данные по городу временно недоступны. Для уточнения наличия или розничного запуска используйте форму на странице «Где купить».
+          </p>
+          <div className="mt-6">
+            <ButtonLink href="/stores#stores-request" analytics="city_request_back" variant="secondary" tone="light">
+              Оставить запрос
+            </ButtonLink>
           </div>
-          <CoverageMap activeCity={city} />
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
-          {(page.stores ?? []).map((store) => (
-            <StoreCard key={store.id} store={store} />
-          ))}
         </div>
       </div>
     </section>
@@ -1051,9 +1008,7 @@ function CityTemplate(page: ResolvedPage) {
 
 function StoreTemplate(page: ResolvedPage) {
   const store = page.store;
-  const city = page.city;
-
-  if (!store || !city) {
+  if (!store) {
     notFound();
   }
 
@@ -1061,39 +1016,31 @@ function StoreTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <SectionHeading eyebrow="Точка" title={store.title} body={store.address} tone="light" />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <MetricCard value={store.hours} label="График" note="Подтверждённый график работы точки." />
-              <MetricCard value={store.phone} label="Телефон" note="Контакт публикуется в карточке подтверждённой точки." />
-            </div>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {store.services.map((service) => (
-                <span key={service} className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
-                  {service}
-                </span>
-              ))}
-            </div>
-          </div>
-          <CoverageMap activeCity={city} />
-        </div>
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+        <SectionHeading
+          eyebrow="Точка"
+          title={store.title}
+          body="Карточка точки публикуется только после подтверждения адреса, графика и контактных данных."
+          tone="light"
+        />
+        <div className="mt-10 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Категории в точке</p>
-            <div className="mt-5 grid gap-3">
-              {store.categories.map((category) => (
-                <div key={category} className="rounded-[1.4rem] border border-black/10 bg-black/[0.03] px-4 py-4 text-black/66">
-                  {category}
-                </div>
-              ))}
-            </div>
+            <RichText
+              paragraphs={[
+                store.address,
+                store.hours,
+                store.phone,
+              ]}
+            />
           </div>
           <LeadForm
             type="retail"
-            title="Связаться с точкой"
-            description="Запрос о наличии, сервисе, открытии или локальном партнёрстве."
+            title="Запрос по розничной точке"
+            description="Используйте форму для уточнения наличия, подтверждения статуса точки или партнёрского запроса."
             submitLabel="Отправить запрос"
+            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
+            fields={retailFields}
+            checkboxes={retailCheckboxes}
+            disclaimer="Информация предназначена для лиц старше 18 лет."
           />
         </div>
       </div>
@@ -1104,17 +1051,22 @@ function StoreTemplate(page: ResolvedPage) {
 function AboutTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
+      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-16 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-10">
         <div>
           <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading eyebrow="О бренде" title="STILNO держит в центре продукт, упаковку и аккуратную визуальную систему." body={page.description} tone="light" />
-          <div className="mt-8">
+          <SectionHeading
+            eyebrow="О бренде"
+            title="STILNO — официальный сайт бренда с продуктовой, партнёрской и франчайзинговой логикой."
+            body={page.description}
+            tone="light"
+          />
+          <div className="mt-8 rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
             <RichText paragraphs={brandNarrative} />
           </div>
         </div>
         <div className="grid gap-5">
-          <MediaTile image="/stilno/products/myata.jpg" title="Устройство как главный объект" aspect="wide" />
-          <MediaTile image="/stilno/products/chernika-klyukva-vishnya.jpg" title="Серийность вкусов и упаковки" aspect="wide" />
+          <ProductPhotoCard src="/stilno/products/barbaris.jpg" alt="STILNO CLICK ONE" />
+          <ProductPhotoCard src="/stilno/products/fruktoviy-chay.jpg" alt="Упаковка STILNO CLICK ONE" />
         </div>
       </div>
     </section>
@@ -1133,7 +1085,12 @@ function GalleryTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Галерея" title="Редакционная подборка строится вокруг устройства, упаковки и технических плоскостей." body={page.description} tone="light" />
+        <SectionHeading
+          eyebrow="Галерея"
+          title="Редакционная подборка: устройство, упаковка, технические плоскости и крупные планы."
+          body={page.description}
+          tone="light"
+        />
         <div className="mt-10 grid gap-10">
           {galleryGroups.map(([type, label]) => {
             const items = galleryItems.filter((item) => item.type === type);
@@ -1150,7 +1107,7 @@ function GalleryTemplate(page: ResolvedPage) {
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {items.map((item) => (
                     <article key={item.id} className="grid gap-3 rounded-[2rem] border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                      <MediaTile image={item.media} title={item.title} aspect="square" />
+                      <ProductPhotoCard src={item.media ?? "/stilno/products/ananas-mango.jpg"} alt={item.alt} aspect="square" />
                       <div>
                         <p className="text-xs uppercase tracking-[0.35em] text-black/38">{label}</p>
                         <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
@@ -1167,16 +1124,46 @@ function GalleryTemplate(page: ResolvedPage) {
   );
 }
 
+function ProductCard({ product }: { product: Product }) {
+  const category = productCategories.find((item) => item.id === product.categoryId);
+
+  return (
+    <article className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.06)]">
+      <ProductPhotoCard src={product.images[0]} alt={product.title} />
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-xs uppercase tracking-[0.35em] text-black/40">
+          {category?.title ?? "Продукт"}
+        </span>
+        <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.25em] text-black/55">
+          {product.highlight}
+        </span>
+      </div>
+      <div>
+        <h3 className="text-3xl font-semibold tracking-[-0.04em] text-black">{product.title}</h3>
+        <p className="mt-3 text-sm leading-6 text-black/62">{product.shortDescription}</p>
+      </div>
+      <ButtonLink href={getProductPath(product)} variant="secondary" tone="light" analytics="product_card_open">
+        Смотреть продукт
+      </ButtonLink>
+    </article>
+  );
+}
+
 function ProductsIndexTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Продукция" title="В публичной версии показана подтверждённая текущая линия STILNO." body={page.description} tone="light" />
+        <SectionHeading
+          eyebrow="Продукт"
+          title="Линейка STILNO строится вокруг подтверждённого продукта STILNO CLICK ONE."
+          body={page.description}
+          tone="light"
+        />
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {productCategories.map((category) => (
             <article key={category.id} className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-              <MediaTile image={category.heroImage} title={category.title} aspect="wide" />
+              <ProductPhotoCard src={category.heroImage ?? featuredProduct.images[0]} alt={category.title} />
               <div className="flex items-center justify-between gap-4">
                 <span className="text-xs uppercase tracking-[0.35em] text-black/38">{category.status}</span>
                 <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
@@ -1184,8 +1171,8 @@ function ProductsIndexTemplate(page: ResolvedPage) {
                 </span>
               </div>
               <p className="text-sm leading-6 text-black/62">{category.shortDescription}</p>
-              <ButtonLink href={getProductCategoryPath(category)} variant="ghost" analytics="products_category_open">
-                Открыть категорию
+              <ButtonLink href={getProductCategoryPath(category)} variant="secondary" tone="light" analytics="products_category_open">
+                Смотреть категорию
               </ButtonLink>
             </article>
           ))}
@@ -1202,7 +1189,6 @@ function ProductsIndexTemplate(page: ResolvedPage) {
 
 function ProductCategoryTemplate(page: ResolvedPage) {
   const category = page.category;
-
   if (!category) {
     notFound();
   }
@@ -1218,7 +1204,7 @@ function ProductCategoryTemplate(page: ResolvedPage) {
               {category.disclaimer}
             </div>
           </div>
-          <MediaTile image={category.heroImage} title={category.title} aspect="wide" />
+          <ProductPhotoCard src={category.heroImage ?? featuredProduct.images[0]} alt={category.title} />
         </div>
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {(page.products ?? []).map((product) => (
@@ -1232,70 +1218,87 @@ function ProductCategoryTemplate(page: ResolvedPage) {
 
 function ProductTemplate(page: ResolvedPage) {
   const product = page.product;
-  const productFaq = faqItems.filter(
-    (item) => item.scope === "products" || item.scope === "responsible" || item.scope === "general",
-  );
-
   if (!product) {
     notFound();
   }
+
+  const productFaq = faqItems.filter((item) => item.scope === "products" || item.scope === "responsible");
 
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <StructuredData data={buildJsonLd(page)} />
-        <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr]">
+
+        <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
-            <SectionHeading eyebrow="Продукт" title={product.title} body={product.shortDescription} tone="light" />
+            <SectionHeading
+              eyebrow="Продукт"
+              title="STILNO CLICK ONE"
+              body="STILNO CLICK ONE — никотинсодержащая продуктовая линия для совершеннолетних пользователей. Характеристики указаны по подтверждённым упаковочным материалам. Показатель количества затяжек зависит от режима использования."
+              tone="light"
+            />
             <div className="mt-6 flex flex-wrap gap-2">
               <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
-                {product.availability}
+                18+
               </span>
               <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
-                {product.highlight}
+                до 15 000 затяжек*
+              </span>
+              <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
+                Type-C
               </span>
             </div>
             <div className="mt-8 rounded-[1.8rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <RichText paragraphs={[product.longDescription]} />
+              <RichText paragraphs={[product.longDescription, "Перезаряжаемое устройство STILNO CLICK ONE. Точная формулировка формата должна быть сверена с упаковкой и документацией перед релизом."]} />
               <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href="/contacts" variant="ghost" analytics="product_contacts_open">
-                  Уточнить доступность
+                <ButtonLink href="/stores#stores-request" variant="secondary" tone="light" analytics="product_retail_request">
+                  Оставить розничный запрос
                 </ButtonLink>
-                <ButtonLink href={documentLinks.deviceAndPackage} target="_blank" variant="ghost" analytics="product_device_pack_pdf">
-                  PDF: устройство и упаковка
+                <ButtonLink href="/partners" variant="secondary" tone="light" analytics="product_partner_request">
+                  Запросить партнёрство
+                </ButtonLink>
+                <ButtonLink
+                  href={documentLinks.franchisePresentation}
+                  target="_blank"
+                  variant="secondary"
+                  tone="light"
+                  analytics="product_presentation_download"
+                >
+                  Скачать презентацию для партнёров
                 </ButtonLink>
               </div>
             </div>
           </div>
+
           <Suspense fallback={<VariantPickerFallback product={product} />}>
             <VariantPicker product={product} />
           </Suspense>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="mt-12 grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
           <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
             <p className="text-xs uppercase tracking-[0.35em] text-black/38">Характеристики</p>
             <div className="mt-5 grid gap-3">
               {product.specs.map((spec) => (
                 <div key={spec.label} className="flex items-center justify-between gap-4 rounded-[1.4rem] border border-black/8 bg-black/[0.03] px-4 py-4">
                   <span className="text-sm text-black/54">{spec.label}</span>
-                  <span className="text-sm font-medium text-black">{spec.value}</span>
+                  <span className="text-sm font-medium text-right text-black">{spec.value}</span>
                 </div>
               ))}
             </div>
           </div>
           <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Предупреждения и сведения</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Предупреждения 18+</p>
             <div className="mt-5 grid gap-4">
-              {product.facts.map((fact) => (
-                <div key={fact} className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/68">
-                  {fact}
-                </div>
-              ))}
               {product.warnings.map((warning) => (
                 <div key={warning} className="rounded-[1.4rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm leading-6 text-white">
                   {warning}
+                </div>
+              ))}
+              {product.facts.map((fact) => (
+                <div key={fact} className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/68">
+                  {fact}
                 </div>
               ))}
             </div>
@@ -1304,15 +1307,15 @@ function ProductTemplate(page: ResolvedPage) {
 
         <div className="mt-12 grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Упаковка и серия</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Упаковка и вкусовые варианты</p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              {product.packagingImages.slice(0, 4).map((image) => (
-                <MediaTile key={image} image={image} title={product.title} aspect="square" />
+              {product.variants.slice(0, 4).map((variant) => (
+                <ProductPhotoCard key={variant.id} src={variant.packaging ?? variant.image ?? product.images[0]} alt={`${product.title} — ${variant.title}`} aspect="square" />
               ))}
             </div>
           </div>
           <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Вопросы и ответы</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-black/38">FAQ</p>
             <div className="mt-5">
               <FaqAccordion items={productFaq} />
             </div>
@@ -1325,25 +1328,59 @@ function ProductTemplate(page: ResolvedPage) {
 
 function PartnersTemplate(page: ResolvedPage) {
   return (
-    <section className="bg-black">
+    <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Партнёры" title="Оптовый и отраслевой слой STILNO без фальшивых логотипов и формальной сетки партнёров." body={page.description} tone="dark" />
-        <div className="mt-10 grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-          <div className="grid gap-4 md:grid-cols-2">
-            {partnershipScenarios.map((scenario) => (
-              <article key={scenario.title} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-                <p className="text-[1.6rem] font-semibold tracking-[-0.05em] text-white">{scenario.title}</p>
-                <p className="mt-3 text-sm leading-6 text-white/60">{scenario.body}</p>
-              </article>
-            ))}
+        <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr]">
+          <div>
+            <SectionHeading
+              eyebrow="Партнёрам"
+              title="Партнёрам STILNO"
+              body="Оптовые, региональные и партнёрские запросы по бренду STILNO принимаются через форму сайта. Условия обсуждаются индивидуально."
+              tone="light"
+            />
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[
+                { title: "Опт", body: "Запросы по оптовым поставкам и B2B-взаимодействию." },
+                { title: "Регион", body: "Работа по конкретному городу или региону после первичного контакта." },
+                { title: "Розница", body: "Подключение действующей точки или обсуждение формата присутствия." },
+                { title: "Франчайзинг", body: "Отдельный сценарий запуска под брендом STILNO." },
+              ].map((item) => (
+                <article key={item.title} className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+                  <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-black/62">{item.body}</p>
+                </article>
+              ))}
+            </div>
+            <div className="mt-8 rounded-[2rem] border border-black/10 bg-black p-6 text-white">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Как проходит контакт</p>
+              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
+                <p>1. Вы оставляете запрос через форму сайта.</p>
+                <p>2. Менеджер STILNO связывается по указанным контактам.</p>
+                <p>3. Уточняется формат: опт, регион, розница или франчайзинг.</p>
+                <p>4. Следующий этап обсуждается индивидуально.</p>
+              </div>
+            </div>
           </div>
-          <LeadForm
-            type="partner"
-            title="Опт и дистрибуция"
-            description="Оптовый контакт, запуск региона, розничное партнёрство или франчайзинговый запрос."
-            submitLabel="Отправить запрос"
-          />
+          <div className="grid gap-5">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+              <SvgAsset
+                src="/stilno/redesign/partner-support-system.svg"
+                alt="Система поддержки партнёра STILNO"
+                className="w-full rounded-[1.4rem] border border-black/8"
+              />
+            </div>
+            <LeadForm
+              type="partner"
+              title="Партнёрский запрос"
+              description="Форма для оптовых, региональных и B2B-обращений по бренду STILNO."
+              submitLabel="Отправить запрос"
+              successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам для уточнения формата сотрудничества."
+              fields={partnerFields}
+              checkboxes={franchiseCheckboxes}
+              disclaimer="Информация на сайте носит справочный характер. Условия обсуждаются индивидуально."
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -1351,34 +1388,34 @@ function PartnersTemplate(page: ResolvedPage) {
 }
 
 function ResponsibleTemplate(page: ResolvedPage) {
-  const responsibleFaq = faqItems.filter(
-    (item) => item.scope === "responsible" || item.scope === "products" || item.scope === "general",
-  );
+  const responsibleFaq = faqItems.filter((item) => item.scope === "responsible" || item.scope === "products");
 
   return (
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading eyebrow="Ответственное потребление" title="Отдельная страница для предупреждений, состава и возрастного ограничения доступа." body={page.description} tone="light" />
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Текущая линия</p>
-              <p className="mt-4 text-sm leading-7 text-white/70">
-                STILNO CLICK ONE публикуется как никотиновая категория с отдельными предупреждениями, составом и 18+ логикой.
-              </p>
-            </div>
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Публикация новых категорий</p>
-              <p className="mt-4 text-sm leading-7 text-black/65">
-                Безникотиновые продукты, если будут опубликованы, должны получить отдельные страницы, предупреждения и самостоятельную коммуникацию.
-              </p>
-            </div>
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <SectionHeading
+            eyebrow="Ответственное потребление"
+            title="Информация о никотинсодержащей продукции публикуется с отдельными предупреждениями и возрастным ограничением 18+."
+            body={page.description}
+            tone="light"
+          />
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+            <SvgAsset
+              src="/stilno/redesign/legal-18-footer-strip.svg"
+              alt="18+ и правовые предупреждения STILNO"
+              className="w-full rounded-[1.4rem] border border-black/8"
+            />
           </div>
         </div>
         <div className="mt-10 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <RichText paragraphs={responsibilityNotes} />
+          <div className="grid gap-4">
+            {responsibilityNotes.map((item) => (
+              <div key={item} className="rounded-[1.6rem] border border-black/10 bg-white px-5 py-4 text-sm leading-6 text-black/64 shadow-[0_10px_36px_rgba(15,15,15,0.04)]">
+                {item}
+              </div>
+            ))}
           </div>
           <FaqAccordion items={responsibleFaq} />
         </div>
@@ -1388,53 +1425,125 @@ function ResponsibleTemplate(page: ResolvedPage) {
 }
 
 function FranchiseTemplate(page: ResolvedPage) {
-  const franchiseFaq = faqItems.filter(
-    (item) => item.scope === "franchise" || item.scope === "general" || item.scope === "stores",
-  );
+  const franchiseFaq = faqItems.filter((item) => item.scope === "franchise" || item.scope === "stores");
 
   return (
     <section className="bg-black">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Франчайзинг" title="Страница франчайзинга объясняет формат партнёрства, документы и способ первого контакта." body={page.description} tone="dark" />
-        <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-          <div className="grid gap-4">
-            {franchisePillars.map((pillar) => (
-              <div key={pillar} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6 text-sm leading-6 text-white/68">
-                {pillar}
-              </div>
-            ))}
-            <div className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Документы</p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <ButtonLink
-                  href={documentLinks.franchisePresentation}
-                  target="_blank"
-                  analytics="franchise_materials_open"
-                  variant="secondary"
-                >
-                  Материалы для партнёра
-                </ButtonLink>
-                <ButtonLink
-                  href={documentLinks.deviceAndPackage}
-                  target="_blank"
-                  analytics="franchise_device_deck"
-                  variant="secondary"
-                >
-                  Устройство и упаковка
-                </ButtonLink>
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div>
+            <SectionHeading
+              eyebrow="Франчайзинг"
+              title="Франчайзинг STILNO"
+              body="Партнёрский запуск бренда STILNO в регионах. Условия обсуждаются индивидуально после заявки и не являются публичной офертой."
+              tone="dark"
+            />
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="#franchise-form" analytics="franchise_form_anchor">
+                Оставить заявку
+              </ButtonLink>
+              <ButtonLink
+                href={documentLinks.franchisePresentation}
+                target="_blank"
+                analytics="franchise_presentation_open"
+                variant="secondary"
+                tone="dark"
+              >
+                Скачать презентацию для партнёров
+              </ButtonLink>
+              <ButtonLink href="/contacts" analytics="franchise_question_open" variant="secondary" tone="dark">
+                Задать вопрос
+              </ButtonLink>
+            </div>
+          </div>
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+            <SvgAsset
+              src="/stilno/redesign/franchise-process.svg"
+              alt="Этапы франчайзинга STILNO"
+              className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+            />
+          </div>
+        </div>
+
+        <div className="mt-14 grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Что получает партнёр</p>
+            <div className="mt-5 grid gap-4">
+              <SvgAsset
+                src="/stilno/redesign/partner-support-system.svg"
+                alt="Система поддержки партнёра STILNO"
+                className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+              />
+              <div className="grid gap-3 sm:grid-cols-2">
+                {[
+                  "брендовые материалы",
+                  "продуктовая база",
+                  "запуск",
+                  "документы",
+                  "контакт с менеджером",
+                  "18+ дисциплина",
+                ].map((item) => (
+                  <div key={item} className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/70">
+                    {item}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+          <div className="grid gap-4">
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Кому подходит</p>
+              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
+                <p>• предпринимателям с опытом в рознице;</p>
+                <p>• владельцам действующих точек в смежных категориях;</p>
+                <p>• региональным партнёрам;</p>
+                <p>• оптовым компаниям;</p>
+                <p>• предпринимателям, готовым соблюдать правила категории 18+.</p>
+              </div>
+            </div>
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Что важно</p>
+              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
+                {franchisePillars.map((pillar) => (
+                  <p key={pillar}>{pillar}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="franchise-form" className="mt-14 grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
           <LeadForm
             type="franchise"
-            title="Франчайзинговый запрос"
-            description="Укажите город, опыт в рознице, формат помещения и желаемый срок запуска."
-            submitLabel="Отправить запрос"
+            title="Заявка на франчайзинг"
+            description="Укажите город, формат и стадию проекта. Условия обсуждаются индивидуально после заявки."
+            submitLabel="Отправить заявку"
+            successMessage="Заявка отправлена. Мы свяжемся с вами по указанным контактам. Обращаем внимание: условия партнёрства обсуждаются индивидуально и не являются публичной офертой."
+            fields={franchiseFields}
+            checkboxes={franchiseCheckboxes}
+            disclaimer="Информация на сайте носит справочный характер. Условия партнёрства и франчайзинга обсуждаются индивидуально."
           />
-        </div>
-        <div className="mt-10">
-          <FaqAccordion items={franchiseFaq} />
+          <div className="grid gap-5">
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Этапы запуска</p>
+              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
+                {[
+                  "1. Заявка.",
+                  "2. Первичный контакт.",
+                  "3. Обсуждение города.",
+                  "4. Выбор формата.",
+                  "5. Согласование условий.",
+                  "6. Договор.",
+                  "7. Подготовка запуска.",
+                  "8. Старт работы.",
+                ].map((item) => (
+                  <p key={item}>{item}</p>
+                ))}
+              </div>
+            </div>
+            <FaqAccordion items={franchiseFaq} />
+          </div>
         </div>
       </div>
     </section>
@@ -1447,23 +1556,26 @@ function CareersTemplate(page: ResolvedPage) {
       <section className="bg-[var(--color-page)]">
         <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
           <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading eyebrow="Вакансии" title="Открытые роли публикуются по мере расширения команды и запусков STILNO." body={page.description} tone="light" />
+          <SectionHeading
+            eyebrow="Вакансии"
+            title="Открытые роли публикуются по мере развития команды STILNO."
+            body={page.description}
+            tone="light"
+          />
           <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
             <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Карьера</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">
-                Можно отправить общий отклик в команду STILNO.
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-black/62">
-                Это подходит для будущих ролей в рознице, операционном управлении, развитии сети и
-                операционных задачах запуска.
+              <p className="text-sm leading-7 text-black/65">
+                Если открытые вакансии ещё не опубликованы, вы можете отправить общий карьерный отклик в команду STILNO.
               </p>
             </div>
             <LeadForm
               type="career"
-              title="Общий карьерный отклик"
-              description="Оставьте контакты и коротко расскажите о своём опыте."
-              submitLabel="Отправить резюме"
+              title="Карьерный отклик"
+              description="Оставьте контакты и кратко расскажите о своём опыте."
+              submitLabel="Отправить отклик"
+              successMessage="Отклик отправлен. Мы свяжемся с вами, если ваш профиль подойдёт под текущие или будущие задачи команды."
+              fields={careerFields}
+              checkboxes={careerCheckboxes}
             />
           </div>
         </div>
@@ -1475,7 +1587,7 @@ function CareersTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Вакансии" title="Карьерный поток STILNO." body={page.description} tone="light" />
+        <SectionHeading eyebrow="Вакансии" title="Карьерные возможности STILNO." body={page.description} tone="light" />
         <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-4">
             {vacancies.map((vacancy) => (
@@ -1486,7 +1598,7 @@ function CareersTemplate(page: ResolvedPage) {
                     <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">{vacancy.title}</h3>
                     <p className="mt-3 text-sm leading-6 text-black/62">{vacancy.description[0]}</p>
                   </div>
-                  <ButtonLink href={getVacancyPath(vacancy)} variant="ghost" analytics="careers_vacancy_open">
+                  <ButtonLink href={getVacancyPath(vacancy)} variant="secondary" tone="light" analytics="careers_vacancy_open">
                     Откликнуться
                   </ButtonLink>
                 </div>
@@ -1495,9 +1607,12 @@ function CareersTemplate(page: ResolvedPage) {
           </div>
           <LeadForm
             type="career"
-              title="Общий карьерный отклик"
-            description="Если роль ещё не опубликована, можно отправить общий карьерный отклик."
-            submitLabel="Отправить резюме"
+            title="Общий карьерный отклик"
+            description="Если нужная роль ещё не опубликована, можно отправить общий отклик."
+            submitLabel="Отправить отклик"
+            successMessage="Отклик отправлен. Мы свяжемся с вами, если ваш профиль подойдёт под текущие или будущие задачи команды."
+            fields={careerFields}
+            checkboxes={careerCheckboxes}
           />
         </div>
       </div>
@@ -1507,7 +1622,6 @@ function CareersTemplate(page: ResolvedPage) {
 
 function VacancyTemplate(page: ResolvedPage) {
   const vacancy = page.vacancy;
-
   if (!vacancy) {
     notFound();
   }
@@ -1550,9 +1664,11 @@ function VacancyTemplate(page: ResolvedPage) {
           <LeadForm
             type="career"
             title="Отклик на вакансию"
-            description="Форма отклика направляет заявку в карьерный поток STILNO."
+            description="Оставьте контакты и коротко расскажите о своём опыте."
             submitLabel="Отправить отклик"
-            vacancyTitle={vacancy.title}
+            successMessage="Отклик отправлен. Мы свяжемся с вами, если ваш профиль подойдёт под задачу."
+            fields={careerFields}
+            checkboxes={careerCheckboxes}
           />
         </div>
       </div>
@@ -1565,42 +1681,39 @@ function ContactsTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-8 xl:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <SectionHeading eyebrow="Контакты" title="Общий контактный слой бренда, продукта и партнёрских сценариев." body={page.description} tone="light" />
-            <div className="mt-8 grid gap-3">
-              {siteSettings.contactLines.map((item) => (
-                item.href ? (
-                  <Link key={item.label} href={item.href} className="rounded-[1.5rem] border border-black/10 bg-white px-5 py-4 text-black shadow-[0_10px_30px_rgba(10,10,10,0.05)]">
-                    <div className="text-xs uppercase tracking-[0.35em] text-black/38">{item.label}</div>
-                    <div className="mt-2 text-lg font-medium">{item.value}</div>
-                  </Link>
-                ) : (
-                  <div key={item.label} className="rounded-[1.5rem] border border-black/10 bg-white px-5 py-4 text-black shadow-[0_10px_30px_rgba(10,10,10,0.05)]">
-                    <div className="text-xs uppercase tracking-[0.35em] text-black/38">{item.label}</div>
-                    <div className="mt-2 text-lg font-medium">{item.value}</div>
-                  </div>
-                )
-              ))}
-            </div>
-            <div className="mt-8">
-              <CoverageMap />
-            </div>
-          </div>
-          <div className="grid gap-5 xl:grid-cols-2">
-            <LeadForm
-              type="retail"
-              title="Розница и поддержка"
-              description="Наличие продукта, города запуска, вопросы по сайту и общие обращения."
-              submitLabel="Отправить обращение"
-            />
-            <LeadForm
-              type="partner"
-              title="Опт и партнёрство"
-              description="Оптовый контакт, франчайзинг и запуск региона."
-              submitLabel="Отправить запрос"
-            />
-          </div>
+        <SectionHeading
+          eyebrow="Контакты"
+          title="Обратиться в STILNO можно через формы сайта и подтверждённые юридические данные."
+          body={page.description}
+          tone="light"
+        />
+        <div className="mt-10 grid gap-5 lg:grid-cols-4">
+          <MetricCard value="Компания" label={companyDetails.companyName} note="Юридическое лицо бренда." />
+          <MetricCard value="Юридический адрес" label="подтверждён" note={companyDetails.legalAddress} />
+          <MetricCard value="Производство" label="подтверждённый адрес" note={companyDetails.productionAddress} />
+          <MetricCard value="Формы сайта" label="розница · партнёрство · франчайзинг" note="Основной способ первичного контакта." />
+        </div>
+        <div className="mt-10 grid gap-5 xl:grid-cols-2">
+          <LeadForm
+            type="retail"
+            title="Розничный запрос"
+            description="Наличие в городе, розничная точка, вопросы по продукту."
+            submitLabel="Отправить запрос"
+            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
+            fields={retailFields}
+            checkboxes={retailCheckboxes}
+            disclaimer="Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
+          />
+          <LeadForm
+            type="partner"
+            title="Партнёрский запрос"
+            description="Опт, региональное сотрудничество, франчайзинг и B2B-вопросы."
+            submitLabel="Отправить запрос"
+            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам для уточнения формата сотрудничества."
+            fields={partnerFields}
+            checkboxes={franchiseCheckboxes}
+            disclaimer="Информация на сайте носит справочный характер. Условия обсуждаются индивидуально."
+          />
         </div>
       </div>
     </section>
@@ -1613,11 +1726,10 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
       <section className="bg-[var(--color-page)]">
         <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-10">
           <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading eyebrow="Новости" title="Редакционный раздел будет пополняться по мере публикации новых материалов STILNO." body={page.description} tone="light" />
+          <SectionHeading eyebrow="Материалы" title="Раздел материалов будет пополняться по мере публикации документов и новостей." body={page.description} tone="light" />
           <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
             <p className="text-base leading-7 text-black/68">
-              Сейчас сайт сфокусирован на продукте, партнёрском потоке и правовой
-              информации. Новые материалы появятся здесь после их утверждения.
+              Сейчас сайт сосредоточен на продукте, партнёрских сценариях, франчайзинге и правовой информации.
             </p>
           </div>
         </div>
@@ -1629,17 +1741,17 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
     <section className="bg-[var(--color-page)]">
       <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Новости" title="Материалы и публикации STILNO." body={page.description} tone="light" />
+        <SectionHeading eyebrow="Материалы" title="Публикации и документы STILNO." body={page.description} tone="light" />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {articles.map((article) => (
             <article key={article.id} className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-              <MediaTile image={article.coverImage} title={article.title} aspect="wide" />
+              <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
               <div className="flex items-center justify-between gap-4">
                 <span className="text-xs uppercase tracking-[0.35em] text-black/38">{article.category}</span>
                 <span className="text-sm text-black/45">{article.publishedAt}</span>
               </div>
               <p className="text-sm leading-6 text-black/62">{article.excerpt}</p>
-              <ButtonLink href={getArticlePath(article)} variant="ghost" analytics="article_open">
+              <ButtonLink href={getArticlePath(article)} variant="secondary" tone="light" analytics="article_open">
                 Читать
               </ButtonLink>
             </article>
@@ -1652,7 +1764,6 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
 
 function ArticleTemplate(page: ResolvedPage) {
   const article = page.article;
-
   if (!article) {
     notFound();
   }
@@ -1669,7 +1780,7 @@ function ArticleTemplate(page: ResolvedPage) {
           {article.publishedAt} / {article.author}
         </div>
         <div className="mt-10">
-          <MediaTile image={article.coverImage} title={article.title} aspect="wide" />
+          <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
         </div>
         <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
           <RichText paragraphs={article.body} />
@@ -1685,7 +1796,7 @@ function FaqTemplate(page: ResolvedPage) {
       <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-10">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <StructuredData data={buildJsonLd(page)} />
-        <SectionHeading eyebrow="Вопросы и ответы" title="Частые вопросы о продукте, правовых ограничениях и партнёрских сценариях." body={page.description} tone="light" />
+        <SectionHeading eyebrow="FAQ" title="Частые вопросы о продукте, розничных запросах, партнёрстве и правовой информации." body={page.description} tone="light" />
         <div className="mt-10">
           <FaqAccordion items={faqItems} />
         </div>
@@ -1696,17 +1807,17 @@ function FaqTemplate(page: ResolvedPage) {
 
 function ThankYouTemplate(page: ResolvedPage) {
   const labels: Record<string, string> = {
-    retail: "Розничное обращение принято.",
-    franchise: "Франчайзинговый запрос принят.",
-    partner: "Партнёрский запрос принят.",
-    career: "Карьерный отклик принят.",
+    retail: "Запрос отправлен.",
+    franchise: "Заявка отправлена.",
+    partner: "Запрос отправлен.",
+    career: "Отклик отправлен.",
   };
 
   const nextSteps: Record<string, string> = {
-    retail: "Команда свяжется по указанным контактам после первичной маршрутизации обращения.",
-    franchise: "Запрос попадёт во франчайзинговую обработку и будет сопоставлен с городом, форматом и стадией запуска.",
-    partner: "Команда по партнёрству вернётся с дальнейшим шагом после первичной квалификации.",
-    career: "Команда по подбору просмотрит отклик и вернётся со следующим этапом.",
+    retail: "Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.",
+    franchise: "Мы свяжемся с вами по указанным контактам. Условия партнёрства обсуждаются индивидуально и не являются публичной офертой.",
+    partner: "Мы свяжемся с вами по указанным контактам для уточнения формата сотрудничества.",
+    career: "Мы свяжемся с вами, если ваш профиль подойдёт под текущие или будущие задачи команды.",
   };
 
   const key = page.thankYouType ?? "retail";
@@ -1718,10 +1829,10 @@ function ThankYouTemplate(page: ResolvedPage) {
         <h1 className="mt-6 text-5xl font-semibold tracking-[-0.06em]">{labels[key]}</h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-white/68">{nextSteps[key]}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/" analytics="thankyou_home" variant="secondary">
+          <ButtonLink href="/" analytics="thankyou_home" variant="secondary" tone="dark">
             На главную
           </ButtonLink>
-          <ButtonLink href="/contacts" analytics="thankyou_contacts" variant="secondary">
+          <ButtonLink href="/contacts" analytics="thankyou_contacts" variant="secondary" tone="dark">
             Контакты
           </ButtonLink>
         </div>
@@ -1732,7 +1843,6 @@ function ThankYouTemplate(page: ResolvedPage) {
 
 function LegalTemplate(page: ResolvedPage) {
   const legalPage = page.legalPage;
-
   if (!legalPage) {
     notFound();
   }
@@ -1751,6 +1861,22 @@ function LegalTemplate(page: ResolvedPage) {
         </div>
       </div>
     </section>
+  );
+}
+
+export function SiteShell({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <AnalyticsBridge />
+      <AnalyticsLoader version={siteSettings.consentVersion} />
+      <AgeGate version={siteSettings.ageGateVersion} legalHref="/legal/age-18" />
+      <CookieBanner version={siteSettings.consentVersion} legalHref="/legal/cookies" />
+      <div className="min-h-screen bg-[var(--color-page)] text-white">
+        <SiteHeader navItems={siteSettings.primaryNav} primaryCta={siteSettings.primaryCta} />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </>
   );
 }
 
@@ -1806,10 +1932,10 @@ export function getStaticParams() {
 export function getMetadataPayload(page?: ResolvedPage) {
   if (!page) {
     return {
-      title: siteSettings.brandName,
+      title: "STILNO CLICK ONE | официальный сайт бренда 18+",
       description: siteSettings.description,
       canonical: siteOrigin,
-      image: `${siteOrigin}${featuredProduct.variants[0].image ?? featuredProduct.images[0]}`,
+      image: `${siteOrigin}${featuredProduct.images[0]}`,
     };
   }
 
@@ -1817,12 +1943,30 @@ export function getMetadataPayload(page?: ResolvedPage) {
     page.product?.images[0] ??
     page.category?.heroImage ??
     page.article?.coverImage ??
-    featuredProduct.variants[0].image ??
     featuredProduct.images[0];
 
+  const titleMap: Partial<Record<ResolvedPage["kind"], string>> = {
+    "stores-index": "Где купить STILNO | розничные запросы 18+",
+    product: "STILNO CLICK ONE | характеристики продукта 18+",
+    franchise: "Франчайзинг STILNO | партнёрство и запуск в регионах 18+",
+    partners: "Партнёрам STILNO | оптовые и региональные запросы 18+",
+    responsible: "Ответственное потребление STILNO | информация 18+",
+    contacts: "Контакты STILNO | официальный сайт бренда 18+",
+    faq: "FAQ STILNO | продукт, партнёрство и правовая информация 18+",
+  };
+
+  const descriptionMap: Partial<Record<ResolvedPage["kind"], string>> = {
+    "stores-index":
+      "Розничная карта STILNO публикуется после подтверждения городов и партнёрских точек. До публикации списка можно оставить запрос по городу.",
+    product:
+      "STILNO CLICK ONE: подтверждённые характеристики продукта, вкусовые варианты, предупреждения 18+ и партнёрские CTA.",
+    franchise:
+      "Франчайзинг STILNO: партнёрский запуск бренда в регионах без публичной оферты и без обещаний доходности.",
+  };
+
   return {
-    title: page.title,
-    description: page.description,
+    title: titleMap[page.kind] ?? page.title,
+    description: descriptionMap[page.kind] ?? page.description,
     canonical: `${siteOrigin}/${page.pathname.join("/")}`,
     image: image ? `${siteOrigin}${image}` : undefined,
   };

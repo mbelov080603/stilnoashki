@@ -1,0 +1,41 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">STILNO hero layout template</title>
+<desc id="desc">Hero design template with product image frame and B2B calls to action.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1440" y2="900" gradientUnits="userSpaceOnUse"><stop stop-color="#06080C"/><stop offset="0.52" stop-color="#111820"/><stop offset="1" stop-color="#E7EAEE"/></linearGradient>
+  <radialGradient id="g" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(830 240) rotate(142) scale(620 390)"><stop stop-color="#FFFFFF" stop-opacity="0.18"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1440" height="900" fill="url(#bg)"/>
+<rect width="1440" height="900" fill="url(#g)"/>
+<g opacity="0.16">
+  <path d="M100 112H1340" stroke="#FFFFFF"/>
+  <path d="M100 306H1340" stroke="#FFFFFF"/>
+  <path d="M100 712H1340" stroke="#FFFFFF"/>
+  <path d="M272 80V820" stroke="#FFFFFF"/>
+  <path d="M626 80V820" stroke="#FFFFFF"/>
+  <path d="M980 80V820" stroke="#FFFFFF"/>
+</g>
+<g transform="translate(110 118)">
+  <rect width="120" height="38" rx="19" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.14"/>
+  <text x="28" y="26" fill="#D7DCE2" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="4">18+</text>
+  <text x="0" y="154" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="74" font-weight="700" letter-spacing="-2.4">STILNO</text>
+  <text x="0" y="232" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="74" font-weight="700" letter-spacing="-2.4">CLICK ONE</text>
+  <text x="0" y="296" fill="#B9C1CA" font-family="Inter, Arial, sans-serif" font-size="22">Никотинсодержащая линия для совершеннолетних пользователей.</text>
+  <text x="0" y="332" fill="#8893A2" font-family="Inter, Arial, sans-serif" font-size="18">10 мл · 850 мА·ч · Type-C · 10–22 Вт · 20 мг/см³ · до 15 000 затяжек*</text>
+  <g transform="translate(0 394)">
+    <rect width="196" height="58" rx="29" fill="#F2F4F6"/>
+    <text x="30" y="37" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="650">Смотреть продукт</text>
+    <rect x="216" width="190" height="58" rx="29" fill="transparent" stroke="#FFFFFF" stroke-opacity="0.24"/>
+    <text x="250" y="37" fill="#F2F4F6" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="600">Партнёрам</text>
+  </g>
+  <text x="0" y="516" fill="#788391" font-family="Inter, Arial, sans-serif" font-size="14">*Показатель зависит от режима использования.</text>
+</g>
+<g transform="translate(772 148)">
+  <rect width="512" height="612" rx="52" fill="#FFFFFF" fill-opacity="0.92"/>
+  <rect x="1" y="1" width="510" height="610" rx="51" stroke="#0B1018" stroke-opacity="0.12"/>
+  <rect x="52" y="82" width="408" height="420" rx="32" fill="#F1F3F5"/>
+  <text x="94" y="292" fill="#9AA4AF" font-family="Inter, Arial, sans-serif" font-size="24" letter-spacing="4">PRODUCT IMAGE</text>
+  <text x="52" y="548" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="650">Вставить реальное фото устройства/упаковки</text>
+  <text x="52" y="578" fill="#667180" font-family="Inter, Arial, sans-serif" font-size="16">Без белого случайного фона и без обрезки.</text>
+</g>
+</svg>
