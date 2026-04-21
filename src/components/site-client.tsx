@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { isStaticExport } from "@/lib/site-data";
 import type { CtaLink, NavItem, Product, ProductVariant } from "@/lib/site-data";
 
 const AGE_KEY = "stilno:age-gate";
@@ -346,6 +347,12 @@ export function LeadForm({
     event.preventDefault();
     setError(null);
     setSuccessHint(null);
+
+    if (isStaticExport) {
+      setError("На GitHub Pages формы не отправляются. Используйте production-хостинг с серверной обработкой заявок.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -476,6 +483,11 @@ export function LeadForm({
 
       {error ? <p className="mt-4 text-sm text-red-300">{error}</p> : null}
       {successHint ? <p className="mt-4 text-sm text-emerald-300">{successHint}</p> : null}
+      {isStaticExport ? (
+        <p className="mt-4 text-sm text-white/48">
+          Эта GitHub Pages-версия работает как статическая брендовая витрина. Отправка форм доступна на серверном хостинге.
+        </p>
+      ) : null}
 
       <button
         type="submit"
