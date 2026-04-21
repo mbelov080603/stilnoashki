@@ -31,6 +31,7 @@ export const isIndexableDeployment = Boolean(
   normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL) ??
     normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL),
 );
+export const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
 
 export const analyticsIds = {
   gtm: process.env.NEXT_PUBLIC_GTM_ID?.trim() || "",
