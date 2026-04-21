@@ -1,0 +1,63 @@
+<svg width="1440" height="820" viewBox="0 0 1440 820" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">STILNO coverage status card</title>
+  <desc id="desc">A dark premium B2B status panel for stores page without fake map points.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1440" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1018"/>
+      <stop offset="0.55" stop-color="#111820"/>
+      <stop offset="1" stop-color="#070A0F"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1010 300) rotate(135) scale(720 460)">
+      <stop stop-color="#EEF2F6" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#EEF2F6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20" y="-20" width="1480" height="860" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="34" stdDeviation="45" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect x="44" y="38" width="1352" height="744" rx="58" fill="url(#bg)" filter="url(#shadow)"/>
+  <rect x="44.5" y="38.5" width="1351" height="743" rx="57.5" stroke="#FFFFFF" stroke-opacity="0.12"/>
+  <rect x="44" y="38" width="1352" height="744" rx="58" fill="url(#glow)"/>
+  <g opacity="0.26">
+    <path d="M204 38V782" stroke="#FFFFFF" stroke-opacity="0.55"/>
+    <path d="M478 38V782" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <path d="M752 38V782" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <path d="M1026 38V782" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <path d="M1264 38V782" stroke="#FFFFFF" stroke-opacity="0.28"/>
+    <path d="M44 226H1396" stroke="#FFFFFF" stroke-opacity="0.38"/>
+    <path d="M44 412H1396" stroke="#FFFFFF" stroke-opacity="0.38"/>
+    <path d="M44 612H1396" stroke="#FFFFFF" stroke-opacity="0.28"/>
+  </g>
+  <rect x="128" y="112" width="250" height="64" rx="32" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14"/>
+  <text x="153" y="153" fill="#F3F5F7" font-family="Inter, Arial, sans-serif" font-size="24" letter-spacing="13">18+</text>
+  <g transform="translate(128 250)">
+    <text x="0" y="0" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="650" letter-spacing="-2">Где купить</text>
+    <text x="0" y="66" fill="#B8C0CA" font-family="Inter, Arial, sans-serif" font-size="24">Розничная карта появится после подтверждения городов и партнёрских точек.</text>
+    <text x="0" y="104" fill="#8792A0" font-family="Inter, Arial, sans-serif" font-size="20">До публикации списка оставьте запрос по городу или перейдите в партнёрский раздел.</text>
+    <g transform="translate(0 158)">
+      <rect width="218" height="58" rx="29" fill="#F2F4F6"/>
+      <text x="31" y="37" fill="#111820" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="650">Отправить запрос</text>
+      <rect x="238" width="236" height="58" rx="29" fill="transparent" stroke="#FFFFFF" stroke-opacity="0.24"/>
+      <text x="270" y="37" fill="#F2F4F6" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="600">Стать партнёром</text>
+    </g>
+  </g>
+  <g transform="translate(810 228)">
+    <rect width="414" height="322" rx="34" fill="#FFFFFF" fill-opacity="0.055" stroke="#FFFFFF" stroke-opacity="0.13"/>
+    <rect x="30" y="30" width="156" height="36" rx="18" fill="#FFFFFF" fill-opacity="0.09"/>
+    <text x="48" y="54" fill="#D7DCE2" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="6">СТАТУС</text>
+    <g transform="translate(38 104)">
+      <circle cx="13" cy="13" r="13" fill="#DDE3EA"/>
+      <text x="42" y="20" fill="#F3F5F7" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="650">Точки не опубликованы</text>
+      <text x="42" y="56" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="17">Публикуем только подтверждённые адреса.</text>
+    </g>
+    <g transform="translate(38 214)">
+      <rect width="336" height="1" fill="#FFFFFF" fill-opacity="0.14"/>
+      <text x="0" y="46" fill="#F3F5F7" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600">Запросы принимаются:</text>
+      <text x="0" y="82" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="16">розница · опт · франчайзинг · регион</text>
+    </g>
+  </g>
+  <g transform="translate(1006 590)" opacity="0.9">
+    <rect width="236" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <text x="28" y="28" fill="#D7DCE2" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="3">STILNO CLICK ONE</text>
+  </g>
+</svg>

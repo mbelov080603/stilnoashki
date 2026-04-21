@@ -1,0 +1,13 @@
+<svg width="1440" height="320" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">STILNO legal footer strip</title>
+<desc id="desc">A compact 18+ legal warning strip for site footer or responsible section.</desc>
+<rect width="1440" height="320" fill="#0B1018"/>
+<g opacity="0.16"><path d="M80 84H1360" stroke="#FFFFFF"/><path d="M80 218H1360" stroke="#FFFFFF"/><path d="M260 40V280" stroke="#FFFFFF"/><path d="M1040 40V280" stroke="#FFFFFF"/></g>
+<rect x="110" y="94" width="154" height="76" rx="38" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.16"/>
+<text x="146" y="145" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="28" letter-spacing="5">18+</text>
+<text x="318" y="112" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="650">Ответственное потребление</text>
+<text x="318" y="158" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="18">Никотин вызывает зависимость. Продажа несовершеннолетним запрещена.</text>
+<text x="318" y="196" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="18">Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.</text>
+<rect x="1074" y="120" width="218" height="56" rx="28" fill="#F5F7FA"/>
+<text x="1110" y="156" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="650">Правовая информация</text>
+</svg>

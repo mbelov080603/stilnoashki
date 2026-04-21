@@ -1,0 +1,49 @@
+<svg width="900" height="620" viewBox="0 0 900 620" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">Иллюстрация розничных запросов STILNO</title>
+<desc id="desc">Чистая иллюстрация статуса розничной карты без вымышленных точек.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="900" y2="620" gradientUnits="userSpaceOnUse"><stop stop-color="#0B1018"/><stop offset="1" stop-color="#151D27"/></linearGradient>
+  <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(616 180) rotate(132) scale(450 320)"><stop stop-color="#FFFFFF" stop-opacity="0.18"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="900" height="620" rx="42" fill="url(#bg)"/>
+<rect x="0.5" y="0.5" width="899" height="619" rx="41.5" stroke="#FFFFFF" stroke-opacity="0.12"/>
+<rect width="900" height="620" rx="42" fill="url(#glow)"/>
+<g opacity="0.16">
+  <path d="M88 92H812" stroke="#FFFFFF"/>
+  <path d="M88 248H812" stroke="#FFFFFF"/>
+  <path d="M88 404H812" stroke="#FFFFFF"/>
+  <path d="M168 52V568" stroke="#FFFFFF"/>
+  <path d="M450 52V568" stroke="#FFFFFF"/>
+  <path d="M732 52V568" stroke="#FFFFFF"/>
+</g>
+<g transform="translate(106 98)">
+  <rect width="188" height="48" rx="24" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.14"/>
+  <circle cx="30" cy="24" r="8" fill="#F5F7FA"/>
+  <text x="52" y="30" fill="#D9DEE5" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="3">18+ SITE</text>
+</g>
+<g transform="translate(116 194)" font-family="Inter, Arial, sans-serif">
+  <text x="0" y="0" fill="#F5F7FA" font-size="40" font-weight="700" letter-spacing="-1">Розничная карта</text>
+  <text x="0" y="38" fill="#AAB3BE" font-size="18">Публикуются только подтверждённые города и точки.</text>
+</g>
+<g transform="translate(116 296)" font-family="Inter, Arial, sans-serif">
+  <rect width="266" height="88" rx="22" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.13"/>
+  <text x="24" y="36" fill="#F5F7FA" font-size="20" font-weight="650">Город</text>
+  <text x="24" y="62" fill="#8C96A3" font-size="15">статус уточняется</text>
+  <rect x="0" y="108" width="266" height="88" rx="22" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.13"/>
+  <text x="24" y="144" fill="#F5F7FA" font-size="20" font-weight="650">Партнёрство</text>
+  <text x="24" y="170" fill="#8C96A3" font-size="15">заявка через форму</text>
+</g>
+<g transform="translate(520 184)">
+  <rect width="234" height="312" rx="34" fill="#F5F7FA" fill-opacity="0.94"/>
+  <rect x="1" y="1" width="232" height="310" rx="33" stroke="#0B1018" stroke-opacity="0.14"/>
+  <g transform="translate(44 44)">
+    <path d="M72 0C111.765 0 144 32.2355 144 72C144 121.5 72 206 72 206C72 206 0 121.5 0 72C0 32.2355 32.2355 0 72 0Z" fill="#0B1018"/>
+    <circle cx="72" cy="72" r="30" fill="#F5F7FA"/>
+  </g>
+  <rect x="42" y="258" width="150" height="20" rx="10" fill="#0B1018" fill-opacity="0.12"/>
+</g>
+<g transform="translate(554 514)">
+  <rect width="164" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.14"/>
+  <text x="28" y="28" fill="#D9DEE5" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="3">NO FAKE MAP</text>
+</g>
+</svg>
