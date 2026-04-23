@@ -1,6 +1,6 @@
 <svg width="900" height="620" viewBox="0 0 900 620" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
 <title id="title">Иллюстрация розничных запросов STILNO</title>
-<desc id="desc">Чистая иллюстрация статуса розничной карты без вымышленных точек.</desc>
+<desc id="desc">Иллюстрация для страницы розничных запросов STILNO.</desc>
 <defs>
   <linearGradient id="bg" x1="0" y1="0" x2="900" y2="620" gradientUnits="userSpaceOnUse"><stop stop-color="#0B1018"/><stop offset="1" stop-color="#151D27"/></linearGradient>
   <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(616 180) rotate(132) scale(450 320)"><stop stop-color="#FFFFFF" stop-opacity="0.18"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
@@ -44,6 +44,6 @@
 </g>
 <g transform="translate(554 514)">
   <rect width="164" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.14"/>
-  <text x="28" y="28" fill="#D9DEE5" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="3">NO FAKE MAP</text>
+  <text x="28" y="28" fill="#D9DEE5" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="3">STILNO 18+</text>
 </g>
 </svg>

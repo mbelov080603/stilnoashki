@@ -1,6 +1,6 @@
 <svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-<title id="title">STILNO city request section</title>
-<desc id="desc">A clean city request and coverage table layout without fake retail addresses.</desc>
+<title id="title">Статус покрытия STILNO</title>
+<desc id="desc">Блок статуса покрытия и запросов по городам STILNO.</desc>
 <defs>
   <linearGradient id="bg" x1="0" x2="1440" y1="0" y2="900" gradientUnits="userSpaceOnUse"><stop stop-color="#F6F7F9"/><stop offset="1" stop-color="#E9EDF2"/></linearGradient>
   <filter id="card" x="-40" y="-40" width="1540" height="980" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="26" stdDeviation="34" flood-color="#0A0F17" flood-opacity="0.16"/></filter>
@@ -11,7 +11,7 @@
   <rect x="70.5" y="62.5" width="1279" height="775" rx="41.5" stroke="#0B1018" stroke-opacity="0.08"/>
 </g>
 <text x="128" y="154" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="700" letter-spacing="-1.5">Покрытие и запросы</text>
-<text x="128" y="198" fill="#5A6573" font-family="Inter, Arial, sans-serif" font-size="20">Без вымышленных точек: публикуются только подтверждённые города и адреса.</text>
+<text x="128" y="198" fill="#5A6573" font-family="Inter, Arial, sans-serif" font-size="20">Города и адреса публикуются после подтверждения партнёрских точек.</text>
 <g transform="translate(128 256)">
   <rect width="548" height="498" rx="28" fill="#0B1018"/>
   <rect x="1" y="1" width="546" height="496" rx="27" stroke="#FFFFFF" stroke-opacity="0.14"/>
@@ -36,18 +36,18 @@
 <g transform="translate(740 256)">
   <rect width="504" height="498" rx="28" fill="#F6F7F9" stroke="#0B1018" stroke-opacity="0.08"/>
   <text x="36" y="64" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="650">Список городов</text>
-  <text x="36" y="98" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="17">Шаблон для реального списка. Не заполнять догадками.</text>
+  <text x="36" y="98" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="17">Оставьте запрос, чтобы уточнить статус по вашему городу.</text>
   <g font-family="Inter, Arial, sans-serif" font-size="18">
     <rect x="36" y="134" width="432" height="64" rx="18" fill="#FFFFFF"/>
-    <text x="58" y="173" fill="#0B1018" font-weight="650">Москва</text>
-    <text x="326" y="173" fill="#687382">на проверке</text>
+    <text x="58" y="173" fill="#0B1018" font-weight="650">Город</text>
+    <text x="326" y="173" fill="#687382">через форму</text>
     <rect x="36" y="214" width="432" height="64" rx="18" fill="#FFFFFF"/>
-    <text x="58" y="253" fill="#0B1018" font-weight="650">Санкт-Петербург</text>
-    <text x="326" y="253" fill="#687382">на проверке</text>
+    <text x="58" y="253" fill="#0B1018" font-weight="650">Формат</text>
+    <text x="326" y="253" fill="#687382">розница · B2B</text>
     <rect x="36" y="294" width="432" height="64" rx="18" fill="#FFFFFF"/>
     <text x="58" y="333" fill="#0B1018" font-weight="650">Ваш город</text>
     <text x="326" y="333" fill="#687382">запрос</text>
   </g>
-  <text x="36" y="428" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="15">Если город не подтверждён — показывать форму, а не фейковую точку.</text>
+  <text x="36" y="428" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="15">После подтверждения точек данные появятся в розничной карте.</text>
 </g>
 </svg>
