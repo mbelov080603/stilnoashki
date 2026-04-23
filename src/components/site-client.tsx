@@ -851,14 +851,17 @@ export function VariantPicker({ product }: { product: Product }) {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <div className="rounded-[2rem] border border-black/10 bg-[linear-gradient(180deg,#f4f4f3,#e5e6e9)] p-5">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_62%_18%,rgba(255,255,255,0.24),transparent_36%),linear-gradient(145deg,#1d2025,#050607_68%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+        <div className="absolute inset-5 rounded-[1.6rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.78),rgba(190,195,198,0.58)_34%,rgba(35,39,44,0.28)_68%),linear-gradient(145deg,rgba(232,234,234,0.42),rgba(24,26,29,0.18))]" />
         {activeImage ? (
           <Image
             src={activeImage}
             alt={`${product.title} — ${activeVariant.title}`}
             width={1400}
             height={1400}
-            className="mx-auto w-full max-w-[34rem] object-contain"
+            priority
+            unoptimized
+            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_34px_54px_rgba(0,0,0,0.62)]"
           />
         ) : null}
       </div>
@@ -959,14 +962,17 @@ export function VariantPickerFallback({ product }: { product: Product }) {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <div className="rounded-[2rem] border border-black/10 bg-[linear-gradient(180deg,#f4f4f3,#e5e6e9)] p-5">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_62%_18%,rgba(255,255,255,0.24),transparent_36%),linear-gradient(145deg,#1d2025,#050607_68%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+        <div className="absolute inset-5 rounded-[1.6rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.78),rgba(190,195,198,0.58)_34%,rgba(35,39,44,0.28)_68%),linear-gradient(145deg,rgba(232,234,234,0.42),rgba(24,26,29,0.18))]" />
         {product.images[0] ? (
           <Image
             src={product.images[0]}
             alt={product.title}
             width={1400}
             height={1400}
-            className="mx-auto w-full max-w-[34rem] object-contain"
+            priority
+            unoptimized
+            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_34px_54px_rgba(0,0,0,0.62)]"
           />
         ) : null}
       </div>

@@ -406,18 +406,51 @@ function ProductPhotoCard({
   return (
     <div
       className={classNames(
-        "overflow-hidden rounded-[2rem] border border-black/10 bg-[linear-gradient(180deg,#f5f5f4,#e4e5e8)] p-5",
+        "relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_62%_18%,rgba(255,255,255,0.24),transparent_36%),linear-gradient(145deg,#1d2025,#050607_68%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]",
         aspect === "wide" ? "min-h-[18rem]" : "min-h-[15rem]",
         className,
       )}
     >
+      <div className="absolute inset-5 rounded-[1.55rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.76),rgba(190,195,198,0.56)_34%,rgba(35,39,44,0.26)_68%),linear-gradient(145deg,rgba(232,234,234,0.38),rgba(24,26,29,0.16))]" />
       <Image
         src={src}
         alt={alt}
         width={1600}
         height={1200}
         priority={priority}
-        className="mx-auto h-full w-full object-contain"
+        unoptimized
+        className="relative z-10 mx-auto h-full w-full object-contain drop-shadow-[0_30px_48px_rgba(0,0,0,0.58)]"
+      />
+    </div>
+  );
+}
+
+function EditorialImageCard({
+  src,
+  alt,
+  className,
+  priority = false,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  priority?: boolean;
+}) {
+  return (
+    <div
+      className={classNames(
+        "overflow-hidden rounded-[2.2rem] border border-black/10 bg-black shadow-[0_22px_66px_rgba(10,10,10,0.14)]",
+        className,
+      )}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        width={1800}
+        height={1200}
+        priority={priority}
+        unoptimized
+        className="h-full min-h-[22rem] w-full object-cover"
       />
     </div>
   );
@@ -582,21 +615,11 @@ export function HomeTemplate() {
             contract={homeContent.hero}
             tone="dark"
             media={
-              <div className="rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,#111214,#1a1b1f)] p-5 shadow-[0_34px_90px_rgba(0,0,0,0.28)]">
-                <div className="rounded-[2rem] border border-black/10 bg-[#ecebea] p-5">
-                  <div className="rounded-[1.7rem] border border-black/10 bg-white p-5">
-                    <Image
-                      src={featuredProduct.variants[0].image ?? featuredProduct.images[0]}
-                      alt="STILNO CLICK ONE"
-                      width={1600}
-                      height={1600}
-                      priority
-                      loading="eager"
-                      className="mx-auto w-full max-w-[36rem] object-contain"
-                    />
-                  </div>
-                </div>
-              </div>
+              <EditorialImageCard
+                src="/stilno/generated/home-hero-product.jpg"
+                alt="STILNO CLICK ONE на тёмной продуктовой сцене"
+                priority
+              />
             }
           />
         </div>
@@ -608,10 +631,10 @@ export function HomeTemplate() {
             <SectionIntro contract={homeContent.productSection} />
             <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
               <div className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
-                <ProductPhotoCard
-                  src={featuredProduct.images[0]}
-                  alt={featuredProduct.title}
-                  className="bg-[linear-gradient(180deg,#f4f4f3,#e5e6e9)]"
+                <EditorialImageCard
+                  src="/stilno/generated/product-snapshot.jpg"
+                  alt="STILNO CLICK ONE в нескольких вкусах"
+                  className="min-h-[24rem]"
                 />
                 <div>
                   <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.02] p-5">
@@ -650,9 +673,9 @@ export function HomeTemplate() {
             <SectionIntro contract={homeContent.partnersSection} tone="dark" />
             <div className="rounded-[2.2rem] border border-white/10 bg-white/[0.03] p-6">
               <SvgAsset
-                src="/stilno/redesign/partner-support-system.svg"
-                alt="Система поддержки партнёра STILNO"
-                className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+                src="/stilno/generated/partner-production.jpg"
+                alt="Производственная дисциплина STILNO"
+                className="w-full rounded-[1.4rem] border border-white/8"
               />
             </div>
           </div>
@@ -680,8 +703,8 @@ export function HomeTemplate() {
             </div>
             <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
               <SvgAsset
-                src="/stilno/redesign/stores-coverage-empty.svg"
-                alt="Статус публикации розничной карты STILNO"
+                src="/stilno/generated/stores-inquiry-visual.jpg"
+                alt="Розничный запрос STILNO без неподтверждённых точек"
                 className="w-full rounded-[1.4rem] border border-black/8"
               />
             </div>
@@ -759,11 +782,11 @@ function StoresIndexTemplate(page: ResolvedPage) {
         <PageHero
           contract={storesContent.hero}
           media={
-            <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
+            <div className="rounded-[2.2rem] border border-black/10 bg-black p-4 shadow-[0_18px_54px_rgba(10,10,10,0.10)]">
               <SvgAsset
-                src="/stilno/redesign/stores-empty-illustration.svg"
+                src="/stilno/generated/stores-inquiry-visual.jpg"
                 alt="Статус розничной карты STILNO"
-                className="w-full"
+                className="w-full rounded-[1.7rem]"
               />
             </div>
           }
@@ -778,12 +801,23 @@ function StoresIndexTemplate(page: ResolvedPage) {
               ))}
             </div>
           </div>
-          <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
-            <SvgAsset
-              src="/stilno/redesign/stores-city-list-template.svg"
-              alt="Шаблон статуса покрытия STILNO"
-              className="w-full rounded-[1.4rem] border border-black/8"
-            />
+          <div className="rounded-[2.2rem] border border-black/10 bg-black p-6 text-white shadow-[0_18px_54px_rgba(10,10,10,0.10)]">
+            <p className="text-xs uppercase tracking-[0.34em] text-white/36">Статус</p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
+              Розничная карта появится после подтверждения точек.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-white/64">
+              Пока список не опубликован, форма на странице собирает запросы по городам, розничным точкам и
+              партнёрскому запуску.
+            </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {storesContent.statusCards.map((card) => (
+                <div key={card.label} className="rounded-[1.3rem] border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-xl font-semibold tracking-[-0.04em]">{card.value}</p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.2em] text-white/42">{card.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -890,8 +924,14 @@ function AboutTemplate(page: ResolvedPage) {
             <RichText paragraphs={brandNarrative} />
           </div>
           <div className="grid gap-5">
-            <ProductPhotoCard src="/stilno/products/barbaris.jpg" alt="STILNO CLICK ONE" />
-            <ProductPhotoCard src="/stilno/products/fruktoviy-chay.jpg" alt="Упаковка STILNO CLICK ONE" />
+            <EditorialImageCard
+              src="/stilno/generated/about-product-duo.jpg"
+              alt="STILNO CLICK ONE в тёмной брендовой композиции"
+            />
+            <EditorialImageCard
+              src="/stilno/generated/quality-production.jpg"
+              alt="Производственная линия STILNO"
+            />
           </div>
         </div>
       </div>
@@ -1203,8 +1243,8 @@ function PartnersTemplate(page: ResolvedPage) {
           </div>
           <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
             <SvgAsset
-              src="/stilno/redesign/partner-support-system.svg"
-              alt="Система поддержки партнёра STILNO"
+              src="/stilno/generated/partner-production.jpg"
+              alt="Производственная и партнёрская база STILNO"
               className="w-full rounded-[1.4rem] border border-black/8"
             />
           </div>
@@ -1305,9 +1345,9 @@ function FranchiseTemplate(page: ResolvedPage) {
             media={
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
                 <SvgAsset
-                  src="/stilno/redesign/partner-support-system.svg"
-                  alt="Система поддержки партнёра STILNO"
-                  className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+                  src="/stilno/generated/partner-production.jpg"
+                  alt="Производственная и партнёрская база STILNO"
+                  className="w-full rounded-[1.4rem] border border-white/8"
                 />
               </div>
             }
@@ -1337,8 +1377,8 @@ function FranchiseTemplate(page: ResolvedPage) {
             </div>
             <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
               <SvgAsset
-                src="/stilno/redesign/franchise-process.svg"
-                alt="Этапы запуска партнёра STILNO"
+                src="/stilno/generated/stores-inquiry-visual.jpg"
+                alt="Партнёрский запуск STILNO"
                 className="w-full rounded-[1.4rem] border border-black/8"
               />
             </div>
@@ -1353,9 +1393,9 @@ function FranchiseTemplate(page: ResolvedPage) {
               <SectionIntro contract={franchiseContent.supportSection} tone="dark" />
               <div className="mt-8 grid gap-4">
                 <SvgAsset
-                  src="/stilno/redesign/partner-support-system.svg"
-                  alt="Что получает партнёр STILNO"
-                  className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+                  src="/stilno/generated/quality-production.jpg"
+                  alt="Производственная дисциплина STILNO"
+                  className="w-full rounded-[1.4rem] border border-white/8"
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                   {[

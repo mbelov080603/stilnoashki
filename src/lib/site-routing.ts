@@ -1,5 +1,5 @@
 import { articles, cities, legalPages, vacancies, stores } from "@/lib/site-content";
-import { featuredProduct, productCategories, products } from "@/lib/catalog-data";
+import { productCategories, products } from "@/lib/catalog-data";
 import { siteOrigin } from "@/lib/site-config";
 import type { LegalPage, ResolvedPage, Store, Vacancy } from "@/lib/site-types";
 
@@ -346,7 +346,7 @@ export function getAllStaticPaths() {
 }
 
 export const defaultMetadataImage =
-  featuredProduct.variants[0].image ?? featuredProduct.images[0] ?? "";
+  "/stilno/generated/home-hero-product.jpg";
 
 export function getCanonicalUrl(pathname: string[]) {
   return pathname.length === 0 ? siteOrigin : `${siteOrigin}/${pathname.join("/")}`;
