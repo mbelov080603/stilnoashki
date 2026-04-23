@@ -63,7 +63,7 @@ export const siteSettings = {
     "STILNO CLICK ONE: официальный сайт бренда 18+ с информацией о продукте, партнёрстве, франчайзинге, розничных запросах и правовых ограничениях категории.",
   primaryNav: [
     { label: "Продукт", href: "/products/stilno-click-one" },
-    { label: "Партнёры", href: "/partners" },
+    { label: "Партнёрам", href: "/partners" },
     { label: "Где купить", href: "/stores" },
     { label: "Франчайзинг", href: "/franchise" },
     { label: "Контакты", href: "/contacts" },

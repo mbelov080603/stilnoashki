@@ -225,7 +225,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
         kind: "careers-index",
         title: "Вакансии STILNO",
         description:
-          "Общий карьерный поток STILNO для будущих запусков, розничных ролей и брендовых функций.",
+          "Общие карьерные обращения STILNO для будущих запусков, розничных ролей и брендовых функций.",
         pathname: slug,
       };
     }

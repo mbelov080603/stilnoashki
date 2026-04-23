@@ -4,34 +4,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import {
-  type Product,
-  type ResolvedPage,
-  articles,
-  brandNarrative,
-  companyDetails,
-  documentLinks,
-  faqItems,
-  featuredProduct,
-  franchisePillars,
-  galleryItems,
-  getAllStaticPaths,
-  getArticlePath,
-  getBreadcrumbs,
-  getCategoryProducts,
-  getProductCategoryPath,
-  getProductPath,
-  getVacancyPath,
-  homeSignals,
-  launchMetrics,
-  partnershipScenarios,
-  productCategories,
-  products,
-  responsibilityNotes,
-  siteOrigin,
-  siteSettings,
-  vacancies,
-} from "@/lib/site-data";
-import {
   AgeGate,
   AnalyticsBridge,
   AnalyticsLoader,
@@ -41,9 +13,29 @@ import {
   SiteHeader,
   VariantPicker,
   VariantPickerFallback,
-  type LeadCheckbox,
-  type LeadField,
 } from "@/components/site-client";
+import { featuredProduct, galleryItems, productCategories, qualityStandards } from "@/lib/catalog-data";
+import { companyDetails, documentLinks, siteOrigin, siteSettings } from "@/lib/site-config";
+import {
+  articles,
+  brandNarrative,
+  contactsPageContent,
+  faqItems,
+  faqPageGroups,
+  formSchemas,
+  franchiseContent,
+  franchisePillars,
+  homeContent,
+  launchMetrics,
+  partnersPageContent,
+  partnershipScenarios,
+  productPageContent,
+  responsibilityNotes,
+  storesContent,
+  vacancies,
+} from "@/lib/site-content";
+import { defaultMetadataImage, getAllStaticPaths, getArticlePath, getBreadcrumbs, getProductCategoryPath, getProductPath, getVacancyPath } from "@/lib/site-routing";
+import type { CtaLink, PageHeroContract, Product, ResolvedPage, SectionContract } from "@/lib/site-types";
 
 function classNames(...values: Array<string | false | undefined>) {
   return values.filter(Boolean).join(" ");
@@ -55,27 +47,36 @@ function ButtonLink({
   variant = "primary",
   analytics,
   target,
-  tone = "dark",
+  tone = "light",
 }: {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "ghost";
   analytics?: string;
   target?: string;
   tone?: "dark" | "light";
 }) {
   const style =
     variant === "primary"
-      ? "border-transparent bg-[var(--color-silver)] text-black hover:bg-white"
+      ? tone === "dark"
+        ? "border-transparent bg-[var(--color-silver)] text-black hover:bg-white"
+        : "border-transparent bg-black text-white hover:bg-black/86"
       : tone === "dark"
-        ? "border-white/16 bg-white/[0.04] text-white hover:border-white/30 hover:bg-white/[0.08]"
-        : "border-black/12 bg-black/[0.03] text-black hover:border-black/22 hover:bg-black/[0.06]";
+        ? "border-white/12 bg-white/[0.04] text-white hover:border-white/22 hover:bg-white/[0.08]"
+        : "border-black/16 bg-[#e8e8e5] text-[#0B1018] hover:border-black/28 hover:bg-white";
+  const inlineStyle =
+    variant !== "primary" && tone === "light"
+      ? {
+          color: "#0B1018",
+        }
+      : undefined;
 
   return (
     <Link
       href={href}
       target={target}
       rel={target === "_blank" ? "noreferrer" : undefined}
+      style={inlineStyle}
       data-analytics={analytics}
       className={`inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-medium transition ${style}`}
     >
@@ -84,37 +85,149 @@ function ButtonLink({
   );
 }
 
-function SectionHeading({
-  eyebrow,
-  title,
-  body,
+function ActionGroup({
+  actions,
   tone = "light",
+  analyticsPrefix,
 }: {
-  eyebrow?: string;
-  title: string;
-  body: string;
+  actions?: CtaLink[];
   tone?: "dark" | "light";
+  analyticsPrefix?: string;
 }) {
-  const textClass = tone === "dark" ? "text-white" : "text-black";
-  const bodyClass = tone === "dark" ? "text-white/68" : "text-black/66";
+  if (!actions?.length) {
+    return null;
+  }
+
+  return (
+    <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      {actions.map((action, index) => (
+        <ButtonLink
+          key={`${action.label}-${action.href}`}
+          href={action.href}
+          target={action.target}
+          variant={action.variant ?? (index === 0 ? "primary" : "secondary")}
+          analytics={analyticsPrefix ? `${analyticsPrefix}_${index + 1}` : undefined}
+          tone={tone}
+        >
+          {action.label}
+        </ButtonLink>
+      ))}
+    </div>
+  );
+}
+
+function SectionIntro({
+  contract,
+  tone = "light",
+  as = "h2",
+}: {
+  contract: SectionContract;
+  tone?: "dark" | "light";
+  as?: "h1" | "h2";
+}) {
+  const TitleTag = as;
 
   return (
     <div className="max-w-3xl">
-      {eyebrow ? (
+      {contract.eyebrow ? (
         <div
           className={classNames(
-            "mb-5 inline-flex items-center gap-3 text-xs uppercase tracking-[0.42em]",
-            tone === "dark" ? "text-white/45" : "text-black/40",
+            "mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.4em]",
+            tone === "dark" ? "text-white/42" : "text-black/36",
           )}
         >
-          <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/26" : "bg-black/20")} />
-          <span>{eyebrow}</span>
+          <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/22" : "bg-black/18")} />
+          <span>{contract.eyebrow}</span>
         </div>
       ) : null}
-      <h2 className={classNames("text-4xl font-semibold tracking-[-0.05em] sm:text-5xl", textClass)}>
-        {title}
-      </h2>
-      <p className={classNames("mt-5 max-w-2xl text-base leading-7 sm:text-lg", bodyClass)}>{body}</p>
+      <TitleTag
+        className={classNames(
+          "text-4xl font-semibold leading-[0.98] tracking-[-0.06em] sm:text-5xl lg:text-[3.65rem]",
+          tone === "dark" ? "text-white" : "text-black",
+        )}
+      >
+        {contract.title}
+      </TitleTag>
+      <p
+        className={classNames(
+          "mt-5 max-w-2xl text-base leading-7 sm:text-lg",
+          tone === "dark" ? "text-white/66" : "text-black/62",
+        )}
+      >
+        {contract.body}
+      </p>
+      <ActionGroup actions={contract.actions} tone={tone} />
+    </div>
+  );
+}
+
+function PageHero({
+  contract,
+  tone = "light",
+  media,
+  compact = false,
+}: {
+  contract: PageHeroContract;
+  tone?: "dark" | "light";
+  media?: React.ReactNode;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={classNames(
+        "grid gap-10",
+        media ? "xl:grid-cols-[0.9fr_1.1fr] xl:items-center" : "",
+        compact ? "py-2" : "",
+      )}
+    >
+      <div>
+        {contract.eyebrow ? (
+          <div
+            className={classNames(
+              "mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.42em]",
+              tone === "dark" ? "text-white/42" : "text-black/36",
+            )}
+          >
+            <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/22" : "bg-black/18")} />
+            <span>{contract.eyebrow}</span>
+          </div>
+        ) : null}
+        <h1
+          className={classNames(
+            "max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.08em] sm:text-6xl lg:text-[4.75rem]",
+            tone === "dark" ? "text-white" : "text-black",
+          )}
+        >
+          {contract.title}
+        </h1>
+        <p
+          className={classNames(
+            "mt-6 max-w-2xl text-lg leading-8",
+            tone === "dark" ? "text-white/68" : "text-black/64",
+          )}
+        >
+          {contract.body}
+        </p>
+        {contract.detailLine ? (
+          <div
+            className={classNames(
+              "mt-6 inline-flex max-w-3xl rounded-[1.5rem] border px-5 py-4 text-sm leading-7 sm:text-base",
+              tone === "dark"
+                ? "border-white/10 bg-white/[0.04] text-white/84"
+                : "border-black/10 bg-white text-black",
+            )}
+          >
+            {contract.detailLine}
+          </div>
+        ) : null}
+        {contract.note ? (
+          <p className={classNames("mt-3 text-sm", tone === "dark" ? "text-white/44" : "text-black/42")}>
+            {contract.note}
+          </p>
+        ) : null}
+        <ActionGroup actions={contract.actions} tone={tone} />
+      </div>
+      {media ? <div>{media}</div> : null}
     </div>
   );
 }
@@ -216,24 +329,30 @@ function buildJsonLd(page?: ResolvedPage) {
   }
 }
 
-function BreadcrumbTrail({ pathname, title }: { pathname: string[]; title: string }) {
+function BreadcrumbTrail({ pathname, title, tone = "light" }: { pathname: string[]; title: string; tone?: "dark" | "light" }) {
   const breadcrumbs = getBreadcrumbs(pathname, title);
   if (breadcrumbs.length === 0) {
     return null;
   }
 
   return (
-    <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm text-black/42" aria-label="Breadcrumbs">
-      <Link href="/" className="transition hover:text-black">
+    <nav
+      className={classNames(
+        "mb-8 flex flex-wrap items-center gap-2 text-sm",
+        tone === "dark" ? "text-white/42" : "text-black/40",
+      )}
+      aria-label="Breadcrumbs"
+    >
+      <Link href="/" className="transition hover:text-current">
         Главная
       </Link>
       {breadcrumbs.map((breadcrumb, index) => (
         <span key={breadcrumb.href} className="flex items-center gap-2">
           <span>/</span>
           {index === breadcrumbs.length - 1 ? (
-            <span className="text-black/72">{breadcrumb.label}</span>
+            <span className={tone === "dark" ? "text-white/70" : "text-black/70"}>{breadcrumb.label}</span>
           ) : (
-            <Link href={breadcrumb.href} className="transition hover:text-black">
+            <Link href={breadcrumb.href} className="transition hover:text-current">
               {breadcrumb.label}
             </Link>
           )}
@@ -243,17 +362,13 @@ function BreadcrumbTrail({ pathname, title }: { pathname: string[]; title: strin
   );
 }
 
-function MetricCard({ value, label, note }: { value: string; label: string; note: string }) {
-  return (
-    <div className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-      <div className="text-3xl font-semibold tracking-[-0.05em] text-black">{value}</div>
-      <div className="mt-2 text-sm font-medium text-black/76">{label}</div>
-      <div className="mt-3 text-sm leading-6 text-black/56">{note}</div>
-    </div>
-  );
-}
-
-function RichText({ paragraphs, tone = "light" }: { paragraphs: string[]; tone?: "dark" | "light" }) {
+function RichText({
+  paragraphs,
+  tone = "light",
+}: {
+  paragraphs: string[];
+  tone?: "dark" | "light";
+}) {
   return (
     <div className={classNames("grid gap-4 text-base leading-7", tone === "dark" ? "text-white/68" : "text-black/68")}>
       {paragraphs.map((paragraph) => (
@@ -279,16 +394,21 @@ function ProductPhotoCard({
   src,
   alt,
   aspect = "wide",
+  priority = false,
+  className,
 }: {
   src: string;
   alt: string;
   aspect?: "square" | "wide";
+  priority?: boolean;
+  className?: string;
 }) {
   return (
     <div
       className={classNames(
-        "overflow-hidden rounded-[2rem] border border-black/10 bg-[linear-gradient(180deg,#f7f7f6,#e3e5e8)] p-5",
-        aspect === "wide" ? "min-h-[18rem]" : "min-h-[16rem]",
+        "overflow-hidden rounded-[2rem] border border-black/10 bg-[linear-gradient(180deg,#f5f5f4,#e4e5e8)] p-5",
+        aspect === "wide" ? "min-h-[18rem]" : "min-h-[15rem]",
+        className,
       )}
     >
       <Image
@@ -296,17 +416,68 @@ function ProductPhotoCard({
         alt={alt}
         width={1600}
         height={1200}
+        priority={priority}
         className="mx-auto h-full w-full object-contain"
       />
     </div>
   );
 }
 
+function StatCard({
+  value,
+  label,
+  note,
+  tone = "light",
+}: {
+  value: string;
+  label: string;
+  note: string;
+  tone?: "dark" | "light";
+}) {
+  return (
+    <div
+      className={classNames(
+        "rounded-[1.7rem] border p-5",
+        tone === "dark" ? "border-white/10 bg-white/[0.03]" : "border-black/10 bg-white",
+      )}
+    >
+      <div className={classNames("text-2xl font-semibold tracking-[-0.05em]", tone === "dark" ? "text-white" : "text-black")}>
+        {value}
+      </div>
+      <div className={classNames("mt-2 text-sm font-medium", tone === "dark" ? "text-white/80" : "text-black/80")}>
+        {label}
+      </div>
+      <div className={classNames("mt-3 text-sm leading-6", tone === "dark" ? "text-white/56" : "text-black/56")}>
+        {note}
+      </div>
+    </div>
+  );
+}
+
+function SpecsList({ product }: { product: Product }) {
+  return (
+    <div className="grid gap-3">
+      {product.specs.map((spec) => (
+        <div
+          key={spec.label}
+          className="flex items-start justify-between gap-5 rounded-[1.35rem] border border-black/10 bg-white px-4 py-4"
+        >
+          <span className="text-sm text-black/54">{spec.label}</span>
+          <span className="max-w-[22rem] text-right text-sm font-medium text-black">{spec.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Footer() {
+  const utilityLinks = siteSettings.footerLinks.slice(0, 4);
+  const legalLinks = siteSettings.footerLinks.slice(4);
+
   return (
     <footer className="border-t border-white/8 bg-black">
       <div className="border-b border-white/8">
-        <div className="mx-auto max-w-[90rem] px-5 py-5 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[86rem] px-5 py-5 sm:px-6 lg:px-8">
           <SvgAsset
             src="/stilno/redesign/legal-18-footer-strip.svg"
             alt="18+ и правовые предупреждения STILNO"
@@ -315,92 +486,79 @@ function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-14 sm:px-6 lg:grid-cols-5 lg:px-10">
+      <div className="mx-auto grid max-w-[86rem] gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.1fr_1fr_0.9fr_1.1fr] lg:px-8">
         <div>
-          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Бренд</p>
-          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">STILNO</h2>
+          <p className="text-xs uppercase tracking-[0.4em] text-white/38">Бренд</p>
+          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.05em] text-white">STILNO</h2>
           <p className="mt-4 text-sm leading-6 text-white/60">
             Официальный сайт бренда STILNO. Информация предназначена для лиц старше 18 лет.
           </p>
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Предупреждение</p>
+          <p className="text-xs uppercase tracking-[0.4em] text-white/38">Предупреждение</p>
           <p className="mt-4 text-sm leading-6 text-white/60">
-            18+. Никотин вызывает зависимость. Продажа несовершеннолетним запрещена. Дистанционная розничная продажа никотинсодержащей продукции не осуществляется.
+            18+. Никотин вызывает зависимость. Продажа несовершеннолетним запрещена. Дистанционная
+            розничная продажа никотинсодержащей продукции не осуществляется.
           </p>
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Навигация</p>
+          <p className="text-xs uppercase tracking-[0.4em] text-white/38">Навигация</p>
           <div className="mt-4 grid gap-2 text-sm">
-            <Link href="/products/stilno-click-one" className="text-white/68 transition hover:text-white">
-              Продукт
-            </Link>
-            <Link href="/partners" className="text-white/68 transition hover:text-white">
-              Партнёрам
-            </Link>
-            <Link href="/franchise" className="text-white/68 transition hover:text-white">
-              Франчайзинг
-            </Link>
-            <Link href="/stores" className="text-white/68 transition hover:text-white">
-              Где купить
-            </Link>
+            {siteSettings.primaryNav.map((item) => (
+              <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
+                {item.label}
+              </Link>
+            ))}
             <Link href="/responsible" className="text-white/68 transition hover:text-white">
               Ответственное потребление
             </Link>
             <Link href="/faq" className="text-white/68 transition hover:text-white">
               FAQ
             </Link>
-            <Link href="/contacts" className="text-white/68 transition hover:text-white">
-              Контакты
-            </Link>
           </div>
         </div>
 
-        <div>
-          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Контакты</p>
-          <div className="mt-4 grid gap-3 text-sm text-white/68">
-            <p>{companyDetails.companyName}</p>
-            <p>{companyDetails.legalAddress}</p>
-            <p>{companyDetails.productionAddress}</p>
-            <p>Обращения принимаются через формы сайта.</p>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-white/38">Контакты</p>
+            <div className="mt-4 grid gap-3 text-sm text-white/68">
+              {siteSettings.contactLines.map((line) => (
+                <p key={line.label}>
+                  <span className="block text-white/36">{line.label}</span>
+                  {line.href ? (
+                    <Link href={line.href} className="mt-1 block transition hover:text-white">
+                      {line.value}
+                    </Link>
+                  ) : (
+                    <span className="mt-1 block">{line.value}</span>
+                  )}
+                </p>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div>
-          <p className="text-xs uppercase tracking-[0.45em] text-white/42">Legal</p>
-          <div className="mt-4 grid gap-2 text-sm">
-            <Link href="/legal/privacy" className="text-white/68 transition hover:text-white">
-              Политика обработки персональных данных
-            </Link>
-            <Link href="/legal/consent" className="text-white/68 transition hover:text-white">
-              Согласие на обработку персональных данных
-            </Link>
-            <Link href="/legal/cookies" className="text-white/68 transition hover:text-white">
-              Политика cookies
-            </Link>
-            <Link href="/legal/terms" className="text-white/68 transition hover:text-white">
-              Пользовательское соглашение
-            </Link>
-            <Link href="/legal/not-public-offer" className="text-white/68 transition hover:text-white">
-              Не является публичной офертой
-            </Link>
-            <Link href="/gallery" className="text-white/68 transition hover:text-white">
-              Галерея
-            </Link>
-            <Link href="/careers" className="text-white/68 transition hover:text-white">
-              Вакансии
-            </Link>
-            <Link href="/articles" className="text-white/68 transition hover:text-white">
-              Материалы
-            </Link>
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-white/38">Материалы и legal</p>
+            <div className="mt-4 grid gap-2 text-sm">
+              {utilityLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+              {legalLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="border-t border-white/8">
-        <div className="mx-auto flex max-w-[90rem] flex-col gap-3 px-5 py-5 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
+        <div className="mx-auto flex max-w-[86rem] flex-col gap-3 px-5 py-5 text-sm text-white/42 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>© 2026 STILNO. Все права защищены.</p>
           <p>Информация на сайте носит справочный характер.</p>
         </div>
@@ -409,368 +567,88 @@ function Footer() {
   );
 }
 
-const retailFields: LeadField[] = [
-  {
-    name: "city",
-    label: "Город",
-    required: true,
-    placeholder: "Укажите ваш город",
-    autoComplete: "address-level2",
-  },
-  {
-    name: "name",
-    label: "Имя",
-    required: true,
-    placeholder: "Как к вам обращаться",
-    autoComplete: "name",
-  },
-  {
-    name: "phone",
-    label: "Телефон",
-    type: "tel",
-    placeholder: "+7 (___) ___-__-__",
-    autoComplete: "tel",
-  },
-  {
-    name: "email",
-    label: "Email",
-    type: "email",
-    placeholder: "name@company.ru",
-    autoComplete: "email",
-  },
-  {
-    name: "requestType",
-    label: "Тип запроса",
-    type: "select",
-    required: true,
-    options: [
-      { value: "availability", label: "наличие в городе" },
-      { value: "retail-point", label: "розничная точка" },
-      { value: "partnership", label: "партнёрство" },
-      { value: "other", label: "другое" },
-    ],
-    halfWidth: false,
-  },
-  {
-    name: "comment",
-    label: "Комментарий",
-    type: "textarea",
-    placeholder: "При необходимости уточните запрос.",
-    halfWidth: false,
-  },
-];
-
-const retailCheckboxes: LeadCheckbox[] = [
-  {
-    name: "ageConfirmed",
-    required: true,
-    label: "Подтверждаю, что мне исполнилось 18 лет.",
-  },
-  {
-    name: "personalData",
-    required: true,
-    label:
-      "Даю согласие ООО “ВОСТОК ИМПОРТ ПРОМ” на обработку персональных данных в соответствии с Политикой обработки персональных данных и Согласием на обработку персональных данных.",
-  },
-];
-
-const franchiseFields: LeadField[] = [
-  {
-    name: "name",
-    label: "Имя / ФИО",
-    required: true,
-    placeholder: "Как к вам обращаться",
-    autoComplete: "name",
-  },
-  {
-    name: "phone",
-    label: "Телефон",
-    type: "tel",
-    required: true,
-    placeholder: "+7 (___) ___-__-__",
-    autoComplete: "tel",
-  },
-  {
-    name: "email",
-    label: "Email",
-    type: "email",
-    required: true,
-    placeholder: "name@company.ru",
-    autoComplete: "email",
-  },
-  {
-    name: "city",
-    label: "Город / регион",
-    required: true,
-    placeholder: "Москва / Московская область",
-  },
-  {
-    name: "businessStatus",
-    label: "Статус",
-    type: "select",
-    required: true,
-    options: [
-      { value: "legal-entity", label: "есть ИП/юрлицо" },
-      { value: "planning", label: "планирую открыть" },
-      { value: "existing-store", label: "действующий магазин" },
-      { value: "distributor", label: "дистрибьютор" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
-    name: "retailExperience",
-    label: "Опыт в рознице",
-    type: "select",
-    required: true,
-    options: [
-      { value: "yes", label: "есть" },
-      { value: "no", label: "нет" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
-    name: "interestFormat",
-    label: "Интересующий формат",
-    type: "select",
-    required: true,
-    options: [
-      { value: "franchise", label: "франчайзинг" },
-      { value: "wholesale", label: "опт" },
-      { value: "regional", label: "региональное партнёрство" },
-      { value: "retail", label: "розничная точка" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
-    name: "projectStage",
-    label: "Стадия проекта",
-    type: "select",
-    required: true,
-    options: [
-      { value: "research", label: "изучаю" },
-      { value: "location", label: "есть помещение" },
-      { value: "ready", label: "готов к запуску" },
-      { value: "existing-business", label: "действующий бизнес" },
-    ],
-  },
-  {
-    name: "comment",
-    label: "Комментарий",
-    type: "textarea",
-    placeholder: "Опишите запрос, город или формат сотрудничества.",
-    halfWidth: false,
-  },
-];
-
-const franchiseCheckboxes: LeadCheckbox[] = [
-  {
-    name: "ageConfirmed",
-    required: true,
-    label: "Подтверждаю, что мне исполнилось 18 лет.",
-  },
-  {
-    name: "personalData",
-    required: true,
-    label:
-      "Даю согласие ООО “ВОСТОК ИМПОРТ ПРОМ” на обработку персональных данных в соответствии с Политикой обработки персональных данных и Согласием на обработку персональных данных.",
-  },
-  {
-    name: "marketing",
-    label: "Согласен получать информационные сообщения по моему запросу о партнёрстве.",
-  },
-];
-
-const partnerFields: LeadField[] = [
-  {
-    name: "name",
-    label: "Имя / ФИО",
-    required: true,
-    placeholder: "Как к вам обращаться",
-    autoComplete: "name",
-  },
-  {
-    name: "phone",
-    label: "Телефон",
-    type: "tel",
-    required: true,
-    placeholder: "+7 (___) ___-__-__",
-    autoComplete: "tel",
-  },
-  {
-    name: "email",
-    label: "Email",
-    type: "email",
-    required: true,
-    placeholder: "name@company.ru",
-    autoComplete: "email",
-  },
-  {
-    name: "city",
-    label: "Город / регион",
-    required: true,
-    placeholder: "Укажите регион работы",
-  },
-  {
-    name: "requestType",
-    label: "Направление",
-    type: "select",
-    required: true,
-    options: [
-      { value: "wholesale", label: "опт" },
-      { value: "regional", label: "регион" },
-      { value: "retail", label: "розница" },
-      { value: "franchise", label: "франчайзинг" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
-    name: "comment",
-    label: "Комментарий",
-    type: "textarea",
-    placeholder: "Опишите формат сотрудничества или задачу.",
-    halfWidth: false,
-  },
-];
-
-const careerFields: LeadField[] = [
-  { name: "name", label: "Имя / ФИО", required: true, placeholder: "Как к вам обращаться" },
-  { name: "phone", label: "Телефон", type: "tel", placeholder: "+7 (___) ___-__-__", autoComplete: "tel" },
-  { name: "email", label: "Email", type: "email", required: true, placeholder: "name@company.ru", autoComplete: "email" },
-  { name: "city", label: "Город", required: true, placeholder: "Город проживания" },
-  {
-    name: "comment",
-    label: "Комментарий",
-    type: "textarea",
-    placeholder: "Кратко расскажите о своём опыте и интересе к STILNO.",
-    halfWidth: false,
-  },
-];
-
-const careerCheckboxes: LeadCheckbox[] = [
-  {
-    name: "personalData",
-    required: true,
-    label:
-      "Даю согласие ООО “ВОСТОК ИМПОРТ ПРОМ” на обработку персональных данных в соответствии с Политикой обработки персональных данных и Согласием на обработку персональных данных.",
-  },
-];
-
 export function HomeTemplate() {
-  const homeFaq = faqItems.filter((item) => item.scope === "general" || item.scope === "products" || item.scope === "franchise");
+  const homeFaq = faqItems.filter((item) =>
+    ["products", "stores", "franchise", "responsible"].includes(item.scope),
+  );
 
   return (
     <>
       <StructuredData data={buildJsonLd()} />
-      <section className="border-b border-white/8 bg-[linear-gradient(180deg,#050505_0%,#101113_54%,#f4f3f1_54%,#f4f3f1_100%)]">
-        <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-20">
-          <div className="flex flex-col justify-center">
-            <p className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.45em] text-white/45">
-              <span className="h-px w-12 bg-white/24" />
-              Официальный сайт STILNO · 18+
-            </p>
-            <h1 className="mt-8 max-w-xl text-5xl font-semibold leading-[0.95] tracking-[-0.08em] text-white sm:text-7xl">
-              STILNO CLICK ONE
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-white/70">
-              Никотинсодержащая линия для совершеннолетних пользователей. Сайт содержит справочную информацию о продукте, партнёрстве и франчайзинге.
-            </p>
-            <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-5 text-sm leading-7 text-white/78">
-              10 мл · 850 мА·ч · Type-C · 10–22 Вт · 20 мг/см³ · до 15 000 затяжек*
-              <div className="mt-2 text-white/48">*Показатель зависит от режима использования.</div>
-            </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/products/stilno-click-one" analytics="home_product_open">
-                Смотреть продукт
-              </ButtonLink>
-              <ButtonLink href="/franchise" analytics="home_franchise_open" variant="secondary" tone="dark">
-                Стать партнёром
-              </ButtonLink>
-              <ButtonLink
-                href={documentLinks.franchisePresentation}
-                target="_blank"
-                analytics="home_presentation_open"
-                variant="secondary"
-                tone="dark"
-              >
-                Скачать презентацию для партнёров
-              </ButtonLink>
-            </div>
-          </div>
 
-          <div className="rounded-[2.4rem] border border-black/10 bg-[#ecebea] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-5">
-              <Image
-                src={featuredProduct.variants[0].image ?? featuredProduct.images[0]}
-                alt="STILNO CLICK ONE"
-                width={1600}
-                height={1600}
-                priority
-                loading="eager"
-                className="mx-auto w-full max-w-[42rem] object-contain"
-              />
-            </div>
-          </div>
+      <section className="border-b border-white/8 bg-black">
+        <div className="mx-auto max-w-[86rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <PageHero
+            contract={homeContent.hero}
+            tone="dark"
+            media={
+              <div className="rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,#111214,#1a1b1f)] p-5 shadow-[0_34px_90px_rgba(0,0,0,0.28)]">
+                <div className="rounded-[2rem] border border-black/10 bg-[#ecebea] p-5">
+                  <div className="rounded-[1.7rem] border border-black/10 bg-white p-5">
+                    <Image
+                      src={featuredProduct.variants[0].image ?? featuredProduct.images[0]}
+                      alt="STILNO CLICK ONE"
+                      width={1600}
+                      height={1600}
+                      priority
+                      loading="eager"
+                      className="mx-auto w-full max-w-[36rem] object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+          />
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr]">
-            <div>
-              <SectionHeading
-                eyebrow="Продукт"
-                title="Подтверждённая линия STILNO CLICK ONE без каталожного шума и спорных заявлений."
-                body="Сайт показывает только ту продуктовую информацию, которая подтверждена текущими упаковочными материалами и документами бренда."
-                tone="light"
-              />
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {launchMetrics.map((metric) => (
-                  <MetricCard key={metric.label} value={metric.value} label={metric.label} note={metric.note} />
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-10 xl:grid-cols-[0.82fr_1.18fr]">
+            <SectionIntro contract={homeContent.productSection} />
+            <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
+              <div className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+                <ProductPhotoCard
+                  src={featuredProduct.images[0]}
+                  alt={featuredProduct.title}
+                  className="bg-[linear-gradient(180deg,#f4f4f3,#e5e6e9)]"
+                />
+                <div>
+                  <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.02] p-5">
+                    <p className="text-xs uppercase tracking-[0.34em] text-black/36">Ключевые параметры</p>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      {launchMetrics.map((metric) => (
+                        <div
+                          key={metric.label}
+                          className="rounded-[1.15rem] border border-black/8 bg-white p-4"
+                        >
+                          <p className="text-base font-semibold leading-6 text-black">{metric.value}</p>
+                          <p className="mt-1 text-sm text-black/58">{metric.label}</p>
+                          <p className="mt-3 text-sm leading-6 text-black/50">{metric.note}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {qualityStandards.map((item) => (
+                  <article key={item.title} className="rounded-[1.6rem] border border-black/10 bg-[#f5f5f4] p-5">
+                    <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-black/60">{item.body}</p>
+                  </article>
                 ))}
               </div>
-            </div>
-            <div className="grid gap-5">
-              <article className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-                <ProductPhotoCard src={featuredProduct.images[0]} alt={featuredProduct.title} />
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {homeSignals.map((signal) => (
-                    <span key={signal} className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
-                      {signal}
-                    </span>
-                  ))}
-                </div>
-                <h3 className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-black">{featuredProduct.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-black/64">{featuredProduct.longDescription}</p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <ButtonLink href="/products/stilno-click-one" analytics="home_product_detail" variant="secondary" tone="light">
-                    Смотреть продукт
-                  </ButtonLink>
-                  <ButtonLink
-                    href={documentLinks.deviceAndPackage}
-                    target="_blank"
-                    analytics="home_packaging_pdf"
-                    variant="secondary"
-                    tone="light"
-                  >
-                    Скачать презентацию для партнёров
-                  </ButtonLink>
-                </div>
-              </article>
             </div>
           </div>
         </div>
       </section>
 
       <section className="border-y border-white/8 bg-black">
-        <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr]">
-            <SectionHeading
-              eyebrow="Партнёрам"
-              title="Отдельный сценарий для опта, регионального сотрудничества и франчайзинга."
-              body="STILNO не обещает доходность и не заменяет переговоры витринными цифрами. Сайт помогает быстро понять формат сотрудничества и отправить корректный запрос."
-              tone="dark"
-            />
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr]">
+            <SectionIntro contract={homeContent.partnersSection} tone="dark" />
+            <div className="rounded-[2.2rem] border border-white/10 bg-white/[0.03] p-6">
               <SvgAsset
                 src="/stilno/redesign/partner-support-system.svg"
                 alt="Система поддержки партнёра STILNO"
@@ -778,48 +656,32 @@ export function HomeTemplate() {
               />
             </div>
           </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
             {partnershipScenarios.map((scenario) => (
-              <article key={scenario.title} className="rounded-[1.8rem] border border-white/8 bg-white/[0.03] p-6">
-                <p className="text-[1.45rem] font-semibold tracking-[-0.05em] text-white">{scenario.title}</p>
+              <article key={scenario.title} className="rounded-[1.7rem] border border-white/8 bg-white/[0.03] p-5">
+                <h3 className="text-[1.35rem] font-semibold tracking-[-0.04em] text-white">{scenario.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-white/60">{scenario.body}</p>
               </article>
             ))}
-          </div>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/partners" analytics="home_partners_page" variant="secondary" tone="dark">
-              Партнёрам STILNO
-            </ButtonLink>
-            <ButtonLink href="/franchise" analytics="home_franchise_page" variant="secondary" tone="dark">
-              Франчайзинг STILNO
-            </ButtonLink>
           </div>
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.84fr_1.16fr]">
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-10 xl:grid-cols-[0.88fr_1.12fr] xl:items-center">
             <div>
-              <SectionHeading
-                eyebrow="Где купить"
-                title="Розничная карта публикуется после подтверждения городов и партнёрских точек."
-                body="До публикации списка можно отправить запрос по вашему городу, уточнить наличие или обсудить партнёрский запуск."
-                tone="light"
-              />
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <ButtonLink href="/stores#stores-request" analytics="home_stores_request" variant="secondary" tone="light">
-                  Оставить запрос
-                </ButtonLink>
-                <ButtonLink href="/franchise" analytics="home_stores_partner" variant="secondary" tone="light">
-                  Стать партнёром
-                </ButtonLink>
+              <SectionIntro contract={homeContent.storesSection} />
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                {storesContent.statusCards.map((card) => (
+                  <StatCard key={card.value} value={card.value} label={card.label} note={card.note} />
+                ))}
               </div>
             </div>
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+            <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
               <SvgAsset
                 src="/stilno/redesign/stores-coverage-empty.svg"
-                alt="Статус покрытия STILNO"
+                alt="Статус публикации розничной карты STILNO"
                 className="w-full rounded-[1.4rem] border border-black/8"
               />
             </div>
@@ -828,68 +690,59 @@ export function HomeTemplate() {
       </section>
 
       <section className="border-y border-white/8 bg-black">
-        <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr]">
-            <SectionHeading
-              eyebrow="Ответственное потребление"
-              title="Сайт отделяет продуктовую информацию от правовых ограничений и не маскирует предупреждения рекламным текстом."
-              body="Информация о STILNO CLICK ONE адресована совершеннолетним пользователям и не заменяет инструкцию к продукту."
-              tone="dark"
-            />
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-10 xl:grid-cols-[0.84fr_1.16fr] xl:items-start">
+            <SectionIntro contract={homeContent.responsibleSection} tone="dark" />
             <div className="grid gap-4">
-              {responsibilityNotes.map((item) => (
-                <div key={item} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] px-5 py-4 text-sm leading-6 text-white/70">
-                  {item}
-                </div>
-              ))}
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+                <SvgAsset
+                  src="/stilno/redesign/legal-18-footer-strip.svg"
+                  alt="18+ и правовые предупреждения STILNO"
+                  className="w-full rounded-[1.4rem] border border-white/8 bg-white/[0.02]"
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {responsibilityNotes.map((item) => (
+                  <article key={item} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
+                    <p className="text-sm leading-6 text-white/66">{item}</p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[76rem] px-5 py-20 sm:px-6 lg:px-10">
-          <SectionHeading
-            eyebrow="FAQ"
-            title="Частые вопросы о продукте, розничных запросах и партнёрстве."
-            body="Краткие ответы на базовые вопросы, которые должен закрывать официальный сайт STILNO."
-            tone="light"
-          />
-          <div className="mt-10">
-            <FaqAccordion items={homeFaq} />
-          </div>
-        </div>
-      </section>
-
-      <section id="forms" className="border-y border-white/8 bg-black">
-        <div className="mx-auto max-w-[90rem] px-5 py-20 sm:px-6 lg:px-10">
-          <SectionHeading
-            eyebrow="Форма заявки"
-            title="Основные обращения принимаются через сайт: розничный запрос и заявка на партнёрство."
-            body="Формы разделены по сценариям и не смешивают розничный запрос с партнёрским запуском."
-            tone="dark"
-          />
-          <div className="mt-10 grid gap-5 xl:grid-cols-2">
-            <LeadForm
-              type="retail"
-              title="Розничный запрос"
-              description="Запрос о наличии в городе, розничной точке или партнёрском контакте."
-              submitLabel="Отправить запрос"
-              successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
-              fields={retailFields}
-              checkboxes={retailCheckboxes}
-              disclaimer="Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
-            />
-            <LeadForm
-              type="franchise"
-              title="Заявка на франчайзинг"
-              description="Форма для франчайзинга, опта и партнёрского запуска в регионе."
-              submitLabel="Отправить заявку"
-              successMessage="Заявка отправлена. Мы свяжемся с вами по указанным контактам. Обращаем внимание: условия партнёрства обсуждаются индивидуально и не являются публичной офертой."
-              fields={franchiseFields}
-              checkboxes={franchiseCheckboxes}
-              disclaimer="Информация на сайте носит справочный характер. Условия партнёрства обсуждаются индивидуально."
-            />
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-10 xl:grid-cols-[0.94fr_1.06fr]">
+            <div>
+              <SectionIntro contract={homeContent.faqSection} />
+              <div className="mt-8">
+                <FaqAccordion items={homeFaq} />
+              </div>
+            </div>
+            <div className="grid gap-5">
+              <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
+                <p className="text-xs uppercase tracking-[0.34em] text-white/36">Форма заявки</p>
+                <h3 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
+                  Основной партнёрский контакт через сайт.
+                </h3>
+                <p className="mt-4 text-sm leading-6 text-white/66">
+                  Для розничного запроса используйте страницу «Где купить». Для B2B-обращений и запуска под
+                  брендом используйте форму ниже.
+                </p>
+              </div>
+              <LeadForm type="partner" schema={formSchemas.partnerBase} />
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <ButtonLink href="/stores#stores-request" variant="secondary" tone="light" analytics="home_retail_page">
+                  Розничный запрос
+                </ButtonLink>
+                <ButtonLink href="/franchise#franchise-form" variant="secondary" tone="light" analytics="home_franchise_form">
+                  Заявка на франчайзинг
+                </ButtonLink>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -900,73 +753,55 @@ export function HomeTemplate() {
 function StoresIndexTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <PageHero
+          contract={storesContent.hero}
+          media={
+            <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
+              <SvgAsset
+                src="/stilno/redesign/stores-empty-illustration.svg"
+                alt="Статус розничной карты STILNO"
+                className="w-full"
+              />
+            </div>
+          }
+        />
+
+        <div className="mt-16 grid gap-8 xl:grid-cols-[1.02fr_0.98fr]">
           <div>
-            <h1 className="text-5xl font-semibold tracking-[-0.06em] text-black sm:text-6xl">
-              Где купить STILNO
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-black/66">
-              Розничная карта STILNO будет опубликована после подтверждения городов и партнёрских точек. До публикации списка вы можете оставить запрос по вашему городу или обсудить партнёрский запуск.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="#stores-request" analytics="stores_request_anchor" variant="secondary" tone="light">
-                Оставить запрос
-              </ButtonLink>
-              <ButtonLink href="/franchise" analytics="stores_franchise_open" variant="secondary" tone="light">
-                Стать партнёром
-              </ButtonLink>
+            <SectionIntro contract={storesContent.statusSection} />
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {storesContent.statusCards.map((card) => (
+                <StatCard key={card.value} value={card.value} label={card.label} note={card.note} />
+              ))}
             </div>
           </div>
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+          <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
             <SvgAsset
-              src="/stilno/redesign/stores-empty-illustration.svg"
-              alt="Иллюстрация пустой розничной карты STILNO"
-              className="w-full"
+              src="/stilno/redesign/stores-city-list-template.svg"
+              alt="Шаблон статуса покрытия STILNO"
+              className="w-full rounded-[1.4rem] border border-black/8"
             />
           </div>
         </div>
 
-        <div className="mt-16 grid gap-10 lg:grid-cols-[0.84fr_1.16fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Статус"
-              title="Текущий статус покрытия"
-              body="Мы не публикуем неподтверждённые адреса. Если вы хотите уточнить наличие в городе или предложить партнёрский запуск, отправьте запрос через форму."
-              tone="light"
-            />
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <MetricCard value="Розничные точки" label="список готовится к публикации" note="Публикация происходит только после подтверждения." />
-            <MetricCard value="Города" label="публикуются только после подтверждения" note="Сайт не показывает неподтверждённые локации." />
-            <MetricCard value="Запросы" label="город · розница · опт · партнёрство" note="Все обращения маршрутизируются через единую форму." />
-          </div>
-        </div>
-
-        <div id="stores-request" className="mt-16 grid gap-6 lg:grid-cols-[1.04fr_0.96fr]">
-          <LeadForm
-            type="retail"
-            title="Оставить розничный запрос"
-            description="Уточните наличие в городе, розничную точку или оставьте запрос на партнёрский запуск."
-            submitLabel="Отправить запрос"
-            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
-            fields={retailFields}
-            checkboxes={retailCheckboxes}
-            disclaimer="Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции. Информация предназначена для лиц старше 18 лет."
-          />
+        <div id="stores-request" className="mt-16 grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
+          <LeadForm type="retail" schema={formSchemas.retailBase} />
           <div className="grid gap-4">
             <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.35em] text-black/38">Розничные запросы</p>
-              <p className="mt-4 text-sm leading-7 text-black/65">
-                Эта страница не заменяет карту подтверждённых точек. Она помогает собрать корректный запрос по городу и не вводит посетителя в заблуждение фейковыми адресами.
-              </p>
+              <p className="text-xs uppercase tracking-[0.34em] text-black/36">{storesContent.supportTitle}</p>
+              <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.supportBody}</p>
             </div>
             <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_14px_40px_rgba(10,10,10,0.12)]">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Дисклеймер</p>
-              <p className="mt-4 text-sm leading-7 text-white/72">
-                Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции. Информация предназначена для лиц старше 18 лет.
-              </p>
+              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Дисклеймер</p>
+              <p className="mt-4 text-sm leading-7 text-white/70">{storesContent.disclaimer}</p>
+              <div className="mt-6">
+                <ButtonLink href="/franchise" variant="secondary" tone="dark" analytics="stores_partner_redirect">
+                  Стать партнёром
+                </ButtonLink>
+              </div>
             </div>
           </div>
         </div>
@@ -983,23 +818,23 @@ function CityTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading
-          eyebrow="Город"
-          title={`${city.name}`}
-          body="Страница города публикуется только после подтверждения розничных точек и контактных данных."
-          tone="light"
+        <PageHero
+          contract={{
+            eyebrow: "Город",
+            title: city.name,
+            body: "Страница города публикуется только после подтверждения розничных точек и контактных данных.",
+            actions: [{ label: "Оставить запрос", href: "/stores#stores-request", variant: "primary" }],
+          }}
+          compact
         />
-        <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-          <p className="text-sm leading-7 text-black/65">
-            Данные по городу временно недоступны. Для уточнения наличия или розничного запуска используйте форму на странице «Где купить».
+        <div className="mt-8 rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+          <p className="text-base leading-7 text-black/64">
+            Данные по городу временно недоступны. Для уточнения наличия или розничного запуска используйте форму на
+            странице «Где купить».
           </p>
-          <div className="mt-6">
-            <ButtonLink href="/stores#stores-request" analytics="city_request_back" variant="secondary" tone="light">
-              Оставить запрос
-            </ButtonLink>
-          </div>
         </div>
       </div>
     </section>
@@ -1014,34 +849,22 @@ function StoreTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading
-          eyebrow="Точка"
-          title={store.title}
-          body="Карточка точки публикуется только после подтверждения адреса, графика и контактных данных."
-          tone="light"
+        <PageHero
+          contract={{
+            eyebrow: "Точка",
+            title: store.title,
+            body: "Карточка точки публикуется только после подтверждения адреса, графика и контактных данных.",
+          }}
+          compact
         />
-        <div className="mt-10 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-            <RichText
-              paragraphs={[
-                store.address,
-                store.hours,
-                store.phone,
-              ]}
-            />
+        <div className="mt-10 grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <RichText paragraphs={[store.address, store.hours, store.phone]} />
           </div>
-          <LeadForm
-            type="retail"
-            title="Запрос по розничной точке"
-            description="Используйте форму для уточнения наличия, подтверждения статуса точки или партнёрского запроса."
-            submitLabel="Отправить запрос"
-            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
-            fields={retailFields}
-            checkboxes={retailCheckboxes}
-            disclaimer="Информация предназначена для лиц старше 18 лет."
-          />
+          <LeadForm type="retail" schema={formSchemas.retailBase} />
         </div>
       </div>
     </section>
@@ -1051,22 +874,25 @@ function StoreTemplate(page: ResolvedPage) {
 function AboutTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-16 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-10">
-        <div>
-          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading
-            eyebrow="О бренде"
-            title="STILNO — официальный сайт бренда с продуктовой, партнёрской и франчайзинговой логикой."
-            body={page.description}
-            tone="light"
-          />
-          <div className="mt-8 rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
+        <BreadcrumbTrail pathname={page.pathname} title={page.title} />
+        <PageHero
+          contract={{
+            eyebrow: "О бренде",
+            title: "STILNO",
+            body: page.description,
+          }}
+          compact
+        />
+        <div className="mt-10 grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
             <RichText paragraphs={brandNarrative} />
           </div>
-        </div>
-        <div className="grid gap-5">
-          <ProductPhotoCard src="/stilno/products/barbaris.jpg" alt="STILNO CLICK ONE" />
-          <ProductPhotoCard src="/stilno/products/fruktoviy-chay.jpg" alt="Упаковка STILNO CLICK ONE" />
+          <div className="grid gap-5">
+            <ProductPhotoCard src="/stilno/products/barbaris.jpg" alt="STILNO CLICK ONE" />
+            <ProductPhotoCard src="/stilno/products/fruktoviy-chay.jpg" alt="Упаковка STILNO CLICK ONE" />
+          </div>
         </div>
       </div>
     </section>
@@ -1083,15 +909,18 @@ function GalleryTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading
-          eyebrow="Галерея"
-          title="Редакционная подборка: устройство, упаковка, технические плоскости и крупные планы."
-          body={page.description}
-          tone="light"
+        <PageHero
+          contract={{
+            eyebrow: "Галерея",
+            title: "Editorial-галерея STILNO CLICK ONE",
+            body: page.description,
+          }}
+          compact
         />
-        <div className="mt-10 grid gap-10">
+        <div className="mt-12 grid gap-12">
           {galleryGroups.map(([type, label]) => {
             const items = galleryItems.filter((item) => item.type === type);
             if (!items.length) {
@@ -1100,18 +929,16 @@ function GalleryTemplate(page: ResolvedPage) {
 
             return (
               <section key={type}>
-                <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-black/38">
-                  <span className="h-px w-10 bg-black/18" />
+                <div className="mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.38em] text-black/36">
+                  <span className="h-px w-12 bg-black/18" />
                   <span>{label}</span>
                 </div>
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {items.map((item) => (
-                    <article key={item.id} className="grid gap-3 rounded-[2rem] border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                      <ProductPhotoCard src={item.media ?? "/stilno/products/ananas-mango.jpg"} alt={item.alt} aspect="square" />
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.35em] text-black/38">{label}</p>
-                        <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
-                      </div>
+                    <article key={item.id} className="rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+                      <ProductPhotoCard src={item.media ?? featuredProduct.images[0]} alt={item.alt} aspect="square" />
+                      <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
                     </article>
                   ))}
                 </div>
@@ -1128,23 +955,21 @@ function ProductCard({ product }: { product: Product }) {
   const category = productCategories.find((item) => item.id === product.categoryId);
 
   return (
-    <article className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.06)]">
+    <article className="rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
       <ProductPhotoCard src={product.images[0]} alt={product.title} />
-      <div className="flex items-center justify-between gap-4">
-        <span className="text-xs uppercase tracking-[0.35em] text-black/40">
-          {category?.title ?? "Продукт"}
-        </span>
-        <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.25em] text-black/55">
+      <div className="mt-5 flex items-center justify-between gap-4">
+        <span className="text-xs uppercase tracking-[0.34em] text-black/36">{category?.title ?? "Продукт"}</span>
+        <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/54">
           {product.highlight}
         </span>
       </div>
-      <div>
-        <h3 className="text-3xl font-semibold tracking-[-0.04em] text-black">{product.title}</h3>
-        <p className="mt-3 text-sm leading-6 text-black/62">{product.shortDescription}</p>
+      <h3 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-black">{product.title}</h3>
+      <p className="mt-3 text-sm leading-6 text-black/62">{product.shortDescription}</p>
+      <div className="mt-5">
+        <ButtonLink href={getProductPath(product)} variant="secondary" tone="light" analytics="product_card_open">
+          Смотреть продукт
+        </ButtonLink>
       </div>
-      <ButtonLink href={getProductPath(product)} variant="secondary" tone="light" analytics="product_card_open">
-        Смотреть продукт
-      </ButtonLink>
     </article>
   );
 }
@@ -1152,35 +977,40 @@ function ProductCard({ product }: { product: Product }) {
 function ProductsIndexTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading
-          eyebrow="Продукт"
-          title="Линейка STILNO строится вокруг подтверждённого продукта STILNO CLICK ONE."
-          body={page.description}
-          tone="light"
+        <PageHero
+          contract={{
+            eyebrow: "Продукт",
+            title: "Текущая линейка STILNO",
+            body: page.description,
+          }}
+          compact
         />
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {productCategories.map((category) => (
-            <article key={category.id} className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-              <ProductPhotoCard src={category.heroImage ?? featuredProduct.images[0]} alt={category.title} />
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs uppercase tracking-[0.35em] text-black/38">{category.status}</span>
-                <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/55">
-                  {getCategoryProducts(category.id).length}
-                </span>
-              </div>
-              <p className="text-sm leading-6 text-black/62">{category.shortDescription}</p>
-              <ButtonLink href={getProductCategoryPath(category)} variant="secondary" tone="light" analytics="products_category_open">
-                Смотреть категорию
-              </ButtonLink>
-            </article>
-          ))}
-        </div>
-        <div className="mt-10 grid gap-5 lg:grid-cols-2">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+          <ProductCard product={featuredProduct} />
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <p className="text-xs uppercase tracking-[0.34em] text-black/36">Категория</p>
+            <div className="mt-5 grid gap-4">
+              {productCategories.map((category) => (
+                <article key={category.id} className="rounded-[1.6rem] border border-black/10 bg-[#f5f5f4] p-5">
+                  <h3 className="text-2xl font-semibold tracking-[-0.03em] text-black">{category.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-black/60">{category.shortDescription}</p>
+                  <div className="mt-4">
+                    <ButtonLink
+                      href={getProductCategoryPath(category)}
+                      variant="secondary"
+                      tone="light"
+                      analytics="products_category_open"
+                    >
+                      Смотреть категорию
+                    </ButtonLink>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1195,17 +1025,19 @@ function ProductCategoryTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-8 lg:grid-cols-[0.86fr_1.14fr]">
-          <div>
-            <SectionHeading eyebrow="Категория" title={category.heroTitle} body={category.heroBody} tone="light" />
-            <div className="mt-6 rounded-[1.7rem] border border-black/10 bg-white p-5 text-sm leading-6 text-black/62 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              {category.disclaimer}
-            </div>
-          </div>
-          <ProductPhotoCard src={category.heroImage ?? featuredProduct.images[0]} alt={category.title} />
-        </div>
+        <PageHero
+          contract={{
+            eyebrow: "Категория",
+            title: category.heroTitle,
+            body: category.heroBody,
+            note: category.disclaimer,
+          }}
+          media={<ProductPhotoCard src={category.heroImage ?? featuredProduct.images[0]} alt={category.title} />}
+          compact
+        />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {(page.products ?? []).map((product) => (
             <ProductCard key={product.id} product={product} />
@@ -1226,99 +1058,102 @@ function ProductTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <StructuredData data={buildJsonLd(page)} />
+        <PageHero contract={productPageContent.hero} compact />
 
-        <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Продукт"
-              title="STILNO CLICK ONE"
-              body="STILNO CLICK ONE — никотинсодержащая продуктовая линия для совершеннолетних пользователей. Характеристики указаны по подтверждённым упаковочным материалам. Показатель количества затяжек зависит от режима использования."
-              tone="light"
-            />
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
-                18+
-              </span>
-              <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
-                до 15 000 затяжек*
-              </span>
-              <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-black/55">
-                Type-C
-              </span>
-            </div>
-            <div className="mt-8 rounded-[1.8rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <RichText paragraphs={[product.longDescription, "Перезаряжаемое устройство STILNO CLICK ONE. Точная формулировка формата должна быть сверена с упаковкой и документацией перед релизом."]} />
-              <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href="/stores#stores-request" variant="secondary" tone="light" analytics="product_retail_request">
-                  Оставить розничный запрос
-                </ButtonLink>
-                <ButtonLink href="/partners" variant="secondary" tone="light" analytics="product_partner_request">
-                  Запросить партнёрство
-                </ButtonLink>
-                <ButtonLink
-                  href={documentLinks.franchisePresentation}
-                  target="_blank"
-                  variant="secondary"
-                  tone="light"
-                  analytics="product_presentation_download"
-                >
-                  Скачать презентацию для партнёров
-                </ButtonLink>
-              </div>
-            </div>
-          </div>
-
+        <div className="mt-10">
           <Suspense fallback={<VariantPickerFallback product={product} />}>
             <VariantPicker product={product} />
           </Suspense>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Характеристики</p>
-            <div className="mt-5 grid gap-3">
-              {product.specs.map((spec) => (
-                <div key={spec.label} className="flex items-center justify-between gap-4 rounded-[1.4rem] border border-black/8 bg-black/[0.03] px-4 py-4">
-                  <span className="text-sm text-black/54">{spec.label}</span>
-                  <span className="text-sm font-medium text-right text-black">{spec.value}</span>
-                </div>
-              ))}
+        <div className="mt-12 grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+          <div>
+            <SectionIntro contract={productPageContent.detailSection} />
+            <div className="mt-6 rounded-[2rem] border border-black/10 bg-[#f1f2f1] p-5">
+              <SpecsList product={product} />
             </div>
           </div>
-          <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Предупреждения 18+</p>
-            <div className="mt-5 grid gap-4">
-              {product.warnings.map((warning) => (
-                <div key={warning} className="rounded-[1.4rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm leading-6 text-white">
-                  {warning}
-                </div>
-              ))}
-              {product.facts.map((fact) => (
-                <div key={fact} className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/68">
-                  {fact}
-                </div>
-              ))}
+          <div className="grid gap-5">
+            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
+              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Предупреждения 18+</p>
+              <div className="mt-5 grid gap-3">
+                {product.warnings.map((warning) => (
+                  <div key={warning} className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm leading-6 text-white/82">
+                    {warning}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Факты и маркировка</p>
+              <div className="mt-5 grid gap-3">
+                {product.facts.map((fact) => (
+                  <div key={fact} className="rounded-[1.35rem] border border-black/10 bg-[#f5f5f4] px-4 py-4 text-sm leading-6 text-black/64">
+                    {fact}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">Упаковка и вкусовые варианты</p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              {product.variants.slice(0, 4).map((variant) => (
-                <ProductPhotoCard key={variant.id} src={variant.packaging ?? variant.image ?? product.images[0]} alt={`${product.title} — ${variant.title}`} aspect="square" />
-              ))}
-            </div>
+        <div className="mt-12">
+          <SectionIntro contract={productPageContent.packagingSection} />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            {product.variants.map((variant) => (
+              <article key={variant.id} className="rounded-[1.7rem] border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+                <ProductPhotoCard
+                  src={variant.packaging ?? variant.image ?? product.images[0]}
+                  alt={`${product.title} — ${variant.title}`}
+                  aspect="square"
+                  className="min-h-[13rem]"
+                />
+                <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-black">{variant.title}</h3>
+                <p className="mt-2 text-sm text-black/52">{variant.nicotineStrength}</p>
+              </article>
+            ))}
           </div>
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-black/38">FAQ</p>
-            <div className="mt-5">
-              <FaqAccordion items={productFaq} />
-            </div>
+        </div>
+
+        <div className="mt-12 rounded-[2.2rem] border border-white/10 bg-black p-6 text-white">
+          <p className="text-xs uppercase tracking-[0.34em] text-white/36">Дальнейшие действия</p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">Розничный запрос, партнёрство и материалы.</h2>
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-white/66">
+            Сайт не продаёт продукт дистанционно. Дальнейшие действия по наличию, B2B-контакту и партнёрству проходят
+            через отдельные формы и документы.
+          </p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <ButtonLink href="/stores#stores-request" tone="dark" analytics="product_retail_request">
+              Оставить розничный запрос
+            </ButtonLink>
+            <ButtonLink href="/partners" tone="dark" variant="secondary" analytics="product_partner_request">
+              Запросить партнёрство
+            </ButtonLink>
+            <ButtonLink
+              href={documentLinks.franchisePresentation}
+              target="_blank"
+              tone="dark"
+              variant="secondary"
+              analytics="product_presentation_download"
+            >
+              Скачать презентацию для партнёров
+            </ButtonLink>
+          </div>
+        </div>
+
+        <div className="mt-12">
+          <SectionIntro
+            contract={{
+              eyebrow: "FAQ",
+              title: "Короткие ответы по продукту и правовым ограничениям.",
+              body: "Базовые вопросы о характеристиках, предупреждениях и продуктовой логике STILNO CLICK ONE.",
+            }}
+          />
+          <div className="mt-8">
+            <FaqAccordion items={productFaq} />
           </div>
         </div>
       </div>
@@ -1329,57 +1164,74 @@ function ProductTemplate(page: ResolvedPage) {
 function PartnersTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Партнёрам"
-              title="Партнёрам STILNO"
-              body="Оптовые, региональные и партнёрские запросы по бренду STILNO принимаются через форму сайта. Условия обсуждаются индивидуально."
-              tone="light"
-            />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {[
-                { title: "Опт", body: "Запросы по оптовым поставкам и B2B-взаимодействию." },
-                { title: "Регион", body: "Работа по конкретному городу или региону после первичного контакта." },
-                { title: "Розница", body: "Подключение действующей точки или обсуждение формата присутствия." },
-                { title: "Франчайзинг", body: "Отдельный сценарий запуска под брендом STILNO." },
-              ].map((item) => (
-                <article key={item.title} className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                  <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-black/62">{item.body}</p>
-                </article>
+        <PageHero
+          contract={{
+            ...partnersPageContent.hero,
+            actions: [
+              { label: "Оставить запрос", href: "#partner-form", variant: "primary" },
+              { label: "Франчайзинг STILNO", href: "/franchise", variant: "secondary" },
+            ],
+          }}
+          compact
+        />
+
+        <div className="mt-12">
+          <SectionIntro contract={partnersPageContent.directionsSection} />
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {partnersPageContent.directions.map((item) => (
+              <article key={item.title} className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+                <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-black/62">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-12 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-[2rem] border border-white/10 bg-black p-6 text-white">
+            <SectionIntro contract={partnersPageContent.contactFlowSection} tone="dark" />
+            <div className="mt-8 grid gap-3">
+              {partnersPageContent.contactFlow.map((step) => (
+                <div key={step} className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm leading-6 text-white/74">
+                  {step}
+                </div>
               ))}
             </div>
-            <div className="mt-8 rounded-[2rem] border border-black/10 bg-black p-6 text-white">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Как проходит контакт</p>
-              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
-                <p>1. Вы оставляете запрос через форму сайта.</p>
-                <p>2. Менеджер STILNO связывается по указанным контактам.</p>
-                <p>3. Уточняется формат: опт, регион, розница или франчайзинг.</p>
-                <p>4. Следующий этап обсуждается индивидуально.</p>
+          </div>
+          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <SvgAsset
+              src="/stilno/redesign/partner-support-system.svg"
+              alt="Система поддержки партнёра STILNO"
+              className="w-full rounded-[1.4rem] border border-black/8"
+            />
+          </div>
+        </div>
+
+        <div id="partner-form" className="mt-12 grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
+          <LeadForm type="partner" schema={formSchemas.partnerBase} />
+          <div className="grid gap-4">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Что важно</p>
+              <p className="mt-4 text-sm leading-7 text-black/62">
+                Страница «Партнёрам» не обещает доходность и не дублирует франчайзинговый раздел. Она нужна для опта,
+                регионального B2B-контакта и действующей розницы.
+              </p>
+            </div>
+            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
+              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Нужен запуск под брендом?</p>
+              <p className="mt-4 text-sm leading-7 text-white/68">
+                Для запуска под брендом STILNO используйте отдельную страницу франчайзинга и соответствующую
+                заявку.
+              </p>
+              <div className="mt-6">
+                <ButtonLink href="/franchise" tone="dark" variant="secondary" analytics="partners_to_franchise">
+                  Открыть франчайзинг
+                </ButtonLink>
               </div>
             </div>
-          </div>
-          <div className="grid gap-5">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <SvgAsset
-                src="/stilno/redesign/partner-support-system.svg"
-                alt="Система поддержки партнёра STILNO"
-                className="w-full rounded-[1.4rem] border border-black/8"
-              />
-            </div>
-            <LeadForm
-              type="partner"
-              title="Партнёрский запрос"
-              description="Форма для оптовых, региональных и B2B-обращений по бренду STILNO."
-              submitLabel="Отправить запрос"
-              successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам для уточнения формата сотрудничества."
-              fields={partnerFields}
-              checkboxes={franchiseCheckboxes}
-              disclaimer="Информация на сайте носит справочный характер. Условия обсуждаются индивидуально."
-            />
           </div>
         </div>
       </div>
@@ -1391,33 +1243,47 @@ function ResponsibleTemplate(page: ResolvedPage) {
   const responsibleFaq = faqItems.filter((item) => item.scope === "responsible" || item.scope === "products");
 
   return (
-    <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
-        <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading
-            eyebrow="Ответственное потребление"
-            title="Информация о никотинсодержащей продукции публикуется с отдельными предупреждениями и возрастным ограничением 18+."
-            body={page.description}
-            tone="light"
-          />
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
-            <SvgAsset
-              src="/stilno/redesign/legal-18-footer-strip.svg"
-              alt="18+ и правовые предупреждения STILNO"
-              className="w-full rounded-[1.4rem] border border-black/8"
-            />
-          </div>
+    <section className="bg-black">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
+        <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+        <PageHero
+          contract={{
+            eyebrow: "Ответственное потребление",
+            title: "Правовые ограничения и продуктовая коммуникация STILNO",
+            body: page.description,
+          }}
+          tone="dark"
+          media={
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <SvgAsset
+                src="/stilno/redesign/legal-18-footer-strip.svg"
+                alt="18+ и правовые предупреждения STILNO"
+                className="w-full rounded-[1.4rem] border border-white/8 bg-white/[0.02]"
+              />
+            </div>
+          }
+          compact
+        />
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
+          {responsibilityNotes.map((item) => (
+            <article key={item} className="rounded-[1.7rem] border border-white/8 bg-white/[0.03] p-5">
+              <p className="text-sm leading-6 text-white/66">{item}</p>
+            </article>
+          ))}
         </div>
-        <div className="mt-10 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="grid gap-4">
-            {responsibilityNotes.map((item) => (
-              <div key={item} className="rounded-[1.6rem] border border-black/10 bg-white px-5 py-4 text-sm leading-6 text-black/64 shadow-[0_10px_36px_rgba(15,15,15,0.04)]">
-                {item}
-              </div>
-            ))}
+        <div className="mt-12">
+          <SectionIntro
+            contract={{
+              eyebrow: "FAQ",
+              title: "Частые вопросы по возрастным ограничениям и правовой подаче.",
+              body: "Блок собран отдельно от продуктового hero, чтобы предупреждения не терялись в визуальном слое.",
+            }}
+            tone="dark"
+          />
+          <div className="mt-8">
+            <FaqAccordion items={responsibleFaq} tone="dark" />
           </div>
-          <FaqAccordion items={responsibleFaq} />
         </div>
       </div>
     </section>
@@ -1428,125 +1294,154 @@ function FranchiseTemplate(page: ResolvedPage) {
   const franchiseFaq = faqItems.filter((item) => item.scope === "franchise" || item.scope === "stores");
 
   return (
-    <section className="bg-black">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
-        <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div>
-            <SectionHeading
-              eyebrow="Франчайзинг"
-              title="Франчайзинг STILNO"
-              body="Партнёрский запуск бренда STILNO в регионах. Условия обсуждаются индивидуально после заявки и не являются публичной офертой."
-              tone="dark"
-            />
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="#franchise-form" analytics="franchise_form_anchor">
-                Оставить заявку
-              </ButtonLink>
-              <ButtonLink
-                href={documentLinks.franchisePresentation}
-                target="_blank"
-                analytics="franchise_presentation_open"
-                variant="secondary"
-                tone="dark"
-              >
-                Скачать презентацию для партнёров
-              </ButtonLink>
-              <ButtonLink href="/contacts" analytics="franchise_question_open" variant="secondary" tone="dark">
-                Задать вопрос
-              </ButtonLink>
-            </div>
-          </div>
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
-            <SvgAsset
-              src="/stilno/redesign/franchise-process.svg"
-              alt="Этапы франчайзинга STILNO"
-              className="w-full rounded-[1.4rem] border border-white/8 bg-white"
-            />
-          </div>
+    <>
+      <section className="border-b border-white/8 bg-black">
+        <StructuredData data={buildJsonLd(page)} />
+        <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+          <PageHero
+            contract={franchiseContent.hero}
+            tone="dark"
+            media={
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+                <SvgAsset
+                  src="/stilno/redesign/partner-support-system.svg"
+                  alt="Система поддержки партнёра STILNO"
+                  className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+                />
+              </div>
+            }
+            compact
+          />
         </div>
+      </section>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
-            <p className="text-xs uppercase tracking-[0.35em] text-white/38">Что получает партнёр</p>
-            <div className="mt-5 grid gap-4">
-              <SvgAsset
-                src="/stilno/redesign/partner-support-system.svg"
-                alt="Система поддержки партнёра STILNO"
-                className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+      <section className="bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+            <div>
+              <SectionIntro
+                contract={{
+                  eyebrow: "Процесс",
+                  title: "Как проходит запуск",
+                  body: "Заявка проходит последовательный порядок: контакт, обсуждение региона, согласование формата, документы и подготовка запуска.",
+                }}
               />
-              <div className="grid gap-3 sm:grid-cols-2">
-                {[
-                  "брендовые материалы",
-                  "продуктовая база",
-                  "запуск",
-                  "документы",
-                  "контакт с менеджером",
-                  "18+ дисциплина",
-                ].map((item) => (
-                  <div key={item} className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/70">
+              <div className="mt-8 grid gap-3">
+                {franchiseContent.processItems.map((item) => (
+                  <div key={item} className="rounded-[1.35rem] border border-black/10 bg-white px-4 py-4 text-sm leading-6 text-black/64">
                     {item}
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-          <div className="grid gap-4">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Кому подходит</p>
-              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
-                <p>• предпринимателям с опытом в рознице;</p>
-                <p>• владельцам действующих точек в смежных категориях;</p>
-                <p>• региональным партнёрам;</p>
-                <p>• оптовым компаниям;</p>
-                <p>• предпринимателям, готовым соблюдать правила категории 18+.</p>
-              </div>
-            </div>
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Что важно</p>
-              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
-                {franchisePillars.map((pillar) => (
-                  <p key={pillar}>{pillar}</p>
-                ))}
-              </div>
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+              <SvgAsset
+                src="/stilno/redesign/franchise-process.svg"
+                alt="Этапы запуска партнёра STILNO"
+                className="w-full rounded-[1.4rem] border border-black/8"
+              />
             </div>
           </div>
         </div>
+      </section>
 
-        <div id="franchise-form" className="mt-14 grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
-          <LeadForm
-            type="franchise"
-            title="Заявка на франчайзинг"
-            description="Укажите город, формат и стадию проекта. Условия обсуждаются индивидуально после заявки."
-            submitLabel="Отправить заявку"
-            successMessage="Заявка отправлена. Мы свяжемся с вами по указанным контактам. Обращаем внимание: условия партнёрства обсуждаются индивидуально и не являются публичной офертой."
-            fields={franchiseFields}
-            checkboxes={franchiseCheckboxes}
-            disclaimer="Информация на сайте носит справочный характер. Условия партнёрства и франчайзинга обсуждаются индивидуально."
-          />
-          <div className="grid gap-5">
+      <section className="border-y border-white/8 bg-black">
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
             <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Этапы запуска</p>
-              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/72">
-                {[
-                  "1. Заявка.",
-                  "2. Первичный контакт.",
-                  "3. Обсуждение города.",
-                  "4. Выбор формата.",
-                  "5. Согласование условий.",
-                  "6. Договор.",
-                  "7. Подготовка запуска.",
-                  "8. Старт работы.",
-                ].map((item) => (
-                  <p key={item}>{item}</p>
-                ))}
+              <SectionIntro contract={franchiseContent.supportSection} tone="dark" />
+              <div className="mt-8 grid gap-4">
+                <SvgAsset
+                  src="/stilno/redesign/partner-support-system.svg"
+                  alt="Что получает партнёр STILNO"
+                  className="w-full rounded-[1.4rem] border border-white/8 bg-white"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {[
+                    "брендовые материалы",
+                    "продуктовая база",
+                    "запуск",
+                    "документы",
+                    "контакт с менеджером",
+                    "18+ дисциплина",
+                  ].map((item) => (
+                    <div key={item} className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/70">
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <FaqAccordion items={franchiseFaq} />
+            <div className="grid gap-5">
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+                <SectionIntro contract={franchiseContent.audienceSection} tone="dark" />
+                <div className="mt-6 grid gap-3">
+                  {franchiseContent.audienceItems.map((item) => (
+                    <div key={item} className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/70">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+                <p className="text-xs uppercase tracking-[0.34em] text-white/36">Документы и материалы</p>
+                <div className="mt-5 grid gap-3">
+                  <ButtonLink
+                    href={documentLinks.franchisePresentation}
+                    target="_blank"
+                    tone="dark"
+                    variant="secondary"
+                    analytics="franchise_download_presentation"
+                  >
+                    Скачать презентацию для партнёров
+                  </ButtonLink>
+                  <ButtonLink
+                    href={documentLinks.deviceAndPackage}
+                    target="_blank"
+                    tone="dark"
+                    variant="secondary"
+                    analytics="franchise_download_product_pack"
+                  >
+                    Скачать материалы по продукту
+                  </ButtonLink>
+                </div>
+                <div className="mt-5 text-sm leading-6 text-white/62">
+                  {franchisePillars.map((pillar) => (
+                    <p key={pillar} className="mt-3 first:mt-0">
+                      {pillar}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section id="franchise-form" className="bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
+            <LeadForm type="franchise" schema={formSchemas.franchiseBase} />
+            <div className="grid gap-5">
+              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+                <p className="text-xs uppercase tracking-[0.34em] text-black/36">Не является публичной офертой</p>
+                <p className="mt-4 text-sm leading-7 text-black/62">
+                  Информация на сайте носит справочный характер. Условия партнёрства и франчайзинга обсуждаются
+                  индивидуально. Заявка через форму не создаёт договорных обязательств.
+                </p>
+              </div>
+              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+                <p className="text-xs uppercase tracking-[0.34em] text-black/36">FAQ</p>
+                <div className="mt-5">
+                  <FaqAccordion items={franchiseFaq} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -1554,29 +1449,25 @@ function CareersTemplate(page: ResolvedPage) {
   if (!vacancies.length) {
     return (
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+        <StructuredData data={buildJsonLd(page)} />
+        <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
           <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading
-            eyebrow="Вакансии"
-            title="Открытые роли публикуются по мере развития команды STILNO."
-            body={page.description}
-            tone="light"
+          <PageHero
+            contract={{
+              eyebrow: "Вакансии",
+              title: "Открытые роли публикуются по мере развития команды STILNO.",
+              body: page.description,
+            }}
+            compact
           />
-          <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <p className="text-sm leading-7 text-black/65">
-                Если открытые вакансии ещё не опубликованы, вы можете отправить общий карьерный отклик в команду STILNO.
+          <div className="mt-10 grid gap-6 xl:grid-cols-[0.96fr_1.04fr]">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+              <p className="text-base leading-7 text-black/64">
+                Если открытые вакансии ещё не опубликованы, вы можете отправить общий карьерный отклик в команду
+                STILNO.
               </p>
             </div>
-            <LeadForm
-              type="career"
-              title="Карьерный отклик"
-              description="Оставьте контакты и кратко расскажите о своём опыте."
-              submitLabel="Отправить отклик"
-              successMessage="Отклик отправлен. Мы свяжемся с вами, если ваш профиль подойдёт под текущие или будущие задачи команды."
-              fields={careerFields}
-              checkboxes={careerCheckboxes}
-            />
+            <LeadForm type="career" schema={formSchemas.careerBase} />
           </div>
         </div>
       </section>
@@ -1585,19 +1476,25 @@ function CareersTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Вакансии" title="Карьерные возможности STILNO." body={page.description} tone="light" />
-        <div className="mt-10 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+        <PageHero
+          contract={{
+            eyebrow: "Вакансии",
+            title: "Карьерные возможности STILNO",
+            body: page.description,
+          }}
+          compact
+        />
+        <div className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-4">
             {vacancies.map((vacancy) => (
-              <article key={vacancy.id} className="rounded-[1.8rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-black/38">{vacancy.department}</p>
-                    <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-black">{vacancy.title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-black/62">{vacancy.description[0]}</p>
-                  </div>
+              <article key={vacancy.id} className="rounded-[1.8rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+                <p className="text-xs uppercase tracking-[0.34em] text-black/36">{vacancy.department}</p>
+                <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">{vacancy.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-black/62">{vacancy.description[0]}</p>
+                <div className="mt-5">
                   <ButtonLink href={getVacancyPath(vacancy)} variant="secondary" tone="light" analytics="careers_vacancy_open">
                     Откликнуться
                   </ButtonLink>
@@ -1605,15 +1502,7 @@ function CareersTemplate(page: ResolvedPage) {
               </article>
             ))}
           </div>
-          <LeadForm
-            type="career"
-            title="Общий карьерный отклик"
-            description="Если нужная роль ещё не опубликована, можно отправить общий отклик."
-            submitLabel="Отправить отклик"
-            successMessage="Отклик отправлен. Мы свяжемся с вами, если ваш профиль подойдёт под текущие или будущие задачи команды."
-            fields={careerFields}
-            checkboxes={careerCheckboxes}
-          />
+          <LeadForm type="career" schema={formSchemas.careerBase} />
         </div>
       </div>
     </section>
@@ -1628,48 +1517,47 @@ function VacancyTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <StructuredData data={buildJsonLd(page)} />
-        <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
+        <PageHero
+          contract={{
+            eyebrow: "Вакансия",
+            title: vacancy.title,
+            body: vacancy.description[0],
+          }}
+          compact
+        />
+        <div className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-5">
-            <SectionHeading eyebrow="Вакансия" title={vacancy.title} body={vacancy.description[0]} tone="light" />
-            <div className="grid gap-5 lg:grid-cols-2">
-              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                <p className="text-xs uppercase tracking-[0.35em] text-black/38">Что предстоит делать</p>
-                <div className="mt-4 grid gap-3 text-sm leading-6 text-black/65">
-                  {vacancy.description.map((item) => (
-                    <p key={item}>{item}</p>
-                  ))}
-                </div>
-              </div>
-              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                <p className="text-xs uppercase tracking-[0.35em] text-black/38">Требования</p>
-                <ul className="mt-4 grid gap-3 text-sm leading-6 text-black/65">
-                  {vacancy.requirements.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/38">Условия</p>
-              <div className="mt-4 grid gap-3 text-sm leading-6 text-white/70">
-                {vacancy.conditions.map((item) => (
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Что предстоит делать</p>
+              <div className="mt-4 grid gap-3 text-sm leading-6 text-black/64">
+                {vacancy.description.map((item) => (
                   <p key={item}>{item}</p>
                 ))}
               </div>
             </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+                <p className="text-xs uppercase tracking-[0.34em] text-black/36">Требования</p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-black/64">
+                  {vacancy.requirements.map((item) => (
+                    <p key={item}>{item}</p>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
+                <p className="text-xs uppercase tracking-[0.34em] text-white/36">Условия</p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-white/70">
+                  {vacancy.conditions.map((item) => (
+                    <p key={item}>{item}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-          <LeadForm
-            type="career"
-            title="Отклик на вакансию"
-            description="Оставьте контакты и коротко расскажите о своём опыте."
-            submitLabel="Отправить отклик"
-            successMessage="Отклик отправлен. Мы свяжемся с вами, если ваш профиль подойдёт под задачу."
-            fields={careerFields}
-            checkboxes={careerCheckboxes}
-          />
+          <LeadForm type="career" schema={formSchemas.careerBase} />
         </div>
       </div>
     </section>
@@ -1679,41 +1567,44 @@ function VacancyTemplate(page: ResolvedPage) {
 function ContactsTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading
-          eyebrow="Контакты"
-          title="Обратиться в STILNO можно через формы сайта и подтверждённые юридические данные."
-          body={page.description}
-          tone="light"
-        />
-        <div className="mt-10 grid gap-5 lg:grid-cols-4">
-          <MetricCard value="Компания" label={companyDetails.companyName} note="Юридическое лицо бренда." />
-          <MetricCard value="Юридический адрес" label="подтверждён" note={companyDetails.legalAddress} />
-          <MetricCard value="Производство" label="подтверждённый адрес" note={companyDetails.productionAddress} />
-          <MetricCard value="Формы сайта" label="розница · партнёрство · франчайзинг" note="Основной способ первичного контакта." />
+        <PageHero contract={contactsPageContent.hero} compact />
+
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {contactsPageContent.routingCards.map((card) => (
+            <StatCard key={card.value} value={card.value} label={card.label} note={card.note} />
+          ))}
         </div>
-        <div className="mt-10 grid gap-5 xl:grid-cols-2">
-          <LeadForm
-            type="retail"
-            title="Розничный запрос"
-            description="Наличие в городе, розничная точка, вопросы по продукту."
-            submitLabel="Отправить запрос"
-            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
-            fields={retailFields}
-            checkboxes={retailCheckboxes}
-            disclaimer="Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции."
-          />
-          <LeadForm
-            type="partner"
-            title="Партнёрский запрос"
-            description="Опт, региональное сотрудничество, франчайзинг и B2B-вопросы."
-            submitLabel="Отправить запрос"
-            successMessage="Запрос отправлен. Мы свяжемся с вами по указанным контактам для уточнения формата сотрудничества."
-            fields={partnerFields}
-            checkboxes={franchiseCheckboxes}
-            disclaimer="Информация на сайте носит справочный характер. Условия обсуждаются индивидуально."
-          />
+
+        <div className="mt-12 grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+          <div className="grid gap-5">
+            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Маршрутизация обращений</p>
+              <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
+                <p>Розничные запросы идут через страницу «Где купить» и общую розничную форму.</p>
+                <p>Оптовые и региональные обращения идут через страницу «Партнёрам».</p>
+                <p>Запуск под брендом STILNO обрабатывается через отдельный раздел франчайзинга.</p>
+              </div>
+            </div>
+            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
+              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Юридические данные</p>
+              <div className="mt-5 grid gap-3 text-sm leading-6 text-white/68">
+                <p>{companyDetails.companyName}</p>
+                <p>{companyDetails.legalAddress}</p>
+                <p>{companyDetails.productionAddress}</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid gap-5">
+            <div id="contacts-retail">
+              <LeadForm type="retail" schema={formSchemas.retailBase} />
+            </div>
+            <div id="contacts-partner">
+              <LeadForm type="partner" schema={formSchemas.partnerBase} />
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1724,12 +1615,20 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
   if (!articles.length) {
     return (
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-10">
+        <StructuredData data={buildJsonLd(page)} />
+        <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-8">
           <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-          <SectionHeading eyebrow="Материалы" title="Раздел материалов будет пополняться по мере публикации документов и новостей." body={page.description} tone="light" />
-          <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+          <PageHero
+            contract={{
+              eyebrow: "Материалы",
+              title: "Раздел материалов будет пополняться по мере публикации документов и новостей.",
+              body: page.description,
+            }}
+            compact
+          />
+          <div className="mt-8 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
             <p className="text-base leading-7 text-black/68">
-              Сейчас сайт сосредоточен на продукте, партнёрских сценариях, франчайзинге и правовой информации.
+              Сейчас сайт сосредоточен на продукте, партнёрских обращениях, франчайзинге и правовой информации.
             </p>
           </div>
         </div>
@@ -1739,21 +1638,32 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <SectionHeading eyebrow="Материалы" title="Публикации и документы STILNO." body={page.description} tone="light" />
+        <PageHero
+          contract={{
+            eyebrow: "Материалы",
+            title: "Публикации и документы STILNO",
+            body: page.description,
+          }}
+          compact
+        />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {articles.map((article) => (
-            <article key={article.id} className="grid gap-4 rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_18px_48px_rgba(10,10,10,0.05)]">
+            <article key={article.id} className="rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
               <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs uppercase tracking-[0.35em] text-black/38">{article.category}</span>
-                <span className="text-sm text-black/45">{article.publishedAt}</span>
+              <div className="mt-5 flex items-center justify-between gap-4">
+                <span className="text-xs uppercase tracking-[0.34em] text-black/36">{article.category}</span>
+                <span className="text-sm text-black/42">{article.publishedAt}</span>
               </div>
-              <p className="text-sm leading-6 text-black/62">{article.excerpt}</p>
-              <ButtonLink href={getArticlePath(article)} variant="secondary" tone="light" analytics="article_open">
-                Читать
-              </ButtonLink>
+              <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-black">{article.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-black/62">{article.excerpt}</p>
+              <div className="mt-5">
+                <ButtonLink href={getArticlePath(article)} variant="secondary" tone="light" analytics="article_open">
+                  Читать
+                </ButtonLink>
+              </div>
             </article>
           ))}
         </div>
@@ -1770,13 +1680,18 @@ function ArticleTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[68rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[70rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <StructuredData data={buildJsonLd(page)} />
-        <p className="text-xs uppercase tracking-[0.35em] text-black/38">{article.category}</p>
-        <h1 className="mt-5 text-5xl font-semibold tracking-[-0.06em] text-black">{article.title}</h1>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-black/65">{article.excerpt}</p>
-        <div className="mt-4 text-sm text-black/45">
+        <PageHero
+          contract={{
+            eyebrow: article.category,
+            title: article.title,
+            body: article.excerpt,
+          }}
+          compact
+        />
+        <div className="mt-4 text-sm text-black/44">
           {article.publishedAt} / {article.author}
         </div>
         <div className="mt-10">
@@ -1793,12 +1708,34 @@ function ArticleTemplate(page: ResolvedPage) {
 function FaqTemplate(page: ResolvedPage) {
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[76rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <StructuredData data={buildJsonLd(page)} />
-        <SectionHeading eyebrow="FAQ" title="Частые вопросы о продукте, розничных запросах, партнёрстве и правовой информации." body={page.description} tone="light" />
-        <div className="mt-10">
-          <FaqAccordion items={faqItems} />
+        <PageHero
+          contract={{
+            eyebrow: "FAQ",
+            title: "Частые вопросы о продукте, розничных запросах, партнёрстве и правовой информации.",
+            body: page.description,
+          }}
+          compact
+        />
+        <div className="mt-12 grid gap-8">
+          {faqPageGroups.map((group) => {
+            const groupItems = faqItems.filter((item) => group.scopes.includes(item.scope));
+            if (!groupItems.length) {
+              return null;
+            }
+
+            return (
+              <section key={group.id}>
+                <div className="mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.38em] text-black/36">
+                  <span className="h-px w-12 bg-black/18" />
+                  <span>{group.title}</span>
+                </div>
+                <FaqAccordion items={groupItems} />
+              </section>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1814,8 +1751,10 @@ function ThankYouTemplate(page: ResolvedPage) {
   };
 
   const nextSteps: Record<string, string> = {
-    retail: "Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.",
-    franchise: "Мы свяжемся с вами по указанным контактам. Условия партнёрства обсуждаются индивидуально и не являются публичной офертой.",
+    retail:
+      "Мы свяжемся с вами по указанным контактам. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.",
+    franchise:
+      "Мы свяжемся с вами по указанным контактам. Условия партнёрства обсуждаются индивидуально и не являются публичной офертой.",
     partner: "Мы свяжемся с вами по указанным контактам для уточнения формата сотрудничества.",
     career: "Мы свяжемся с вами, если ваш профиль подойдёт под текущие или будущие задачи команды.",
   };
@@ -1823,9 +1762,9 @@ function ThankYouTemplate(page: ResolvedPage) {
   const key = page.thankYouType ?? "retail";
 
   return (
-    <section className="grid min-h-[70svh] place-items-center bg-black px-5 py-16 sm:px-6 lg:px-10">
-      <div className="w-full max-w-3xl rounded-[2.6rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_42%),linear-gradient(145deg,#0a0a0a,#17181b)] p-8 text-white shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-10">
-        <p className="text-xs uppercase tracking-[0.45em] text-white/38">Спасибо</p>
+    <section className="grid min-h-[70svh] place-items-center bg-black px-5 py-16 sm:px-6 lg:px-8">
+      <div className="w-full max-w-3xl rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_42%),linear-gradient(145deg,#090909,#17181b)] p-8 text-white shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-10">
+        <p className="text-xs uppercase tracking-[0.42em] text-white/38">Спасибо</p>
         <h1 className="mt-6 text-5xl font-semibold tracking-[-0.06em]">{labels[key]}</h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-white/68">{nextSteps[key]}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -1849,13 +1788,17 @@ function LegalTemplate(page: ResolvedPage) {
 
   return (
     <section className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[68rem] px-5 py-16 sm:px-6 lg:px-10">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[70rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <p className="text-xs uppercase tracking-[0.35em] text-black/38">
-          Версия {legalPage.version} / {legalPage.effectiveDate}
-        </p>
-        <h1 className="mt-5 text-5xl font-semibold tracking-[-0.06em] text-black">{legalPage.title}</h1>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-black/65">{legalPage.summary}</p>
+        <PageHero
+          contract={{
+            eyebrow: `Версия ${legalPage.version} · ${legalPage.effectiveDate}`,
+            title: legalPage.title,
+            body: legalPage.summary,
+          }}
+          compact
+        />
         <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
           <RichText paragraphs={legalPage.body} />
         </div>
@@ -1935,7 +1878,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
       title: "STILNO CLICK ONE | официальный сайт бренда 18+",
       description: siteSettings.description,
       canonical: siteOrigin,
-      image: `${siteOrigin}${featuredProduct.images[0]}`,
+      image: `${siteOrigin}${defaultMetadataImage}`,
     };
   }
 
@@ -1943,7 +1886,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
     page.product?.images[0] ??
     page.category?.heroImage ??
     page.article?.coverImage ??
-    featuredProduct.images[0];
+    defaultMetadataImage;
 
   const titleMap: Partial<Record<ResolvedPage["kind"], string>> = {
     "stores-index": "Где купить STILNO | розничные запросы 18+",
@@ -1962,6 +1905,10 @@ export function getMetadataPayload(page?: ResolvedPage) {
       "STILNO CLICK ONE: подтверждённые характеристики продукта, вкусовые варианты, предупреждения 18+ и партнёрские CTA.",
     franchise:
       "Франчайзинг STILNO: партнёрский запуск бренда в регионах без публичной оферты и без обещаний доходности.",
+    partners:
+      "Партнёрам STILNO: оптовые, региональные и B2B-запросы по бренду принимаются через форму сайта и обсуждаются индивидуально.",
+    contacts:
+      "Контакты STILNO: формы обратной связи, данные об изготовителе и направления для розничных, оптовых и франчайзинговых запросов.",
   };
 
   return {

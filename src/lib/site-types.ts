@@ -7,6 +7,7 @@ export type CtaLink = {
   label: string;
   href: string;
   variant?: "primary" | "secondary" | "ghost";
+  target?: "_blank" | "_self";
 };
 
 export type ContactLine = {
@@ -198,4 +199,54 @@ export type LaunchMetric = {
 export type PartnershipScenario = {
   title: string;
   body: string;
+};
+
+export type LeadField = {
+  name: string;
+  label: string;
+  type?: "text" | "email" | "tel" | "textarea" | "select";
+  required?: boolean;
+  placeholder?: string;
+  options?: Array<{ value: string; label: string }>;
+  halfWidth?: boolean;
+  autoComplete?: string;
+};
+
+export type LeadCheckbox = {
+  name: string;
+  label: string;
+  required?: boolean;
+};
+
+export type LeadFormSchema = {
+  title: string;
+  description: string;
+  submitLabel: string;
+  successMessage: string;
+  disclaimer?: string;
+  theme?: "light" | "dark";
+  fields: LeadField[];
+  checkboxes: LeadCheckbox[];
+};
+
+export type PageHeroContract = {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  detailLine?: string;
+  note?: string;
+  actions?: CtaLink[];
+};
+
+export type SectionContract = {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  actions?: CtaLink[];
+};
+
+export type PageStat = {
+  value: string;
+  label: string;
+  note: string;
 };
