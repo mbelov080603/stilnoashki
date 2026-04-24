@@ -32,6 +32,21 @@ export const isIndexableDeployment = Boolean(
     normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL),
 );
 export const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
+export const siteBasePath =
+  process.env.NEXT_PUBLIC_BASE_PATH?.trim() ||
+  (process.env.GITHUB_PAGES === "true" ? "/stilnoashki" : "");
+
+export function assetPath(path: string) {
+  if (!path || /^https?:\/\//.test(path) || !path.startsWith("/")) {
+    return path;
+  }
+
+  if (!siteBasePath || path === siteBasePath || path.startsWith(`${siteBasePath}/`)) {
+    return path;
+  }
+
+  return `${siteBasePath}${path}`;
+}
 
 export const analyticsIds = {
   gtm: process.env.NEXT_PUBLIC_GTM_ID?.trim() || "",
@@ -40,8 +55,8 @@ export const analyticsIds = {
 };
 
 export const documentLinks = {
-  franchisePresentation: "/stilno/docs/stilno-business-presentation.pdf",
-  deviceAndPackage: "/stilno/docs/stilno-click-one-device-package.pdf",
+  franchisePresentation: assetPath("/stilno/docs/stilno-business-presentation.pdf"),
+  deviceAndPackage: assetPath("/stilno/docs/stilno-click-one-device-package.pdf"),
 };
 
 export const companyDetails = {

@@ -15,6 +15,7 @@ import {
 } from "react";
 
 import { analyticsIds, isStaticExport } from "@/lib/site-data";
+import { assetPath } from "@/lib/site-config";
 import type {
   CtaLink,
   LeadFormSchema,
@@ -855,7 +856,7 @@ export function VariantPicker({ product }: { product: Product }) {
         <div className="absolute inset-5 rounded-[1.6rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.78),rgba(190,195,198,0.58)_34%,rgba(35,39,44,0.28)_68%),linear-gradient(145deg,rgba(232,234,234,0.42),rgba(24,26,29,0.18))]" />
         {activeImage ? (
           <Image
-            src={activeImage}
+            src={assetPath(activeImage)}
             alt={`${product.title} — ${activeVariant.title}`}
             width={1400}
             height={1400}
@@ -966,7 +967,7 @@ export function VariantPickerFallback({ product }: { product: Product }) {
         <div className="absolute inset-5 rounded-[1.6rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.78),rgba(190,195,198,0.58)_34%,rgba(35,39,44,0.28)_68%),linear-gradient(145deg,rgba(232,234,234,0.42),rgba(24,26,29,0.18))]" />
         {product.images[0] ? (
           <Image
-            src={product.images[0]}
+            src={assetPath(product.images[0])}
             alt={product.title}
             width={1400}
             height={1400}

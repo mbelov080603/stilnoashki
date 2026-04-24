@@ -15,7 +15,7 @@ import {
   VariantPickerFallback,
 } from "@/components/site-client";
 import { featuredProduct, galleryItems, productCategories, qualityStandards } from "@/lib/catalog-data";
-import { companyDetails, documentLinks, siteOrigin, siteSettings } from "@/lib/site-config";
+import { assetPath, companyDetails, documentLinks, siteOrigin, siteSettings } from "@/lib/site-config";
 import {
   articles,
   brandNarrative,
@@ -142,7 +142,7 @@ function SectionIntro({
       ) : null}
       <TitleTag
         className={classNames(
-          "text-4xl font-semibold leading-[0.98] tracking-[-0.06em] sm:text-5xl lg:text-[3.65rem]",
+          "text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl sm:tracking-[-0.06em] lg:text-[3.65rem]",
           tone === "dark" ? "text-white" : "text-black",
         )}
       >
@@ -194,7 +194,7 @@ function PageHero({
         ) : null}
         <h1
           className={classNames(
-            "max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.08em] sm:text-6xl lg:text-[4.75rem]",
+            "max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.01em] [word-spacing:0.16em] sm:text-6xl sm:tracking-[-0.07em] sm:[word-spacing:normal] lg:text-[4.75rem] lg:tracking-[-0.08em]",
             tone === "dark" ? "text-white" : "text-black",
           )}
         >
@@ -387,7 +387,7 @@ function SvgAsset({
   alt: string;
   className?: string;
 }) {
-  return <Image src={src} alt={alt} width={1600} height={900} unoptimized className={className} />;
+  return <Image src={assetPath(src)} alt={alt} width={1600} height={900} unoptimized className={className} />;
 }
 
 function ProductPhotoCard({
@@ -413,7 +413,7 @@ function ProductPhotoCard({
     >
       <div className="absolute inset-5 rounded-[1.55rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.76),rgba(190,195,198,0.56)_34%,rgba(35,39,44,0.26)_68%),linear-gradient(145deg,rgba(232,234,234,0.38),rgba(24,26,29,0.16))]" />
       <Image
-        src={src}
+        src={assetPath(src)}
         alt={alt}
         width={1600}
         height={1200}
@@ -444,7 +444,7 @@ function EditorialImageCard({
       )}
     >
       <Image
-        src={src}
+        src={assetPath(src)}
         alt={alt}
         width={1800}
         height={1200}
@@ -673,8 +673,8 @@ export function HomeTemplate() {
             <SectionIntro contract={homeContent.partnersSection} tone="dark" />
             <div className="rounded-[2.2rem] border border-white/10 bg-white/[0.03] p-6">
               <SvgAsset
-                src="/stilno/generated/partner-production.jpg"
-                alt="Производственная дисциплина STILNO"
+                src="/stilno/generated/partner-kit-visual.jpg"
+                alt="Партнёрский комплект STILNO"
                 className="w-full rounded-[1.4rem] border border-white/8"
               />
             </div>
@@ -703,7 +703,7 @@ export function HomeTemplate() {
             </div>
             <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
               <SvgAsset
-                src="/stilno/generated/stores-inquiry-visual.jpg"
+                src="/stilno/generated/retail-request-visual.jpg"
                 alt="Розничный запрос STILNO без неподтверждённых точек"
                 className="w-full rounded-[1.4rem] border border-black/8"
               />
@@ -746,6 +746,11 @@ export function HomeTemplate() {
               </div>
             </div>
             <div className="grid gap-5">
+              <EditorialImageCard
+                src="/stilno/generated/partner-kit-visual.jpg"
+                alt="Партнёрские материалы STILNO"
+                className="min-h-[18rem]"
+              />
               <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
                 <p className="text-xs uppercase tracking-[0.34em] text-white/36">Форма заявки</p>
                 <h3 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
@@ -784,7 +789,7 @@ function StoresIndexTemplate(page: ResolvedPage) {
           media={
             <div className="rounded-[2.2rem] border border-black/10 bg-black p-4 shadow-[0_18px_54px_rgba(10,10,10,0.10)]">
               <SvgAsset
-                src="/stilno/generated/stores-inquiry-visual.jpg"
+                src="/stilno/generated/retail-request-visual.jpg"
                 alt="Статус розничной карты STILNO"
                 className="w-full rounded-[1.7rem]"
               />
@@ -824,6 +829,11 @@ function StoresIndexTemplate(page: ResolvedPage) {
         <div id="stores-request" className="mt-16 grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
           <LeadForm type="retail" schema={formSchemas.retailBase} />
           <div className="grid gap-4">
+            <EditorialImageCard
+              src="/stilno/generated/stores-inquiry-visual.jpg"
+              alt="Официальный розничный запрос STILNO"
+              className="min-h-[18rem]"
+            />
             <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
               <p className="text-xs uppercase tracking-[0.34em] text-black/36">{storesContent.supportTitle}</p>
               <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.supportBody}</p>
@@ -958,6 +968,13 @@ function GalleryTemplate(page: ResolvedPage) {
             title: "Editorial-галерея STILNO CLICK ONE",
             body: page.description,
           }}
+          media={
+            <EditorialImageCard
+              src="/stilno/generated/gallery-editorial-board.jpg"
+              alt="Устройство, упаковка и продуктовая серия STILNO CLICK ONE"
+              priority
+            />
+          }
           compact
         />
         <div className="mt-12 grid gap-12">
@@ -1026,6 +1043,13 @@ function ProductsIndexTemplate(page: ResolvedPage) {
             title: "Текущая линейка STILNO",
             body: page.description,
           }}
+          media={
+            <EditorialImageCard
+              src="/stilno/generated/product-hero-lineup.jpg"
+              alt="Линейка STILNO CLICK ONE"
+              priority
+            />
+          }
           compact
         />
         <div className="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -1101,7 +1125,17 @@ function ProductTemplate(page: ResolvedPage) {
       <StructuredData data={buildJsonLd(page)} />
       <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <PageHero contract={productPageContent.hero} compact />
+        <PageHero
+          contract={productPageContent.hero}
+          media={
+            <EditorialImageCard
+              src="/stilno/generated/product-hero-lineup.jpg"
+              alt="STILNO CLICK ONE и вкусовая серия"
+              priority
+            />
+          }
+          compact
+        />
 
         <div className="mt-10">
           <Suspense fallback={<VariantPickerFallback product={product} />}>
@@ -1202,6 +1236,13 @@ function ProductTemplate(page: ResolvedPage) {
 }
 
 function PartnersTemplate(page: ResolvedPage) {
+  const partnerDirectionImages = [
+    "/stilno/products-cutout/ananas-mango.png",
+    "/stilno/products-cutout/barbaris.png",
+    "/stilno/products-cutout/myata.png",
+    "/stilno/products-cutout/chernika-klyukva-vishnya.png",
+  ];
+
   return (
     <section className="bg-[var(--color-page)]">
       <StructuredData data={buildJsonLd(page)} />
@@ -1215,14 +1256,27 @@ function PartnersTemplate(page: ResolvedPage) {
               { label: "Франчайзинг STILNO", href: "/franchise", variant: "secondary" },
             ],
           }}
+          media={
+            <EditorialImageCard
+              src="/stilno/generated/partner-kit-visual.jpg"
+              alt="Партнёрские материалы STILNO"
+              priority
+            />
+          }
           compact
         />
 
         <div className="mt-12">
           <SectionIntro contract={partnersPageContent.directionsSection} />
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {partnersPageContent.directions.map((item) => (
+            {partnersPageContent.directions.map((item, index) => (
               <article key={item.title} className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+                <ProductPhotoCard
+                  src={partnerDirectionImages[index] ?? featuredProduct.images[0]}
+                  alt={`${item.title} STILNO`}
+                  aspect="square"
+                  className="mb-5 min-h-[11rem] rounded-[1.25rem] p-3"
+                />
                 <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-black/62">{item.body}</p>
               </article>
@@ -1345,8 +1399,8 @@ function FranchiseTemplate(page: ResolvedPage) {
             media={
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
                 <SvgAsset
-                  src="/stilno/generated/partner-production.jpg"
-                  alt="Производственная и партнёрская база STILNO"
+                  src="/stilno/generated/franchise-launch-kit.jpg"
+                  alt="Партнёрский запуск STILNO"
                   className="w-full rounded-[1.4rem] border border-white/8"
                 />
               </div>
@@ -1377,7 +1431,7 @@ function FranchiseTemplate(page: ResolvedPage) {
             </div>
             <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
               <SvgAsset
-                src="/stilno/generated/stores-inquiry-visual.jpg"
+                src="/stilno/generated/franchise-launch-kit.jpg"
                 alt="Партнёрский запуск STILNO"
                 className="w-full rounded-[1.4rem] border border-black/8"
               />
@@ -1393,8 +1447,8 @@ function FranchiseTemplate(page: ResolvedPage) {
               <SectionIntro contract={franchiseContent.supportSection} tone="dark" />
               <div className="mt-8 grid gap-4">
                 <SvgAsset
-                  src="/stilno/generated/quality-production.jpg"
-                  alt="Производственная дисциплина STILNO"
+                  src="/stilno/generated/partner-kit-visual.jpg"
+                  alt="Партнёрский комплект STILNO"
                   className="w-full rounded-[1.4rem] border border-white/8"
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -1464,6 +1518,11 @@ function FranchiseTemplate(page: ResolvedPage) {
           <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
             <LeadForm type="franchise" schema={formSchemas.franchiseBase} />
             <div className="grid gap-5">
+              <EditorialImageCard
+                src="/stilno/generated/franchise-launch-kit.jpg"
+                alt="Этапы партнёрского запуска STILNO"
+                className="min-h-[18rem]"
+              />
               <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
                 <p className="text-xs uppercase tracking-[0.34em] text-black/36">Не является публичной офертой</p>
                 <p className="mt-4 text-sm leading-7 text-black/62">
