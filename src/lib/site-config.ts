@@ -55,8 +55,8 @@ export const analyticsIds = {
 };
 
 export const documentLinks = {
-  franchisePresentation: assetPath("/stilno/docs/stilno-business-presentation.pdf"),
-  deviceAndPackage: assetPath("/stilno/docs/stilno-click-one-device-package.pdf"),
+  franchisePresentation: "/stilno/docs/stilno-business-presentation.pdf",
+  deviceAndPackage: "/stilno/docs/stilno-click-one-device-package.pdf",
 };
 
 export const companyDetails = {
