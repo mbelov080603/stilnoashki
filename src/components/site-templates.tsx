@@ -522,23 +522,81 @@ const franchiseSupportItems = [
 ];
 
 const franchiseVisualDevices = [
-  { src: "/stilno/products-cutout/myata.png", className: "left-[0%] z-10 h-[68%] opacity-90" },
-  { src: "/stilno/products-cutout/barbaris.png", className: "left-[15%] z-20 h-[80%]" },
-  { src: "/stilno/products-cutout/yagodniy-energetik.png", className: "left-[31%] z-30 h-[90%]" },
-  { src: "/stilno/products-cutout/vishnya-limon-persik.png", className: "left-[49%] z-20 h-[80%]" },
-  { src: "/stilno/products-cutout/fruktoviy-chay.png", className: "left-[65%] z-10 h-[68%] opacity-[0.92]" },
+  {
+    src: "/stilno/products-cutout/myata.png",
+    className: "z-10 w-[clamp(5.8rem,18vw,11rem)] opacity-80",
+    compactClassName: "z-10 w-[clamp(3.8rem,15vw,6.7rem)] opacity-80",
+  },
+  {
+    src: "/stilno/products-cutout/barbaris.png",
+    className: "z-20 w-[clamp(6.7rem,20vw,13rem)]",
+    compactClassName: "z-20 w-[clamp(4.5rem,17vw,7.8rem)]",
+  },
+  {
+    src: "/stilno/products-cutout/yagodniy-energetik.png",
+    className: "z-30 w-[clamp(7.6rem,22vw,15rem)]",
+    compactClassName: "z-30 w-[clamp(5.2rem,19vw,8.8rem)]",
+  },
+  {
+    src: "/stilno/products-cutout/vishnya-limon-persik.png",
+    className: "z-20 w-[clamp(6.7rem,20vw,13rem)]",
+    compactClassName: "z-20 w-[clamp(4.5rem,17vw,7.8rem)]",
+  },
+  {
+    src: "/stilno/products-cutout/fruktoviy-chay.png",
+    className: "z-10 w-[clamp(5.8rem,18vw,11rem)] opacity-90",
+    compactClassName: "z-10 w-[clamp(3.8rem,15vw,6.7rem)] opacity-90",
+  },
 ];
 
-function FranchiseVisualTimeline() {
+const franchiseHeroSignals = [
+  { label: "Возрастная рамка", value: "18+" },
+  { label: "Коммуникация", value: "заявка -> контакт" },
+  { label: "Материалы", value: "презентация и база" },
+  { label: "Условия", value: "индивидуально" },
+];
+
+function FranchiseProductLineup({ priority = false, compact = false }: { priority?: boolean; compact?: boolean }) {
   return (
-    <ol className="mt-6 grid grid-cols-4 gap-x-3 gap-y-4 border-t border-white/18 pt-4 sm:grid-cols-8">
+    <div
+      className={classNames(
+        "pointer-events-none relative mx-auto flex w-full items-end justify-center",
+        compact
+          ? "min-h-[13rem] max-w-[28rem] -space-x-9 sm:min-h-[16rem] sm:-space-x-12"
+          : "min-h-[21rem] max-w-[48rem] -space-x-14 sm:min-h-[28rem] sm:-space-x-28",
+      )}
+      aria-hidden="true"
+    >
+      <div className="absolute inset-x-8 bottom-0 h-24 rounded-full bg-black/78 blur-2xl" />
+      {franchiseVisualDevices.map((device) => (
+        <Image
+          key={device.src}
+          src={assetPath(device.src)}
+          alt=""
+          width={1181}
+          height={1700}
+          priority={priority}
+          unoptimized
+          className={classNames(
+            "relative h-auto shrink-0 object-contain drop-shadow-[0_28px_38px_rgba(0,0,0,0.62)]",
+            compact ? device.compactClassName : device.className,
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FranchiseHeroTimeline() {
+  return (
+    <ol className="grid grid-cols-4 gap-x-3 gap-y-4 border-t border-white/16 pt-4 sm:grid-cols-8">
       {franchiseVisualSteps.map((step, index) => (
         <li key={step} className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="size-2.5 shrink-0 rounded-full bg-white" aria-hidden="true" />
+            <span className="size-2.5 shrink-0 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.32)]" aria-hidden="true" />
             <span className="text-[0.65rem] font-medium text-white/76">{String(index + 1).padStart(2, "0")}</span>
           </div>
-          <p className="mt-2 text-[0.62rem] font-semibold uppercase leading-tight tracking-[0.08em] text-white/70 sm:text-[0.58rem]">
+          <p className="mt-2 text-[0.62rem] font-semibold uppercase leading-tight tracking-[0.08em] text-white/62 sm:text-[0.58rem]">
             {step}
           </p>
         </li>
@@ -547,135 +605,186 @@ function FranchiseVisualTimeline() {
   );
 }
 
-function FranchiseLaunchVisual({
-  className,
-  compact = false,
-  priority = false,
-}: {
-  className?: string;
-  compact?: boolean;
-  priority?: boolean;
-}) {
+function FranchiseHeroScene({ priority = false }: { priority?: boolean }) {
   return (
-    <div
-      className={classNames(
-        "relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070809] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.22)]",
-        className,
-      )}
-    >
-      <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.05)_0_12%,transparent_12%_20%,rgba(255,255,255,0.08)_20%_30%,transparent_30%_44%,rgba(255,255,255,0.06)_44%_58%,transparent_58%_72%,rgba(255,255,255,0.05)_72%_82%,transparent_82%)] opacity-75" />
-      <div
-        className={classNames(
-          "relative overflow-hidden rounded-[1.55rem] border border-white/18 bg-[#0c0d0f] p-5 sm:p-6",
-          compact ? "min-h-[23rem]" : "min-h-[28rem]",
-        )}
-      >
-        <div className="relative z-20">
-          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-white/56">
-            STILNO / франчайзинг
-          </p>
-          <h3 className="mt-4 text-3xl font-semibold leading-none tracking-[-0.04em] text-white sm:text-4xl">
-            Запуск под брендом
-          </h3>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70 sm:text-base">
-            индивидуальные условия · документы · подготовка запуска
-          </p>
+    <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#08090a] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)] sm:p-5">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(255,255,255,0.16),transparent_28%),linear-gradient(118deg,rgba(255,255,255,0.06)_0_10%,transparent_10%_20%,rgba(255,255,255,0.09)_20%_31%,transparent_31%_46%,rgba(255,255,255,0.06)_46%_59%,transparent_59%_73%,rgba(255,255,255,0.05)_73%_84%,transparent_84%)]" />
+      <div className="relative overflow-hidden rounded-[1.9rem] border border-white/16 bg-[#101113] p-5 sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/52">STILNO / launch file</p>
+          <span className="rounded-full border border-white/12 px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/58">
+            18+
+          </span>
         </div>
 
-        <div className="relative z-10 mt-7 grid gap-5 md:grid-cols-[0.42fr_0.58fr] md:items-end">
-          <div className="rounded-[1.45rem] bg-[#f4f4ef] p-5 text-[#111215] shadow-[0_18px_42px_rgba(0,0,0,0.28)]">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-black/34">
-              Не публичная оферта
+        <div className="relative z-10 mt-8 grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+          <div>
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/42">Не публичная оферта</p>
+            <h3 className="mt-4 max-w-[24rem] text-3xl font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-5xl">
+              Запуск обсуждается после заявки
+            </h3>
+            <p className="mt-5 max-w-[24rem] text-sm leading-6 text-white/62">
+              Сначала фиксируем город, формат и статус проекта. Затем переходим к материалам, документам и условиям.
             </p>
-            <p className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.05em]">
-              Условия обсуждаются после заявки
-            </p>
-            {!compact ? (
-              <p className="mt-3 text-sm leading-6 text-black/56">
-                Старт проходит через контакт с менеджером, уточнение города, формата и документов.
-              </p>
-            ) : null}
+            <div className="mt-7 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-white/10 py-5">
+              {franchiseHeroSignals.map((signal) => (
+                <div key={signal.label}>
+                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/34">
+                    {signal.label}
+                  </p>
+                  <p className="mt-2 text-sm font-medium text-white/82">{signal.value}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className={classNames("relative min-h-[13rem] sm:min-h-[16rem]", compact ? "md:min-h-[14rem]" : "md:min-h-[18rem]")}>
-            <div className="absolute inset-x-3 bottom-0 h-16 rounded-full bg-black/70 blur-2xl" />
-            {franchiseVisualDevices.map((device) => (
-              <Image
-                key={device.src}
-                src={assetPath(device.src)}
-                alt=""
-                width={1181}
-                height={1700}
-                priority={priority}
-                unoptimized
-                aria-hidden="true"
-                className={classNames(
-                  "absolute bottom-0 w-auto max-w-none object-contain drop-shadow-[0_24px_34px_rgba(0,0,0,0.62)]",
-                  device.className,
-                )}
-              />
-            ))}
+          <div className="relative lg:-translate-x-8">
+            <FranchiseProductLineup priority={priority} />
+            <div className="absolute bottom-5 right-0 hidden w-[13rem] rounded-[1.4rem] border border-white/12 bg-black/48 p-4 backdrop-blur md:block">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/42">Пакет</p>
+              <p className="mt-2 text-sm leading-5 text-white/76">брендовые материалы · продуктовая база · рабочий контакт</p>
+            </div>
           </div>
         </div>
 
-        <FranchiseVisualTimeline />
+        <div className="relative z-10 mt-7">
+          <FranchiseHeroTimeline />
+        </div>
       </div>
     </div>
   );
 }
 
-function FranchiseProcessGrid() {
+function FranchiseRoadmap() {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="relative">
+      <div className="absolute bottom-6 left-5 top-6 hidden w-px bg-black/10 sm:block" aria-hidden="true" />
       {franchiseProcessDetails.map((item, index) => (
-        <article key={item.title} className="rounded-[1.35rem] border border-black/10 bg-white p-5 shadow-[0_12px_34px_rgba(10,10,10,0.04)]">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">
+        <article
+          key={item.title}
+          className="relative grid gap-4 border-b border-black/10 py-5 last:border-b-0 sm:grid-cols-[3.25rem_0.68fr_1fr] sm:items-start"
+        >
+          <div className="flex items-center gap-3 sm:block">
+            <span className="relative z-10 inline-flex size-10 items-center justify-center rounded-full border border-black/10 bg-[var(--color-page)] text-xs font-semibold text-black/46">
               {String(index + 1).padStart(2, "0")}
             </span>
-            <span className="size-2 rounded-full bg-black/18" aria-hidden="true" />
           </div>
-          <h3 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
-          <p className="mt-3 text-sm leading-6 text-black/58">{item.body}</p>
+          <h3 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{item.title}</h3>
+          <p className="text-sm leading-7 text-black/60 sm:text-base">{item.body}</p>
         </article>
       ))}
     </div>
   );
 }
 
-function FranchiseSupportPreview() {
+function FranchisePartnerKit() {
   return (
-    <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0c0e] p-5">
-      <div className="absolute inset-0 bg-[linear-gradient(122deg,rgba(255,255,255,0.04)_0_16%,transparent_16%_28%,rgba(255,255,255,0.07)_28%_40%,transparent_40%_100%)]" />
-      <div className="relative z-10 grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-        <div className="grid gap-3">
-          {franchiseSupportItems.map((item) => (
-            <div key={item.title} className="rounded-[1.1rem] border border-white/10 bg-white/[0.04] p-4">
-              <h3 className="text-base font-semibold tracking-[-0.02em] text-white">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-white/56">{item.body}</p>
-            </div>
+    <div className="grid gap-10 xl:grid-cols-[1fr_0.92fr] xl:items-start">
+      <div>
+        <SectionIntro contract={franchiseContent.supportSection} tone="dark" />
+        <div className="mt-10 grid border-y border-white/10 lg:grid-cols-2">
+          {franchiseSupportItems.map((item, index) => (
+            <article
+              key={item.title}
+              className={classNames(
+                "border-b border-white/10 py-6 lg:p-6",
+                index % 2 === 0 && "lg:border-r",
+                index > 1 && "lg:border-b-0",
+              )}
+            >
+              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-white/34">
+                {String(index + 1).padStart(2, "0")}
+              </p>
+              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-white/58">{item.body}</p>
+            </article>
           ))}
         </div>
-        <div className="relative min-h-[18rem]">
-          <div className="absolute inset-x-5 bottom-4 h-20 rounded-full bg-black/80 blur-2xl" />
-          {franchiseVisualDevices.slice(1, 5).map((device, index) => (
-            <Image
-              key={`support-${device.src}`}
-              src={assetPath(device.src)}
-              alt=""
-              width={1181}
-              height={1700}
-              unoptimized
-              aria-hidden="true"
-              className={classNames(
-                "absolute bottom-0 w-auto max-w-none object-contain drop-shadow-[0_24px_34px_rgba(0,0,0,0.62)]",
-                index === 0 && "left-[4%] z-10 h-[72%]",
-                index === 1 && "left-[25%] z-30 h-[92%]",
-                index === 2 && "left-[48%] z-20 h-[82%]",
-                index === 3 && "left-[66%] z-10 h-[72%]",
-              )}
-            />
-          ))}
+      </div>
+
+      <div className="grid gap-8">
+        <div>
+          <SectionIntro contract={franchiseContent.audienceSection} tone="dark" />
+          <div className="mt-7 divide-y divide-white/10 border-y border-white/10">
+            {franchiseContent.audienceItems.map((item, index) => (
+              <div key={item} className="grid grid-cols-[2.5rem_1fr] gap-4 py-4">
+                <span className="text-sm font-semibold text-white/34">{String(index + 1).padStart(2, "0")}</span>
+                <p className="text-sm leading-6 text-white/68">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0c0e] p-5">
+          <div className="absolute inset-0 bg-[linear-gradient(122deg,rgba(255,255,255,0.04)_0_16%,transparent_16%_28%,rgba(255,255,255,0.07)_28%_40%,transparent_40%_100%)]" />
+          <div className="relative z-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/40">Документы и материалы</p>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <ButtonLink
+                href={documentLinks.franchisePresentation}
+                target="_blank"
+                tone="dark"
+                variant="secondary"
+                analytics="franchise_download_presentation"
+              >
+                Скачать презентацию
+              </ButtonLink>
+              <ButtonLink
+                href={documentLinks.deviceAndPackage}
+                target="_blank"
+                tone="dark"
+                variant="secondary"
+                analytics="franchise_download_product_pack"
+              >
+                Материалы по продукту
+              </ButtonLink>
+            </div>
+            <div className="mt-7 grid gap-3">
+              {franchisePillars.map((pillar) => (
+                <p key={pillar} className="border-t border-white/10 pt-3 text-sm leading-6 text-white/58">
+                  {pillar}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FranchiseFormAside({ items }: { items: typeof faqItems }) {
+  return (
+    <div className="grid gap-5">
+      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[#0b0c0e] p-6 text-white shadow-[0_18px_54px_rgba(10,10,10,0.12)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.15),transparent_30%)]" />
+        <div className="relative z-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Перед заявкой</p>
+          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.045em]">Подготовьте город, формат и статус проекта</h3>
+          <p className="mt-4 text-sm leading-6 text-white/62">
+            Так менеджер быстрее отделит франчайзинговый запуск от опта, розничного запроса или регионального партнёрства.
+          </p>
+          <FranchiseProductLineup compact />
+          <div className="mt-5 divide-y divide-white/10 border-y border-white/10">
+            {["город / регион", "интересующий формат", "опыт в рознице", "стадия проекта"].map((item) => (
+              <p key={item} className="py-3 text-sm text-white/70">
+                {item}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">Не является публичной офертой</p>
+        <p className="mt-4 text-sm leading-7 text-black/62">
+          Информация на сайте носит справочный характер. Условия партнёрства и франчайзинга обсуждаются
+          индивидуально. Заявка через форму не создаёт договорных обязательств.
+        </p>
+      </div>
+      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">FAQ</p>
+        <div className="mt-5">
+          <FaqAccordion items={items} />
         </div>
       </div>
     </div>
@@ -1634,20 +1743,38 @@ function FranchiseTemplate(page: ResolvedPage) {
     <>
       <section className="border-b border-white/8 bg-black">
         <StructuredData data={buildJsonLd(page)} />
-        <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-[86rem] px-5 py-12 sm:px-6 lg:px-8 lg:pb-14 lg:pt-16">
           <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
-          <PageHero
-            contract={franchiseContent.hero}
-            tone="dark"
-            media={<FranchiseLaunchVisual priority />}
-            compact
-          />
+          <div className="grid gap-10 py-8 xl:grid-cols-[0.82fr_1.18fr] xl:items-center">
+            <div>
+              <div className="mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-white/42">
+                <span className="h-px w-12 bg-white/22" />
+                <span>{franchiseContent.hero.eyebrow}</span>
+              </div>
+              <h1 className="max-w-4xl text-5xl font-semibold leading-[0.96] tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.8rem]">
+                {franchiseContent.hero.title}
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">{franchiseContent.hero.body}</p>
+              <ActionGroup actions={franchiseContent.hero.actions} tone="dark" analyticsPrefix="franchise_hero" />
+              <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-5 border-y border-white/10 py-5 sm:grid-cols-4">
+                {franchiseHeroSignals.map((signal) => (
+                  <div key={signal.label}>
+                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/32">
+                      {signal.label}
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-white/78">{signal.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <FranchiseHeroScene priority />
+          </div>
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
-          <div className="grid gap-10 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
+          <div className="grid gap-12 xl:grid-cols-[0.72fr_1.28fr] xl:items-start">
             <div>
               <SectionIntro
                 contract={{
@@ -1656,73 +1783,22 @@ function FranchiseTemplate(page: ResolvedPage) {
                   body: "Сначала короткая заявка, затем квалификация региона, формата, документов и готовности к запуску под брендом.",
                 }}
               />
-              <div className="mt-8 rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-[0_12px_34px_rgba(10,10,10,0.04)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">
-                  Принцип коммуникации
-                </p>
+              <div className="mt-9 border-y border-black/10 py-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">Принцип коммуникации</p>
                 <p className="mt-4 text-sm leading-7 text-black/62">
                   Мы не публикуем универсальную цену, окупаемость или доходность. Это снижает риск неверных ожиданий и
                   переводит разговор в конкретику: город, формат, документы, обязанности сторон и следующий шаг.
                 </p>
               </div>
             </div>
-            <FranchiseProcessGrid />
+            <FranchiseRoadmap />
           </div>
         </div>
       </section>
 
       <section className="border-y border-white/8 bg-black">
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
-          <div className="grid gap-6 xl:grid-cols-[1.04fr_0.96fr] xl:items-start">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-              <SectionIntro contract={franchiseContent.supportSection} tone="dark" />
-              <div className="mt-8">
-                <FranchiseSupportPreview />
-              </div>
-            </div>
-            <div className="grid gap-5">
-              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                <SectionIntro contract={franchiseContent.audienceSection} tone="dark" />
-                <div className="mt-6 grid gap-3">
-                  {franchiseContent.audienceItems.map((item) => (
-                    <div key={item} className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/70">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/40">Документы и материалы</p>
-                <div className="mt-5 grid gap-3">
-                  <ButtonLink
-                    href={documentLinks.franchisePresentation}
-                    target="_blank"
-                    tone="dark"
-                    variant="secondary"
-                    analytics="franchise_download_presentation"
-                  >
-                    Скачать презентацию для партнёров
-                  </ButtonLink>
-                  <ButtonLink
-                    href={documentLinks.deviceAndPackage}
-                    target="_blank"
-                    tone="dark"
-                    variant="secondary"
-                    analytics="franchise_download_product_pack"
-                  >
-                    Скачать материалы по продукту
-                  </ButtonLink>
-                </div>
-                <div className="mt-5 text-sm leading-6 text-white/62">
-                  {franchisePillars.map((pillar) => (
-                    <p key={pillar} className="mt-3 first:mt-0">
-                      {pillar}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <FranchisePartnerKit />
         </div>
       </section>
 
@@ -1730,22 +1806,7 @@ function FranchiseTemplate(page: ResolvedPage) {
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
           <div className="grid gap-8 xl:grid-cols-[1.04fr_0.96fr] xl:items-start">
             <LeadForm type="franchise" schema={formSchemas.franchiseBase} />
-            <div className="grid gap-5">
-              <FranchiseLaunchVisual compact className="border-black/10" />
-              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">Не является публичной офертой</p>
-                <p className="mt-4 text-sm leading-7 text-black/62">
-                  Информация на сайте носит справочный характер. Условия партнёрства и франчайзинга обсуждаются
-                  индивидуально. Заявка через форму не создаёт договорных обязательств.
-                </p>
-              </div>
-              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">FAQ</p>
-                <div className="mt-5">
-                  <FaqAccordion items={franchiseFaq} />
-                </div>
-              </div>
-            </div>
+            <FranchiseFormAside items={franchiseFaq} />
           </div>
         </div>
       </section>

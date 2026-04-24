@@ -471,9 +471,9 @@ export const productPageContent = {
 export const franchiseContent = {
   hero: {
     eyebrow: "Франчайзинг",
-    title: "Франчайзинг STILNO",
+    title: "Франчайзинг STILNO для регионального запуска",
     body:
-      "Партнёрский запуск бренда STILNO в регионах. Условия обсуждаются индивидуально после заявки и не являются публичной офертой.",
+      "Партнёрский запуск бренда STILNO в регионах: заявка, квалификация города, формат, документы и подготовка старта. Условия обсуждаются индивидуально и не являются публичной офертой.",
     actions: [
       { label: "Оставить заявку", href: "#franchise-form", variant: "primary" },
       {
@@ -487,13 +487,13 @@ export const franchiseContent = {
   } satisfies PageHeroContract,
   supportSection: {
     eyebrow: "Поддержка",
-    title: "Что получает партнёр",
+    title: "Партнёрский комплект без витринных обещаний",
     body:
       "В старт входят материалы, продуктовая база, документы, контакт менеджера и аккуратная работа с категорией 18+.",
   } satisfies SectionContract,
   audienceSection: {
     eyebrow: "Кому подходит",
-    title: "Кому подходит франчайзинг STILNO",
+    title: "Кому подходит запуск под брендом STILNO",
     body:
       "Без публичных обещаний доходности, без упрощённых цифр и без давления витринной риторикой.",
   } satisfies SectionContract,
