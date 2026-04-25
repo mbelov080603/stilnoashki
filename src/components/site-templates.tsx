@@ -59,7 +59,7 @@ function ButtonLink({
   const style =
     variant === "primary"
       ? tone === "dark"
-        ? "border-transparent bg-[var(--color-silver)] text-black hover:bg-white"
+        ? "border-white/14 bg-white/[0.06] text-white hover:border-white/28 hover:bg-white/[0.1]"
         : "border-transparent bg-black text-white hover:bg-black/86"
       : tone === "dark"
         ? "border-white/12 bg-white/[0.04] text-white hover:border-white/22 hover:bg-white/[0.08]"
@@ -456,17 +456,6 @@ function EditorialImageCard({
   );
 }
 
-const franchiseVisualSteps = [
-  "заявка",
-  "контакт",
-  "город",
-  "формат",
-  "условия",
-  "договор",
-  "подготовка",
-  "старт",
-];
-
 const franchiseProcessDetails = [
   {
     title: "Заявка",
@@ -587,29 +576,13 @@ function FranchiseProductLineup({ priority = false, compact = false }: { priorit
   );
 }
 
-function FranchiseHeroTimeline() {
-  return (
-    <ol className="grid grid-cols-4 gap-x-3 gap-y-4 border-t border-white/16 pt-4 sm:grid-cols-8">
-      {franchiseVisualSteps.map((step, index) => (
-        <li key={step} className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="size-2.5 shrink-0 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.32)]" aria-hidden="true" />
-            <span className="text-[0.65rem] font-medium text-white/76">{String(index + 1).padStart(2, "0")}</span>
-          </div>
-          <p className="mt-2 text-[0.62rem] font-semibold uppercase leading-tight tracking-[0.08em] text-white/62 sm:text-[0.58rem]">
-            {step}
-          </p>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 function FranchiseHeroScene({ priority = false }: { priority?: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#08090a] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)] sm:p-5">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(255,255,255,0.16),transparent_28%),linear-gradient(118deg,rgba(255,255,255,0.06)_0_10%,transparent_10%_20%,rgba(255,255,255,0.09)_20%_31%,transparent_31%_46%,rgba(255,255,255,0.06)_46%_59%,transparent_59%_73%,rgba(255,255,255,0.05)_73%_84%,transparent_84%)]" />
-      <div className="relative overflow-hidden rounded-[1.9rem] border border-white/16 bg-[#101113] p-5 sm:p-7">
+    <div className="relative overflow-hidden rounded-[2rem] bg-[#0c0d0e] p-px shadow-[0_30px_90px_rgba(0,0,0,0.34)]">
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.16),transparent_28%,rgba(255,255,255,0.06)_72%,transparent)]" />
+      <div className="relative overflow-hidden rounded-[calc(2rem-1px)] bg-[#101113] p-5 ring-1 ring-white/8 sm:p-7">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_28%,rgba(255,255,255,0.11),transparent_34%)]" />
+        <div className="absolute -right-24 bottom-0 h-56 w-72 bg-white/[0.03] blur-3xl" />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/52">STILNO / launch file</p>
           <span className="rounded-full border border-white/12 px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/58">
@@ -645,10 +618,6 @@ function FranchiseHeroScene({ priority = false }: { priority?: boolean }) {
               <p className="mt-2 text-sm leading-5 text-white/76">брендовые материалы · продуктовая база · рабочий контакт</p>
             </div>
           </div>
-        </div>
-
-        <div className="relative z-10 mt-7">
-          <FranchiseHeroTimeline />
         </div>
       </div>
     </div>
@@ -760,13 +729,13 @@ function FranchiseFormAside({ items }: { items: typeof faqItems }) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.15),transparent_30%)]" />
         <div className="relative z-10">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Перед заявкой</p>
-          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.045em]">Подготовьте город, формат и статус проекта</h3>
+          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.045em]">Заполните короткую заявку</h3>
           <p className="mt-4 text-sm leading-6 text-white/62">
-            Так менеджер быстрее отделит франчайзинговый запуск от опта, розничного запроса или регионального партнёрства.
+            Достаточно контактов, города, формата запроса и комментария. Остальные детали уточняются в разговоре.
           </p>
           <FranchiseProductLineup compact />
           <div className="mt-5 divide-y divide-white/10 border-y border-white/10">
-            {["город / регион", "интересующий формат", "опыт в рознице", "стадия проекта"].map((item) => (
+            {["ФИО", "телефон и email", "город", "для себя / опт", "комментарий"].map((item) => (
               <p key={item} className="py-3 text-sm text-white/70">
                 {item}
               </p>
@@ -785,6 +754,93 @@ function FranchiseFormAside({ items }: { items: typeof faqItems }) {
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">FAQ</p>
         <div className="mt-5">
           <FaqAccordion items={items} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const partnerMarketplaceSpecs = [
+  { label: "формат", value: "устройство + картридж" },
+  { label: "объём", value: "10 мл" },
+  { label: "никотин", value: "20 мг/см³" },
+  { label: "аккумулятор", value: "850 мА·ч" },
+  { label: "порт", value: "Type-C" },
+  { label: "мощность", value: "10–22 Вт" },
+];
+
+function PartnerProductShowcase() {
+  const showcaseVariants = featuredProduct.variants.slice(0, 8);
+
+  return (
+    <div className="mt-8 grid gap-5 xl:grid-cols-[0.34fr_0.66fr] xl:items-stretch">
+      <aside className="relative overflow-hidden rounded-[2rem] bg-[#0c0d0f] p-6 text-white shadow-[0_20px_70px_rgba(10,10,10,0.14)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(255,255,255,0.14),transparent_32%)]" />
+        <div className="relative z-10 flex h-full flex-col">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Витрина</p>
+          <h3 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.045em]">STILNO CLICK ONE</h3>
+          <p className="mt-4 text-sm leading-6 text-white/62">
+            Вкусы, параметры и карточки для первичного партнёрского запроса.
+          </p>
+          <div className="mt-6">
+            <FranchiseProductLineup compact />
+          </div>
+          <div className="mt-auto grid grid-cols-2 gap-2 pt-6">
+            {partnerMarketplaceSpecs.slice(0, 4).map((spec) => (
+              <div key={spec.label} className="rounded-[1rem] border border-white/10 bg-white/[0.04] p-3">
+                <p className="text-[0.62rem] uppercase tracking-[0.18em] text-white/34">{spec.label}</p>
+                <p className="mt-2 text-sm font-medium text-white">{spec.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      <div
+        className="-mx-5 overflow-x-auto px-5 pb-3 sm:mx-0 sm:px-0"
+        aria-label="Карусель вариантов STILNO"
+        data-product-showcase-carousel
+      >
+        <div className="flex min-w-full snap-x gap-4">
+          {showcaseVariants.map((variant) => (
+            <article
+              key={variant.id}
+              className="min-w-[17rem] snap-start rounded-[1.6rem] border border-black/10 bg-white p-4 shadow-[0_16px_46px_rgba(10,10,10,0.06)] sm:min-w-[19rem]"
+              data-product-showcase-card
+            >
+              <ProductPhotoCard
+                src={variant.packaging ?? variant.image ?? featuredProduct.images[0]}
+                alt={`${featuredProduct.title} — ${variant.title}`}
+                aspect="square"
+                className="min-h-[14rem] rounded-[1.25rem] p-3"
+              />
+              <div className="mt-4 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">STILNO CLICK ONE</p>
+                  <h3 className="mt-2 text-xl font-semibold leading-tight tracking-[-0.035em] text-black">
+                    {variant.title}
+                  </h3>
+                </div>
+                <span className="shrink-0 rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-black/56">
+                  18+
+                </span>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {partnerMarketplaceSpecs.slice(1, 5).map((spec) => (
+                  <div key={`${variant.id}-${spec.label}`} className="rounded-[0.9rem] bg-black/[0.035] px-3 py-2">
+                    <p className="text-[0.58rem] uppercase tracking-[0.16em] text-black/34">{spec.label}</p>
+                    <p className="mt-1 text-sm font-medium text-black/78">{spec.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 grid gap-3 border-t border-black/10 pt-4">
+                <p className="text-sm font-medium text-black">Условия по запросу</p>
+                <Link href="#partner-form" className="inline-flex min-h-10 items-center justify-center rounded-full border border-black bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/82">
+                  Запросить
+                </Link>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </div>
@@ -840,14 +896,14 @@ function SpecsList({ product }: { product: Product }) {
 
 function LegalWarningStrip() {
   return (
-    <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-[#0b1018] p-5 sm:p-6">
-      <div className="absolute inset-x-5 top-1/2 h-px bg-white/10" aria-hidden="true" />
-      <div className="relative grid gap-5 sm:grid-cols-[8rem_1fr] lg:grid-cols-[9rem_1fr_auto] lg:items-center">
-        <div className="inline-flex h-16 w-32 items-center justify-center rounded-full border border-white/16 bg-white/[0.08] text-3xl font-semibold tracking-[0.12em] text-white">
+    <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-[#080a0d] p-5 sm:p-6">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_50%,rgba(255,255,255,0.09),transparent_30%)]" />
+      <div className="relative grid gap-5 sm:grid-cols-[7.5rem_1fr] lg:items-center">
+        <div className="inline-flex h-16 w-28 items-center justify-center rounded-full border border-white/14 bg-white/[0.06] text-3xl font-semibold tracking-[0.12em] text-white">
           18+
         </div>
         <div className="min-w-0">
-          <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white">Ответственное потребление</h3>
+          <h3 className="text-xl font-semibold tracking-[-0.04em] text-white sm:text-2xl">Ответственное потребление</h3>
           <p className="mt-3 text-sm leading-6 text-white/62">
             Никотин вызывает зависимость. Продажа несовершеннолетним запрещена.
           </p>
@@ -855,13 +911,6 @@ function LegalWarningStrip() {
             Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.
           </p>
         </div>
-        <Link
-          href="/responsible"
-          style={{ color: "#0b1018" }}
-          className="inline-flex min-h-11 w-full max-w-full items-center justify-center rounded-full bg-white px-5 py-3 text-center text-sm font-semibold leading-5 text-black transition hover:bg-[var(--color-silver)] sm:w-auto lg:min-w-[14rem]"
-        >
-          Правовая информация
-        </Link>
       </div>
     </div>
   );
@@ -886,6 +935,9 @@ function Footer() {
           <p className="mt-4 text-sm leading-6 text-white/60">
             Официальный сайт бренда STILNO. Информация предназначена для лиц старше 18 лет.
           </p>
+          <Link href="/responsible" className="mt-5 inline-flex text-sm font-medium text-white transition hover:text-white/72">
+            Правовая информация
+          </Link>
         </div>
 
         <div>
@@ -1592,13 +1644,6 @@ function ProductTemplate(page: ResolvedPage) {
 }
 
 function PartnersTemplate(page: ResolvedPage) {
-  const partnerDirectionImages = [
-    "/stilno/products-cutout/ananas-mango.png",
-    "/stilno/products-cutout/barbaris.png",
-    "/stilno/products-cutout/myata.png",
-    "/stilno/products-cutout/chernika-klyukva-vishnya.png",
-  ];
-
   return (
     <section className="bg-[var(--color-page)]">
       <StructuredData data={buildJsonLd(page)} />
@@ -1624,40 +1669,7 @@ function PartnersTemplate(page: ResolvedPage) {
 
         <div className="mt-12">
           <SectionIntro contract={partnersPageContent.directionsSection} />
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {partnersPageContent.directions.map((item, index) => (
-              <article key={item.title} className="rounded-[1.7rem] border border-black/10 bg-white p-5 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-                <ProductPhotoCard
-                  src={partnerDirectionImages[index] ?? featuredProduct.images[0]}
-                  alt={`${item.title} STILNO`}
-                  aspect="square"
-                  className="mb-5 min-h-[11rem] rounded-[1.25rem] p-3"
-                />
-                <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-black/62">{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-12 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-black p-6 text-white">
-            <SectionIntro contract={partnersPageContent.contactFlowSection} tone="dark" />
-            <div className="mt-8 grid gap-3">
-              {partnersPageContent.contactFlow.map((step) => (
-                <div key={step} className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm leading-6 text-white/74">
-                  {step}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <SvgAsset
-              src="/stilno/generated/partner-production.jpg"
-              alt="Производственная и партнёрская база STILNO"
-              className="w-full rounded-[1.4rem] border border-black/8"
-            />
-          </div>
+          <PartnerProductShowcase />
         </div>
 
         <div id="partner-form" className="mt-12 grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
@@ -1778,16 +1790,16 @@ function FranchiseTemplate(page: ResolvedPage) {
             <div>
               <SectionIntro
                 contract={{
-                  eyebrow: "Процесс",
-                  title: "Как проходит запуск",
-                  body: "Сначала короткая заявка, затем квалификация региона, формата, документов и готовности к запуску под брендом.",
+                  eyebrow: "Принципы",
+                  title: "Премиальный бренд строится на бескомпромиссном качестве.",
+                  body: "Мы работаем над тем, чтобы потребитель получал удовольствие от каждой затяжки, а процесс парения оставался максимально комфортным, стабильным и предсказуемым.",
                 }}
               />
               <div className="mt-9 border-y border-black/10 py-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">Принцип коммуникации</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">Подход к запуску</p>
                 <p className="mt-4 text-sm leading-7 text-black/62">
-                  Мы не публикуем универсальную цену, окупаемость или доходность. Это снижает риск неверных ожиданий и
-                  переводит разговор в конкретику: город, формат, документы, обязанности сторон и следующий шаг.
+                  В партнёрском запуске для нас важны не громкие обещания, а аккуратная продуктовая подача, понятные
+                  материалы, правовая чистота и готовность партнёра соблюдать стандарты категории 18+.
                 </p>
               </div>
             </div>

@@ -145,7 +145,7 @@ function ctaClassName(variant: "primary" | "secondary" | "ghost" = "primary") {
     return "border border-black/12 bg-black/[0.03] text-black hover:border-black/22 hover:bg-black/[0.05]";
   }
 
-  return "border border-transparent bg-[var(--color-silver)] text-black hover:bg-white";
+  return "border border-white/14 bg-white/[0.06] text-white hover:border-white/28 hover:bg-white/[0.1]";
 }
 
 function createScript(src: string, onload?: () => void) {
@@ -804,11 +804,11 @@ export function LeadForm({
               type="checkbox"
               required={checkbox.required}
               name={checkbox.name}
-              className={`mt-1 size-4 rounded ${
+              className={`mt-1 h-4 w-4 shrink-0 rounded accent-black ${
                 theme === "dark" ? "border-white/20 bg-transparent" : "border-black/20 bg-transparent"
               }`}
             />
-            <span>{checkbox.label}</span>
+            <span className="min-w-0 flex-1">{checkbox.label}</span>
           </label>
         ))}
       </div>

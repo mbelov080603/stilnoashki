@@ -117,52 +117,13 @@ const franchiseFields: LeadField[] = [
     placeholder: "Укажите город / регион",
   },
   {
-    name: "businessStatus",
-    label: "Статус",
-    type: "select",
-    required: true,
-    options: [
-      { value: "legal-entity", label: "есть ИП/юрлицо" },
-      { value: "planning", label: "планирую открыть" },
-      { value: "existing-store", label: "действующий магазин" },
-      { value: "distributor", label: "дистрибьютор" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
-    name: "retailExperience",
-    label: "Опыт в рознице",
-    type: "select",
-    required: true,
-    options: [
-      { value: "yes", label: "есть" },
-      { value: "no", label: "нет" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
     name: "interestFormat",
-    label: "Интересующий формат",
+    label: "Формат запроса",
     type: "select",
     required: true,
     options: [
-      { value: "franchise", label: "франчайзинг" },
+      { value: "personal", label: "для себя" },
       { value: "wholesale", label: "опт" },
-      { value: "regional", label: "региональное партнёрство" },
-      { value: "retail", label: "розничная точка" },
-      { value: "other", label: "другое" },
-    ],
-  },
-  {
-    name: "projectStage",
-    label: "Стадия проекта",
-    type: "select",
-    required: true,
-    options: [
-      { value: "research", label: "изучаю" },
-      { value: "location", label: "есть помещение" },
-      { value: "ready", label: "готов к запуску" },
-      { value: "existing-business", label: "действующий бизнес" },
     ],
   },
   {
@@ -307,7 +268,7 @@ export const formSchemas = {
   } satisfies LeadFormSchema,
   franchiseBase: {
     title: "Заявка на франчайзинг",
-    description: "Укажите город, формат и стадию проекта. Условия обсуждаются индивидуально после заявки.",
+    description: "Оставьте базовые контакты и короткий комментарий. Условия обсуждаются индивидуально после заявки.",
     submitLabel: "Отправить заявку",
     successMessage:
       "Заявка отправлена. Мы свяжемся с вами по указанным контактам. Обращаем внимание: условия партнёрства обсуждаются индивидуально и не являются публичной офертой.",
@@ -524,10 +485,10 @@ export const partnersPageContent = {
       "Оптовые, региональные и партнёрские запросы по бренду STILNO принимаются через форму сайта. Условия обсуждаются индивидуально.",
   } satisfies PageHeroContract,
   directionsSection: {
-    eyebrow: "Направления",
-    title: "Отдельные B2B-направления без смешения с франчайзинговым запуском.",
+    eyebrow: "Витрина",
+    title: "Варианты STILNO CLICK ONE для партнёрского запроса.",
     body:
-      "Страница помогает быстро выбрать формат обращения: опт, регион, действующая розница или запуск под брендом.",
+      "Карточки помогают быстро сравнить вкусы и базовые параметры линейки перед оптовым или региональным обращением.",
   } satisfies SectionContract,
   contactFlowSection: {
     eyebrow: "Как проходит контакт",
