@@ -3,7 +3,6 @@ import { IBM_Plex_Mono, Manrope } from "next/font/google";
 
 import { SiteShell } from "@/components/site-templates";
 import {
-  defaultMetadataImage,
   isIndexableDeployment,
   siteOrigin,
   siteSettings,
@@ -21,8 +20,6 @@ const plexMono = IBM_Plex_Mono({
   weight: ["400", "500"],
   variable: "--font-plex-mono",
 });
-
-const defaultImage = `${siteOrigin}${defaultMetadataImage}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
@@ -46,20 +43,11 @@ export const metadata: Metadata = {
     description: siteSettings.description,
     url: siteOrigin,
     siteName: siteSettings.brandName,
-    images: [
-      {
-        url: defaultImage,
-        width: 1200,
-        height: 1200,
-        alt: `${siteSettings.brandName} product render`,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteSettings.title,
     description: siteSettings.description,
-    images: [defaultImage],
   },
 };
 

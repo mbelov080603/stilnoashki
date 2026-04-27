@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { MediaSlot } from "@/components/media-slot";
 import {
   AgeGate,
   AnalyticsBridge,
@@ -15,7 +15,7 @@ import {
   VariantPickerFallback,
 } from "@/components/site-client";
 import { featuredProduct, galleryItems, productCategories, qualityStandards } from "@/lib/catalog-data";
-import { assetPath, companyDetails, documentLinks, siteOrigin, siteSettings } from "@/lib/site-config";
+import { companyDetails, documentLinks, siteOrigin, siteSettings } from "@/lib/site-config";
 import {
   articles,
   brandNarrative,
@@ -34,7 +34,7 @@ import {
   storesContent,
   vacancies,
 } from "@/lib/site-content";
-import { defaultMetadataImage, getAllStaticPaths, getArticlePath, getBreadcrumbs, getProductCategoryPath, getProductPath, getVacancyPath } from "@/lib/site-routing";
+import { getAllStaticPaths, getArticlePath, getBreadcrumbs, getProductCategoryPath, getProductPath, getVacancyPath } from "@/lib/site-routing";
 import type { CtaLink, PageHeroContract, Product, ResolvedPage, SectionContract } from "@/lib/site-types";
 
 function classNames(...values: Array<string | false | undefined>) {
@@ -284,7 +284,6 @@ function buildJsonLd(page?: ResolvedPage) {
           "@type": "Organization",
           name: companyDetails.companyName,
         },
-        image: page.product?.images[0] ? `${siteOrigin}${page.product.images[0]}` : undefined,
         url: canonicalUrl,
         additionalProperty: page.product?.specs.map((spec) => ({
           "@type": "PropertyValue",
@@ -378,81 +377,34 @@ function RichText({
   );
 }
 
-function SvgAsset({
-  src,
-  alt,
-  className,
-}: {
-  src: string;
-  alt: string;
-  className?: string;
-}) {
-  return <Image src={assetPath(src)} alt={alt} width={1600} height={900} unoptimized className={className} />;
-}
-
 function ProductPhotoCard({
-  src,
-  alt,
+  slotId,
+  title = "Место для продуктового фото",
+  note = "Здесь будет новый продуктовый визуал.",
   aspect = "wide",
-  priority = false,
   className,
 }: {
-  src: string;
-  alt: string;
+  slotId: string;
+  title?: string;
+  note?: string;
   aspect?: "square" | "wide";
-  priority?: boolean;
   className?: string;
 }) {
-  return (
-    <div
-      className={classNames(
-        "relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5",
-        aspect === "wide" ? "min-h-[18rem]" : "min-h-[15rem]",
-        className,
-      )}
-    >
-      <Image
-        src={assetPath(src)}
-        alt={alt}
-        width={1600}
-        height={1200}
-        priority={priority}
-        unoptimized
-        className="relative z-10 mx-auto h-full w-full object-contain drop-shadow-[0_18px_26px_rgba(0,0,0,0.16)]"
-      />
-    </div>
-  );
+  return <MediaSlot slotId={slotId} title={title} note={note} aspect={aspect} className={className} />;
 }
 
 function EditorialImageCard({
-  src,
-  alt,
+  slotId,
+  title = "Место для фото",
+  note = "Новый визуал будет добавлен после согласования.",
   className,
-  priority = false,
 }: {
-  src: string;
-  alt: string;
+  slotId: string;
+  title?: string;
+  note?: string;
   className?: string;
-  priority?: boolean;
 }) {
-  return (
-    <div
-      className={classNames(
-        "overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3]",
-        className,
-      )}
-    >
-      <Image
-        src={assetPath(src)}
-        alt={alt}
-        width={1800}
-        height={1200}
-        priority={priority}
-        unoptimized
-        className="h-full min-h-[22rem] w-full object-contain p-3"
-      />
-    </div>
-  );
+  return <MediaSlot slotId={slotId} title={title} note={note} aspect="wide" className={className} />;
 }
 
 const franchiseProcessDetails = [
@@ -509,34 +461,6 @@ const franchiseSupportItems = [
   },
 ];
 
-const franchiseVisualDevices = [
-  {
-    src: "/stilno/products-cutout/myata.png",
-    className: "z-10 w-[clamp(5.8rem,18vw,11rem)] opacity-80",
-    compactClassName: "z-10 w-[clamp(3.8rem,15vw,6.7rem)] opacity-80",
-  },
-  {
-    src: "/stilno/products-cutout/barbaris.png",
-    className: "z-20 w-[clamp(6.7rem,20vw,13rem)]",
-    compactClassName: "z-20 w-[clamp(4.5rem,17vw,7.8rem)]",
-  },
-  {
-    src: "/stilno/products-cutout/yagodniy-energetik.png",
-    className: "z-30 w-[clamp(7.6rem,22vw,15rem)]",
-    compactClassName: "z-30 w-[clamp(5.2rem,19vw,8.8rem)]",
-  },
-  {
-    src: "/stilno/products-cutout/vishnya-limon-persik.png",
-    className: "z-20 w-[clamp(6.7rem,20vw,13rem)]",
-    compactClassName: "z-20 w-[clamp(4.5rem,17vw,7.8rem)]",
-  },
-  {
-    src: "/stilno/products-cutout/fruktoviy-chay.png",
-    className: "z-10 w-[clamp(5.8rem,18vw,11rem)] opacity-90",
-    compactClassName: "z-10 w-[clamp(3.8rem,15vw,6.7rem)] opacity-90",
-  },
-];
-
 const franchiseHeroSignals = [
   { label: "Возрастная рамка", value: "18+" },
   { label: "Коммуникация", value: "заявка -> контакт" },
@@ -545,33 +469,16 @@ const franchiseHeroSignals = [
 ];
 
 function FranchiseProductLineup({ priority = false, compact = false }: { priority?: boolean; compact?: boolean }) {
+  void priority;
+
   return (
-    <div
-      className={classNames(
-        "pointer-events-none relative mx-auto flex w-full items-end justify-center",
-        compact
-          ? "min-h-[13rem] max-w-[28rem] -space-x-9 sm:min-h-[16rem] sm:-space-x-12"
-          : "min-h-[21rem] max-w-[48rem] -space-x-14 sm:min-h-[28rem] sm:-space-x-28",
-      )}
-      aria-hidden="true"
-    >
-      <div className="absolute inset-x-8 bottom-0 h-16 rounded-full bg-black/10 blur-2xl" />
-      {franchiseVisualDevices.map((device) => (
-        <Image
-          key={device.src}
-          src={assetPath(device.src)}
-          alt=""
-          width={1181}
-          height={1700}
-          priority={priority}
-          unoptimized
-          className={classNames(
-            "relative h-auto shrink-0 object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.18)]",
-            compact ? device.compactClassName : device.className,
-          )}
-        />
-      ))}
-    </div>
+    <MediaSlot
+      slotId={compact ? "franchise-lineup-compact" : "franchise-lineup"}
+      title="Место для продуктовой линейки"
+      note="Позже сюда можно поставить новую групповую фотографию или рендер."
+      aspect={compact ? "square" : "wide"}
+      className={compact ? "min-h-[13rem] sm:min-h-[16rem]" : "min-h-[21rem] sm:min-h-[28rem]"}
+    />
   );
 }
 
@@ -800,8 +707,9 @@ function PartnerProductShowcase() {
               data-product-showcase-card
             >
               <ProductPhotoCard
-                src={variant.packaging ?? variant.image ?? featuredProduct.images[0]}
-                alt={`${featuredProduct.title} — ${variant.title}`}
+                slotId={`partner-variant-${variant.id}`}
+                title={variant.title}
+                note="Слот карточки товара для будущего фото."
                 aspect="square"
                 className="min-h-[14rem] rounded-[1.25rem] p-3"
               />
@@ -1014,9 +922,9 @@ export function HomeTemplate() {
             contract={homeContent.hero}
             media={
               <EditorialImageCard
-                src="/stilno/generated/home-hero-product.jpg"
-                alt="STILNO CLICK ONE на тёмной продуктовой сцене"
-                priority
+                slotId="home-hero"
+                title="Главное фото"
+                note="Будущий hero-визуал для первой секции."
               />
             }
           />
@@ -1030,8 +938,9 @@ export function HomeTemplate() {
             <div className="rounded-[1rem] border border-black/10 bg-white p-6">
               <div className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
                 <EditorialImageCard
-                  src="/stilno/generated/product-snapshot.jpg"
-                  alt="STILNO CLICK ONE в нескольких вкусах"
+                  slotId="home-product"
+                  title="Фото продукта"
+                  note="Сюда будет добавлена новая подача продуктовой линии."
                   className="min-h-[24rem]"
                 />
                 <div>
@@ -1070,10 +979,11 @@ export function HomeTemplate() {
           <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr]">
             <SectionIntro contract={homeContent.partnersSection} />
             <div className="rounded-[1rem] border border-black/10 bg-white p-5">
-              <SvgAsset
-                src="/stilno/generated/partner-kit-visual.jpg"
-                alt="Партнёрский комплект STILNO"
-                className="w-full rounded-[1rem] border border-black/10"
+              <EditorialImageCard
+                slotId="home-partners"
+                title="Фото для партнёрского блока"
+                note="Новый B2B-визуал будет вставлен сюда."
+                className="w-full"
               />
             </div>
           </div>
@@ -1100,10 +1010,11 @@ export function HomeTemplate() {
               </div>
             </div>
             <div className="rounded-[1rem] border border-black/10 bg-white p-6">
-              <SvgAsset
-                src="/stilno/generated/retail-request-visual.jpg"
-                alt="Розничный запрос STILNO без неподтверждённых точек"
-                className="w-full rounded-[1rem] border border-black/8"
+              <EditorialImageCard
+                slotId="home-stores"
+                title="Фото для розничного блока"
+                note="Позже здесь будет визуал для запросов по городам."
+                className="w-full"
               />
             </div>
           </div>
@@ -1141,8 +1052,9 @@ export function HomeTemplate() {
             </div>
             <div className="grid gap-5">
               <EditorialImageCard
-                src="/stilno/generated/partner-kit-visual.jpg"
-                alt="Партнёрские материалы STILNO"
+                slotId="home-faq-side"
+                title="Дополнительное фото"
+                note="Слот под поддерживающий визуал рядом с FAQ."
                 className="min-h-[18rem]"
               />
               <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
@@ -1182,10 +1094,11 @@ function StoresIndexTemplate(page: ResolvedPage) {
           contract={storesContent.hero}
           media={
             <div className="rounded-[1rem] border border-black/10 bg-white p-4">
-              <SvgAsset
-                src="/stilno/generated/retail-request-visual.jpg"
-                alt="Статус розничной карты STILNO"
-                className="w-full rounded-[1rem]"
+              <EditorialImageCard
+                slotId="stores-hero"
+                title="Фото для страницы розницы"
+                note="Здесь будет новый визуал для карты и городов."
+                className="w-full"
               />
             </div>
           }
@@ -1224,8 +1137,9 @@ function StoresIndexTemplate(page: ResolvedPage) {
           <LeadForm type="retail" schema={formSchemas.retailBase} />
           <div className="grid gap-4">
             <EditorialImageCard
-              src="/stilno/generated/stores-inquiry-visual.jpg"
-              alt="Официальный розничный запрос STILNO"
+              slotId="stores-request"
+              title="Фото для формы запроса"
+              note="Слот под будущую фотографию или композицию."
               className="min-h-[18rem]"
             />
             <div className="rounded-[1rem] border border-black/10 bg-white p-6">
@@ -1329,12 +1243,14 @@ function AboutTemplate(page: ResolvedPage) {
           </div>
           <div className="grid gap-5">
             <EditorialImageCard
-              src="/stilno/generated/about-product-duo.jpg"
-              alt="STILNO CLICK ONE в тёмной брендовой композиции"
+              slotId="about-primary"
+              title="Фото бренда"
+              note="Основной визуал страницы о бренде будет добавлен позже."
             />
             <EditorialImageCard
-              src="/stilno/generated/quality-production.jpg"
-              alt="Производственная линия STILNO"
+              slotId="about-secondary"
+              title="Фото производства"
+              note="Сюда можно поставить новый производственный кадр."
             />
           </div>
         </div>
@@ -1364,9 +1280,9 @@ function GalleryTemplate(page: ResolvedPage) {
           }}
           media={
             <EditorialImageCard
-              src="/stilno/generated/gallery-editorial-board.jpg"
-              alt="Устройство, упаковка и продуктовая серия STILNO CLICK ONE"
-              priority
+              slotId="gallery-hero"
+              title="Фото галереи"
+              note="Главный визуал галереи будет заменён новым."
             />
           }
           compact
@@ -1387,7 +1303,12 @@ function GalleryTemplate(page: ResolvedPage) {
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {items.map((item) => (
                     <article key={item.id} className="rounded-[1rem] border border-black/10 bg-white p-5">
-                      <ProductPhotoCard src={item.media ?? featuredProduct.images[0]} alt={item.alt} aspect="square" />
+                      <ProductPhotoCard
+                        slotId={`gallery-${item.id}`}
+                        title={item.title}
+                        note="Слот галереи для будущего фото."
+                        aspect="square"
+                      />
                       <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
                       <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
                     </article>
@@ -1407,7 +1328,11 @@ function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="rounded-[1rem] border border-black/10 bg-white p-5">
-      <ProductPhotoCard src={product.images[0]} alt={product.title} />
+      <ProductPhotoCard
+        slotId={`product-card-${product.slug}`}
+        title={product.title}
+        note="Карточка готова к новому продуктовому фото."
+      />
       <div className="mt-5 flex items-center justify-between gap-4">
         <span className="text-xs uppercase tracking-[0.22em] text-black/36">{category?.title ?? "Продукт"}</span>
         <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/54">
@@ -1439,9 +1364,9 @@ function ProductsIndexTemplate(page: ResolvedPage) {
           }}
           media={
             <EditorialImageCard
-              src="/stilno/generated/product-hero-lineup.jpg"
-              alt="Линейка STILNO CLICK ONE"
-              priority
+              slotId="products-hero"
+              title="Фото линейки"
+              note="Сюда будет добавлен новый общий визуал продукта."
             />
           }
           compact
@@ -1493,7 +1418,13 @@ function ProductCategoryTemplate(page: ResolvedPage) {
             body: category.heroBody,
             note: category.disclaimer,
           }}
-          media={<ProductPhotoCard src={category.heroImage ?? featuredProduct.images[0]} alt={category.title} />}
+          media={
+            <ProductPhotoCard
+              slotId={`category-${category.slug}`}
+              title={category.title}
+              note="Слот категории готов к новому фото."
+            />
+          }
           compact
         />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
@@ -1523,9 +1454,9 @@ function ProductTemplate(page: ResolvedPage) {
           contract={productPageContent.hero}
           media={
             <EditorialImageCard
-              src="/stilno/generated/product-hero-lineup.jpg"
-              alt="STILNO CLICK ONE и вкусовая серия"
-              priority
+              slotId="product-hero"
+              title="Фото продукта"
+              note="Главный продуктовый визуал будет добавлен позже."
             />
           }
           compact
@@ -1574,8 +1505,9 @@ function ProductTemplate(page: ResolvedPage) {
             {product.variants.map((variant) => (
               <article key={variant.id} className="rounded-[1rem] border border-black/10 bg-white p-4">
                 <ProductPhotoCard
-                  src={variant.packaging ?? variant.image ?? product.images[0]}
-                  alt={`${product.title} — ${variant.title}`}
+                  slotId={`variant-${variant.id}`}
+                  title={variant.title}
+                  note="Слот вкуса для будущей карточки товара."
                   aspect="square"
                   className="min-h-[13rem]"
                 />
@@ -1645,9 +1577,9 @@ function PartnersTemplate(page: ResolvedPage) {
           }}
           media={
             <EditorialImageCard
-              src="/stilno/generated/partner-kit-visual.jpg"
-              alt="Партнёрские материалы STILNO"
-              priority
+              slotId="partners-hero"
+              title="Фото для партнёров"
+              note="Сюда будет поставлен новый B2B-визуал."
             />
           }
           compact
@@ -2017,7 +1949,11 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {articles.map((article) => (
             <article key={article.id} className="rounded-[1rem] border border-black/10 bg-white p-5">
-              <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
+              <ProductPhotoCard
+                slotId={`article-card-${article.slug}`}
+                title={article.title}
+                note="Слот публикации для будущей обложки."
+              />
               <div className="mt-5 flex items-center justify-between gap-4">
                 <span className="text-xs uppercase tracking-[0.22em] text-black/36">{article.category}</span>
                 <span className="text-sm text-black/42">{article.publishedAt}</span>
@@ -2060,7 +1996,11 @@ function ArticleTemplate(page: ResolvedPage) {
           {article.publishedAt} / {article.author}
         </div>
         <div className="mt-10">
-          <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
+          <ProductPhotoCard
+            slotId={`article-${article.slug}`}
+            title={article.title}
+            note="Сюда можно добавить новую обложку материала."
+          />
         </div>
         <div className="mt-10 rounded-[1rem] border border-black/10 bg-white p-8">
           <RichText paragraphs={article.body} />
@@ -2243,15 +2183,9 @@ export function getMetadataPayload(page?: ResolvedPage) {
       title: "STILNO CLICK ONE | официальный сайт бренда 18+",
       description: siteSettings.description,
       canonical: siteOrigin,
-      image: `${siteOrigin}${defaultMetadataImage}`,
+      image: undefined,
     };
   }
-
-  const image =
-    page.product?.images[0] ??
-    page.category?.heroImage ??
-    page.article?.coverImage ??
-    defaultMetadataImage;
 
   const titleMap: Partial<Record<ResolvedPage["kind"], string>> = {
     "stores-index": "Где купить STILNO | розничные запросы 18+",
@@ -2280,6 +2214,6 @@ export function getMetadataPayload(page?: ResolvedPage) {
     title: titleMap[page.kind] ?? page.title,
     description: descriptionMap[page.kind] ?? page.description,
     canonical: `${siteOrigin}/${page.pathname.join("/")}`,
-    image: image ? `${siteOrigin}${image}` : undefined,
+    image: undefined,
   };
 }

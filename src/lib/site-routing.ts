@@ -345,9 +345,6 @@ export function getAllStaticPaths() {
   ];
 }
 
-export const defaultMetadataImage =
-  "/stilno/generated/home-hero-product.jpg";
-
 export function getCanonicalUrl(pathname: string[]) {
   return pathname.length === 0 ? siteOrigin : `${siteOrigin}/${pathname.join("/")}`;
 }

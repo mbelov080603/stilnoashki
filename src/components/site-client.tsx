@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -14,8 +13,8 @@ import {
   useState,
 } from "react";
 
+import { MediaSlot } from "@/components/media-slot";
 import { analyticsIds, isStaticExport } from "@/lib/site-data";
-import { assetPath } from "@/lib/site-config";
 import type {
   CtaLink,
   LeadFormSchema,
@@ -848,23 +847,14 @@ export function VariantPicker({ product }: { product: Product }) {
     product.variants.find((variant) => variant.id === searchParams.get("flavor")) ??
     product.variants[0];
 
-  const activeImage = activeVariant.image ?? product.images[0];
-
   return (
     <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
-        {activeImage ? (
-          <Image
-            src={assetPath(activeImage)}
-            alt={`${product.title} — ${activeVariant.title}`}
-            width={1400}
-            height={1400}
-            priority
-            unoptimized
-            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_18px_26px_rgba(0,0,0,0.18)]"
-          />
-        ) : null}
-      </div>
+      <MediaSlot
+        slotId={`product-variant-${activeVariant.id}`}
+        title={activeVariant.title}
+        note="Слот подготовлен для нового фото выбранного вкуса."
+        aspect="square"
+      />
 
       <div className="rounded-[1rem] border border-black/10 bg-white p-6">
         <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
@@ -962,19 +952,12 @@ export function VariantPickerFallback({ product }: { product: Product }) {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
-        {product.images[0] ? (
-          <Image
-            src={assetPath(product.images[0])}
-            alt={product.title}
-            width={1400}
-            height={1400}
-            priority
-            unoptimized
-            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_18px_26px_rgba(0,0,0,0.18)]"
-          />
-        ) : null}
-      </div>
+      <MediaSlot
+        slotId="product-variant-fallback"
+        title={product.title}
+        note="Слот подготовлен для нового фото продукта."
+        aspect="square"
+      />
       <div className="rounded-[1rem] border border-black/10 bg-white p-6">
         <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">{firstVariant?.title}</h3>
