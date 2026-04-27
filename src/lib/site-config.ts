@@ -20,6 +20,9 @@ function normalizeUrl(value?: string) {
 function resolveSiteOrigin() {
   return (
     normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL) ??
+    (process.env.GITHUB_PAGES === "true"
+      ? "https://mbelov080603.github.io/stilnoashki"
+      : undefined) ??
     normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
     normalizeUrl(process.env.VERCEL_URL) ??
     "http://localhost:3000"
@@ -29,6 +32,9 @@ function resolveSiteOrigin() {
 export const siteOrigin = resolveSiteOrigin();
 export const isIndexableDeployment = Boolean(
   normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL) ??
+    (process.env.GITHUB_PAGES === "true"
+      ? "https://mbelov080603.github.io/stilnoashki"
+      : undefined) ??
     normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL),
 );
 export const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
