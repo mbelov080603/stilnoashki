@@ -98,10 +98,7 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
   const email = normalizeField(fields.email);
   const city = normalizeField(fields.city);
   const requestType = normalizeField(fields.requestType);
-  const businessStatus = normalizeField(fields.businessStatus);
-  const retailExperience = normalizeField(fields.retailExperience);
   const interestFormat = normalizeField(fields.interestFormat);
-  const projectStage = normalizeField(fields.projectStage);
 
   if (!consents.personalData) {
     return "Нужно согласие на обработку персональных данных.";
@@ -141,8 +138,8 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
     if (!phone || !email) {
       return "Укажите телефон и email.";
     }
-    if (!businessStatus || !retailExperience || !interestFormat || !projectStage) {
-      return "Заполните статус, опыт, формат и стадию проекта.";
+    if (!interestFormat) {
+      return "Выберите формат запроса.";
     }
   }
 

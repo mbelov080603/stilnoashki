@@ -138,14 +138,14 @@ declare global {
 
 function ctaClassName(variant: "primary" | "secondary" | "ghost" = "primary") {
   if (variant === "secondary") {
-    return "border border-white/12 bg-white/[0.04] text-white hover:border-white/24 hover:bg-white/[0.08]";
+    return "border border-black/14 bg-white text-black hover:border-black/34 hover:bg-[#f4f4f1]";
   }
 
   if (variant === "ghost") {
-    return "border border-black/12 bg-black/[0.03] text-black hover:border-black/22 hover:bg-black/[0.05]";
+    return "border border-black/10 bg-transparent text-black hover:border-black/24 hover:bg-black/[0.03]";
   }
 
-  return "border border-white/14 bg-white/[0.06] text-white hover:border-white/28 hover:bg-white/[0.1]";
+  return "border border-black bg-black text-white hover:bg-black/82";
 }
 
 function createScript(src: string, onload?: () => void) {
@@ -161,8 +161,8 @@ function createScript(src: string, onload?: () => void) {
 
 function fieldClass(theme: "light" | "dark") {
   return theme === "dark"
-    ? "border-white/10 bg-white/[0.04] text-white placeholder:text-white/28 focus:border-white/26"
-    : "border-black/10 bg-black/[0.03] text-black placeholder:text-black/32 focus:border-black/24";
+    ? "border-black/12 bg-white text-black placeholder:text-black/34 focus:border-black/36"
+    : "border-black/12 bg-white text-black placeholder:text-black/34 focus:border-black/36";
 }
 
 export function SiteHeader({
@@ -222,12 +222,12 @@ export function SiteHeader({
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/6 bg-black/78 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-black/10 bg-white/92 backdrop-blur-xl">
       <div className="mx-auto flex max-w-[86rem] items-center justify-between gap-5 px-5 py-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           data-analytics="nav_logo"
-          className="inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.55em] text-white"
+          className="inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.22em] text-black"
         >
           STILNO
         </Link>
@@ -238,7 +238,7 @@ export function SiteHeader({
               key={item.href}
               href={item.href}
               data-analytics={`nav_${item.href.replace(/\W+/g, "_")}`}
-              className="text-[0.95rem] text-white/70 transition hover:text-white"
+              className="text-[0.95rem] text-black/64 transition hover:text-black"
             >
               {item.label}
             </Link>
@@ -260,7 +260,7 @@ export function SiteHeader({
         <button
           ref={buttonRef}
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white xl:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-black xl:hidden"
           onClick={() => setMenuOpen((current) => !current)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -274,13 +274,13 @@ export function SiteHeader({
         </button>
       </div>
 
-      {menuOpen ? <div className="fixed inset-0 z-40 bg-black/60 xl:hidden" aria-hidden="true" /> : null}
+      {menuOpen ? <div className="fixed inset-0 z-40 bg-black/20 xl:hidden" aria-hidden="true" /> : null}
 
       {menuOpen ? (
         <div
           id="mobile-menu"
           ref={menuRef}
-          className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.8rem] border border-white/10 bg-[#0d0e11] p-4 shadow-[0_26px_80px_rgba(0,0,0,0.42)] xl:hidden"
+          className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1rem] border border-black/10 bg-white p-4 xl:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Мобильное меню"
@@ -291,7 +291,7 @@ export function SiteHeader({
                 key={item.href}
                 href={item.href}
                 data-analytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
-                className="rounded-[1.25rem] border border-white/8 px-4 py-3 text-white/78 transition hover:border-white/18 hover:text-white"
+                className="rounded-[0.8rem] border border-black/10 px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -446,17 +446,17 @@ export function AgeGate({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/94 px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/92 px-4 backdrop-blur-sm">
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="age-gate-title"
-        className="relative w-full max-w-3xl overflow-hidden rounded-[2.25rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_42%),linear-gradient(145deg,#060708,#17181b)] p-7 text-white shadow-[0_40px_120px_rgba(0,0,0,0.58)] sm:p-10"
+        className="relative w-full max-w-3xl overflow-hidden rounded-[1rem] border border-black/10 bg-white p-7 text-black sm:p-10"
       >
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-        <div className="mb-6 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.42em] text-white/42">
-          <span className="h-px w-10 bg-white/24" />
+        <div className="absolute inset-x-0 top-0 h-px bg-black/20" />
+        <div className="mb-6 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-black/44">
+          <span className="h-px w-10 bg-black/20" />
           <span>18+</span>
         </div>
         <h2
@@ -465,13 +465,13 @@ export function AgeGate({
         >
           Сайт содержит информацию о никотинсодержащей продукции и предназначен только для лиц старше 18 лет.
         </h2>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-white/70 sm:text-lg">
+        <p className="mt-5 max-w-2xl text-base leading-7 text-black/64 sm:text-lg">
           Подтвердите, что вам исполнилось 18 лет.
         </p>
 
         {denied ? (
-          <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/[0.05] p-5">
-            <p className="text-base leading-7 text-white/82">
+          <div className="mt-8 rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
+            <p className="text-base leading-7 text-black/76">
               Доступ к сайту ограничен. Продажа никотинсодержащей продукции несовершеннолетним запрещена.
             </p>
           </div>
@@ -500,11 +500,11 @@ export function AgeGate({
             Мне нет 18 лет
           </button>
         </div>
-        <p className="mt-5 text-sm leading-6 text-white/46">
+        <p className="mt-5 text-sm leading-6 text-black/50">
           Подробные возрастные ограничения описаны в{" "}
           <Link
             href={legalHref}
-            className="underline decoration-white/18 underline-offset-4 transition hover:text-white"
+            className="underline decoration-black/18 underline-offset-4 transition hover:text-black"
           >
             правовой информации
           </Link>
@@ -554,14 +554,14 @@ export function CookieBanner({
 
   return (
     <div className="fixed inset-x-0 bottom-3 z-40 px-4">
-      <div className="mx-auto max-w-4xl rounded-[1.6rem] border border-white/10 bg-black/90 px-5 py-5 text-white shadow-[0_22px_80px_rgba(0,0,0,0.4)] sm:px-6">
+      <div className="mx-auto max-w-4xl rounded-[1rem] border border-black/10 bg-white px-5 py-5 text-black sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <p className="text-sm font-medium text-white">Cookie-файлы</p>
-            <p className="mt-1 text-sm leading-6 text-white/64">
+            <p className="text-sm font-medium text-black">Cookie-файлы</p>
+            <p className="mt-1 text-sm leading-6 text-black/62">
               Мы используем необходимые cookie для работы сайта и сохранения подтверждения возраста.
               Аналитические cookie подключаются только с вашего согласия. Подробнее — в{" "}
-              <Link href={legalHref} className="underline decoration-white/18 underline-offset-4">
+              <Link href={legalHref} className="underline decoration-black/18 underline-offset-4">
                 Политике cookies
               </Link>
               .
@@ -593,20 +593,20 @@ export function CookieBanner({
         </div>
 
         {settingsOpen ? (
-          <div className="mt-5 grid gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.03] p-4 sm:grid-cols-3">
-            <label className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-3 text-sm text-white/74">
-              <span className="block font-medium text-white">Необходимые cookie</span>
-              <span className="mt-2 block text-white/54">Нужны для корректной работы сайта.</span>
+          <div className="mt-5 grid gap-3 rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-4 sm:grid-cols-3">
+            <label className="rounded-[0.85rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/74">
+              <span className="block font-medium text-black">Необходимые cookie</span>
+              <span className="mt-2 block text-black/54">Нужны для корректной работы сайта.</span>
               <input type="checkbox" checked disabled className="mt-3" />
             </label>
-            <label className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-3 text-sm text-white/74">
-              <span className="block font-medium text-white">Age-gate cookie</span>
-              <span className="mt-2 block text-white/54">Сохраняет подтверждение возраста 18+.</span>
+            <label className="rounded-[0.85rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/74">
+              <span className="block font-medium text-black">Age-gate cookie</span>
+              <span className="mt-2 block text-black/54">Сохраняет подтверждение возраста 18+.</span>
               <input type="checkbox" checked disabled className="mt-3" />
             </label>
-            <label className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-3 text-sm text-white/74">
-              <span className="block font-medium text-white">Аналитика</span>
-              <span className="mt-2 block text-white/54">Подключается только после вашего согласия.</span>
+            <label className="rounded-[0.85rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/74">
+              <span className="block font-medium text-black">Аналитика</span>
+              <span className="mt-2 block text-black/54">Подключается только после вашего согласия.</span>
               <input
                 type="checkbox"
                 checked={analyticsEnabled}
@@ -728,15 +728,15 @@ export function LeadForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`rounded-[2rem] border p-6 shadow-[0_18px_60px_rgba(0,0,0,0.16)] ${
+      className={`rounded-[1rem] border p-6 ${
         theme === "dark"
-          ? "border-white/10 bg-white/[0.03] text-white"
+          ? "border-black/10 bg-white text-black"
           : "border-black/10 bg-white text-black"
       }`}
     >
       <div className="mb-6">
         <h3 className="text-2xl font-semibold tracking-[-0.04em]">{schema.title}</h3>
-        <p className={`mt-3 text-sm leading-6 ${theme === "dark" ? "text-white/62" : "text-black/62"}`}>
+        <p className={`mt-3 text-sm leading-6 ${theme === "dark" ? "text-black/62" : "text-black/62"}`}>
           {schema.description}
         </p>
       </div>
@@ -749,7 +749,7 @@ export function LeadForm({
           <label
             key={field.name}
             className={`grid gap-2 text-sm ${field.halfWidth === false ? "sm:col-span-2" : ""} ${
-              theme === "dark" ? "text-white/72" : "text-black/70"
+              theme === "dark" ? "text-black/70" : "text-black/70"
             }`}
           >
             {field.label}
@@ -759,14 +759,14 @@ export function LeadForm({
                 required={field.required}
                 rows={4}
                 autoComplete={field.autoComplete}
-                className={`rounded-[1.4rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
+                className={`rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
                 placeholder={field.placeholder}
               />
             ) : field.type === "select" ? (
               <select
                 name={field.name}
                 required={field.required}
-                className={`rounded-[1.4rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
+                className={`rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
                 defaultValue=""
               >
                 <option value="" disabled className="text-black">
@@ -784,7 +784,7 @@ export function LeadForm({
                 type={field.type ?? "text"}
                 required={field.required}
                 autoComplete={field.autoComplete}
-                className={`rounded-[1.4rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
+                className={`rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
                 placeholder={field.placeholder}
               />
             )}
@@ -797,7 +797,7 @@ export function LeadForm({
           <label
             key={checkbox.name}
             className={`flex items-start gap-3 text-sm leading-6 ${
-              theme === "dark" ? "text-white/60" : "text-black/60"
+              theme === "dark" ? "text-black/60" : "text-black/60"
             }`}
           >
             <input
@@ -805,7 +805,7 @@ export function LeadForm({
               required={checkbox.required}
               name={checkbox.name}
               className={`mt-1 h-4 w-4 shrink-0 rounded accent-black ${
-                theme === "dark" ? "border-white/20 bg-transparent" : "border-black/20 bg-transparent"
+                theme === "dark" ? "border-black/20 bg-transparent" : "border-black/20 bg-transparent"
               }`}
             />
             <span className="min-w-0 flex-1">{checkbox.label}</span>
@@ -814,13 +814,13 @@ export function LeadForm({
       </div>
 
       {schema.disclaimer ? (
-        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-white/48" : "text-black/50"}`}>
+        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-black/50" : "text-black/50"}`}>
           {schema.disclaimer}
         </p>
       ) : null}
       {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
       {successHint ? (
-        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-emerald-300" : "text-emerald-700"}`}>
+        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-emerald-700" : "text-emerald-700"}`}>
           {successHint}
         </p>
       ) : null}
@@ -852,8 +852,7 @@ export function VariantPicker({ product }: { product: Product }) {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_62%_18%,rgba(255,255,255,0.24),transparent_36%),linear-gradient(145deg,#1d2025,#050607_68%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-        <div className="absolute inset-5 rounded-[1.6rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.78),rgba(190,195,198,0.58)_34%,rgba(35,39,44,0.28)_68%),linear-gradient(145deg,rgba(232,234,234,0.42),rgba(24,26,29,0.18))]" />
+      <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
         {activeImage ? (
           <Image
             src={assetPath(activeImage)}
@@ -862,13 +861,13 @@ export function VariantPicker({ product }: { product: Product }) {
             height={1400}
             priority
             unoptimized
-            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_34px_54px_rgba(0,0,0,0.62)]"
+            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_18px_26px_rgba(0,0,0,0.18)]"
           />
         ) : null}
       </div>
 
-      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_48px_rgba(15,15,15,0.08)]">
-        <p className="text-xs uppercase tracking-[0.34em] text-black/36">Вкусовая серия</p>
+      <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+        <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">{activeVariant.title}</h3>
         <p className="mt-3 text-sm leading-6 text-black/60">
           Подтверждённые варианты текущей линии STILNO CLICK ONE. Выберите вкус, чтобы посмотреть соответствующий визуал и маркировку.
@@ -889,7 +888,7 @@ export function VariantPicker({ product }: { product: Product }) {
               className={`rounded-[1.15rem] border px-4 py-3 text-left transition ${
                 activeVariant.id === variant.id
                   ? "border-black bg-black text-white"
-                  : "border-black/10 bg-black/[0.02] text-black/72 hover:border-black/24"
+                  : "border-black/10 bg-white text-black/72 hover:border-black/24 hover:bg-[#f6f6f3]"
               }`}
               onClick={() => {
                 const nextSearch = new URLSearchParams(searchParams.toString());
@@ -930,14 +929,14 @@ export function FaqAccordion({
         const isOpen = openId === item.id;
         const closedClass =
           tone === "dark"
-            ? "border-white/10 bg-white/[0.03] text-white"
+            ? "border-black/10 bg-white text-black"
             : "border-black/10 bg-white text-black";
 
         return (
           <div
             key={item.id}
-            className={`overflow-hidden rounded-[1.6rem] border transition ${
-              isOpen ? "border-black bg-black text-white" : closedClass
+            className={`overflow-hidden rounded-[1rem] border transition ${
+              isOpen ? "border-black bg-white text-black" : closedClass
             }`}
           >
             <button
@@ -946,7 +945,7 @@ export function FaqAccordion({
               onClick={() => setOpenId((current) => (current === item.id ? "" : item.id))}
             >
               <span className="text-lg font-medium tracking-[-0.02em]">{item.question}</span>
-              <span className="text-xs uppercase tracking-[0.28em] opacity-55">
+              <span className="text-xs uppercase tracking-[0.18em] opacity-55">
                 {isOpen ? "Свернуть" : "Открыть"}
               </span>
             </button>
@@ -963,8 +962,7 @@ export function VariantPickerFallback({ product }: { product: Product }) {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_62%_18%,rgba(255,255,255,0.24),transparent_36%),linear-gradient(145deg,#1d2025,#050607_68%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-        <div className="absolute inset-5 rounded-[1.6rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.78),rgba(190,195,198,0.58)_34%,rgba(35,39,44,0.28)_68%),linear-gradient(145deg,rgba(232,234,234,0.42),rgba(24,26,29,0.18))]" />
+      <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
         {product.images[0] ? (
           <Image
             src={assetPath(product.images[0])}
@@ -973,12 +971,12 @@ export function VariantPickerFallback({ product }: { product: Product }) {
             height={1400}
             priority
             unoptimized
-            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_34px_54px_rgba(0,0,0,0.62)]"
+            className="relative z-10 mx-auto w-full max-w-[34rem] object-contain drop-shadow-[0_18px_26px_rgba(0,0,0,0.18)]"
           />
         ) : null}
       </div>
-      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_48px_rgba(15,15,15,0.08)]">
-        <p className="text-xs uppercase tracking-[0.34em] text-black/36">Вкусовая серия</p>
+      <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+        <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">{firstVariant?.title}</h3>
       </div>
     </div>

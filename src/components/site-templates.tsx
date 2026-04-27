@@ -59,11 +59,11 @@ function ButtonLink({
   const style =
     variant === "primary"
       ? tone === "dark"
-        ? "border-white/14 bg-white/[0.06] text-white hover:border-white/28 hover:bg-white/[0.1]"
-        : "border-transparent bg-black text-white hover:bg-black/86"
+        ? "border-black bg-black text-white hover:bg-black/82"
+        : "border-black bg-black text-white hover:bg-black/82"
       : tone === "dark"
-        ? "border-white/12 bg-white/[0.04] text-white hover:border-white/22 hover:bg-white/[0.08]"
-        : "border-black/16 bg-[#e8e8e5] text-[#0B1018] hover:border-black/28 hover:bg-white";
+        ? "border-black/14 bg-white text-black hover:border-black/34 hover:bg-[#f4f4f1]"
+        : "border-black/14 bg-white text-black hover:border-black/34 hover:bg-[#f4f4f1]";
   const inlineStyle =
     variant !== "primary" && tone === "light"
       ? {
@@ -132,18 +132,18 @@ function SectionIntro({
       {contract.eyebrow ? (
         <div
           className={classNames(
-            "mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em]",
-            tone === "dark" ? "text-white/42" : "text-black/36",
+            "mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.18em]",
+            tone === "dark" ? "text-black/44" : "text-black/44",
           )}
         >
-          <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/22" : "bg-black/18")} />
+          <span className="h-px w-10 bg-black/20" />
           <span>{contract.eyebrow}</span>
         </div>
       ) : null}
       <TitleTag
         className={classNames(
-          "text-4xl font-semibold leading-[1] tracking-[-0.035em] sm:text-5xl lg:text-[3.25rem]",
-          tone === "dark" ? "text-white" : "text-black",
+          "text-3xl font-semibold leading-[1.04] tracking-[-0.025em] sm:text-4xl lg:text-5xl",
+          tone === "dark" ? "text-black" : "text-black",
         )}
       >
         {contract.title}
@@ -151,7 +151,7 @@ function SectionIntro({
       <p
         className={classNames(
           "mt-5 max-w-2xl text-base leading-7 sm:text-lg",
-          tone === "dark" ? "text-white/66" : "text-black/62",
+          tone === "dark" ? "text-black/62" : "text-black/62",
         )}
       >
         {contract.body}
@@ -184,18 +184,18 @@ function PageHero({
         {contract.eyebrow ? (
           <div
             className={classNames(
-              "mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em]",
-              tone === "dark" ? "text-white/42" : "text-black/36",
+              "mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.18em]",
+              tone === "dark" ? "text-black/44" : "text-black/44",
             )}
           >
-            <span className={classNames("h-px w-12", tone === "dark" ? "bg-white/22" : "bg-black/18")} />
+            <span className="h-px w-10 bg-black/20" />
             <span>{contract.eyebrow}</span>
           </div>
         ) : null}
         <h1
           className={classNames(
-            "max-w-4xl text-5xl font-semibold leading-[0.96] tracking-[-0.035em] sm:text-6xl lg:text-[4.35rem]",
-            tone === "dark" ? "text-white" : "text-black",
+            "max-w-4xl text-4xl font-semibold leading-[1.02] tracking-[-0.025em] sm:text-5xl lg:text-6xl",
+            tone === "dark" ? "text-black" : "text-black",
           )}
         >
           {contract.title}
@@ -203,7 +203,7 @@ function PageHero({
         <p
           className={classNames(
             "mt-6 max-w-2xl text-lg leading-8",
-            tone === "dark" ? "text-white/68" : "text-black/64",
+            tone === "dark" ? "text-black/64" : "text-black/64",
           )}
         >
           {contract.body}
@@ -211,9 +211,9 @@ function PageHero({
         {contract.detailLine ? (
           <div
             className={classNames(
-              "mt-6 inline-flex max-w-3xl rounded-[1.5rem] border px-5 py-4 text-sm leading-7 sm:text-base",
+              "mt-6 inline-flex max-w-3xl rounded-[1rem] border px-5 py-4 text-sm leading-7 sm:text-base",
               tone === "dark"
-                ? "border-white/10 bg-white/[0.04] text-white/84"
+                ? "border-black/10 bg-[#f6f6f3] text-black"
                 : "border-black/10 bg-white text-black",
             )}
           >
@@ -221,7 +221,7 @@ function PageHero({
           </div>
         ) : null}
         {contract.note ? (
-          <p className={classNames("mt-3 text-sm", tone === "dark" ? "text-white/44" : "text-black/42")}>
+          <p className={classNames("mt-3 text-sm", tone === "dark" ? "text-black/46" : "text-black/46")}>
             {contract.note}
           </p>
         ) : null}
@@ -339,7 +339,7 @@ function BreadcrumbTrail({ pathname, title, tone = "light" }: { pathname: string
     <nav
       className={classNames(
         "mb-8 flex flex-wrap items-center gap-2 text-sm",
-        tone === "dark" ? "text-white/42" : "text-black/40",
+        tone === "dark" ? "text-black/44" : "text-black/44",
       )}
       aria-label="Breadcrumbs"
     >
@@ -350,7 +350,7 @@ function BreadcrumbTrail({ pathname, title, tone = "light" }: { pathname: string
         <span key={breadcrumb.href} className="flex items-center gap-2">
           <span>/</span>
           {index === breadcrumbs.length - 1 ? (
-            <span className={tone === "dark" ? "text-white/70" : "text-black/70"}>{breadcrumb.label}</span>
+            <span className={tone === "dark" ? "text-black/70" : "text-black/70"}>{breadcrumb.label}</span>
           ) : (
             <Link href={breadcrumb.href} className="transition hover:text-current">
               {breadcrumb.label}
@@ -370,7 +370,7 @@ function RichText({
   tone?: "dark" | "light";
 }) {
   return (
-    <div className={classNames("grid gap-4 text-base leading-7", tone === "dark" ? "text-white/68" : "text-black/68")}>
+    <div className={classNames("grid gap-4 text-base leading-7", tone === "dark" ? "text-black/68" : "text-black/68")}>
       {paragraphs.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
@@ -406,12 +406,11 @@ function ProductPhotoCard({
   return (
     <div
       className={classNames(
-        "relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_62%_18%,rgba(255,255,255,0.24),transparent_36%),linear-gradient(145deg,#1d2025,#050607_68%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]",
+        "relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5",
         aspect === "wide" ? "min-h-[18rem]" : "min-h-[15rem]",
         className,
       )}
     >
-      <div className="absolute inset-5 rounded-[1.55rem] border border-white/12 bg-[radial-gradient(circle_at_34%_18%,rgba(255,255,255,0.76),rgba(190,195,198,0.56)_34%,rgba(35,39,44,0.26)_68%),linear-gradient(145deg,rgba(232,234,234,0.38),rgba(24,26,29,0.16))]" />
       <Image
         src={assetPath(src)}
         alt={alt}
@@ -419,7 +418,7 @@ function ProductPhotoCard({
         height={1200}
         priority={priority}
         unoptimized
-        className="relative z-10 mx-auto h-full w-full object-contain drop-shadow-[0_30px_48px_rgba(0,0,0,0.58)]"
+        className="relative z-10 mx-auto h-full w-full object-contain drop-shadow-[0_18px_26px_rgba(0,0,0,0.16)]"
       />
     </div>
   );
@@ -439,7 +438,7 @@ function EditorialImageCard({
   return (
     <div
       className={classNames(
-        "overflow-hidden rounded-[2.2rem] border border-black/10 bg-black shadow-[0_22px_66px_rgba(10,10,10,0.14)]",
+        "overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3]",
         className,
       )}
     >
@@ -450,7 +449,7 @@ function EditorialImageCard({
         height={1200}
         priority={priority}
         unoptimized
-        className="h-full min-h-[22rem] w-full object-cover"
+        className="h-full min-h-[22rem] w-full object-contain p-3"
       />
     </div>
   );
@@ -556,7 +555,7 @@ function FranchiseProductLineup({ priority = false, compact = false }: { priorit
       )}
       aria-hidden="true"
     >
-      <div className="absolute inset-x-8 bottom-0 h-24 rounded-full bg-black/78 blur-2xl" />
+      <div className="absolute inset-x-8 bottom-0 h-16 rounded-full bg-black/10 blur-2xl" />
       {franchiseVisualDevices.map((device) => (
         <Image
           key={device.src}
@@ -567,7 +566,7 @@ function FranchiseProductLineup({ priority = false, compact = false }: { priorit
           priority={priority}
           unoptimized
           className={classNames(
-            "relative h-auto shrink-0 object-contain drop-shadow-[0_28px_38px_rgba(0,0,0,0.62)]",
+            "relative h-auto shrink-0 object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.18)]",
             compact ? device.compactClassName : device.className,
           )}
         />
@@ -578,34 +577,30 @@ function FranchiseProductLineup({ priority = false, compact = false }: { priorit
 
 function FranchiseHeroScene({ priority = false }: { priority?: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[2rem] bg-[#0c0d0e] p-px shadow-[0_30px_90px_rgba(0,0,0,0.34)]">
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.16),transparent_28%,rgba(255,255,255,0.06)_72%,transparent)]" />
-      <div className="relative overflow-hidden rounded-[calc(2rem-1px)] bg-[#101113] p-5 ring-1 ring-white/8 sm:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_28%,rgba(255,255,255,0.11),transparent_34%)]" />
-        <div className="absolute -right-24 bottom-0 h-56 w-72 bg-white/[0.03] blur-3xl" />
+    <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-white p-5 sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/52">STILNO / launch file</p>
-          <span className="rounded-full border border-white/12 px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/58">
+          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-black/46">STILNO / launch file</p>
+          <span className="rounded-full border border-black/10 px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-black/54">
             18+
           </span>
         </div>
 
         <div className="relative z-10 mt-8 grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
           <div>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/42">Не публичная оферта</p>
-            <h3 className="mt-4 max-w-[24rem] text-3xl font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-5xl">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-black/44">Не публичная оферта</p>
+            <h3 className="mt-4 max-w-[24rem] text-3xl font-semibold leading-[1.03] tracking-[-0.025em] text-black sm:text-4xl">
               Запуск обсуждается после заявки
             </h3>
-            <p className="mt-5 max-w-[24rem] text-sm leading-6 text-white/62">
+            <p className="mt-5 max-w-[24rem] text-sm leading-6 text-black/62">
               Сначала фиксируем город, формат и статус проекта. Затем переходим к материалам, документам и условиям.
             </p>
-            <div className="mt-7 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-white/10 py-5">
+            <div className="mt-7 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-black/10 py-5">
               {franchiseHeroSignals.map((signal) => (
                 <div key={signal.label}>
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/34">
+                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-black/42">
                     {signal.label}
                   </p>
-                  <p className="mt-2 text-sm font-medium text-white/82">{signal.value}</p>
+                  <p className="mt-2 text-sm font-medium text-black/78">{signal.value}</p>
                 </div>
               ))}
             </div>
@@ -613,13 +608,12 @@ function FranchiseHeroScene({ priority = false }: { priority?: boolean }) {
 
           <div className="relative lg:-translate-x-8">
             <FranchiseProductLineup priority={priority} />
-            <div className="absolute bottom-5 right-0 hidden w-[13rem] rounded-[1.4rem] border border-white/12 bg-black/48 p-4 backdrop-blur md:block">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/42">Пакет</p>
-              <p className="mt-2 text-sm leading-5 text-white/76">брендовые материалы · продуктовая база · рабочий контакт</p>
+            <div className="absolute bottom-5 right-0 hidden w-[13rem] rounded-[1rem] border border-black/10 bg-white/92 p-4 md:block">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-black/44">Пакет</p>
+              <p className="mt-2 text-sm leading-5 text-black/68">брендовые материалы · продуктовая база · рабочий контакт</p>
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
@@ -650,22 +644,22 @@ function FranchisePartnerKit() {
   return (
     <div className="grid gap-10 xl:grid-cols-[1fr_0.92fr] xl:items-start">
       <div>
-        <SectionIntro contract={franchiseContent.supportSection} tone="dark" />
-        <div className="mt-10 grid border-y border-white/10 lg:grid-cols-2">
+        <SectionIntro contract={franchiseContent.supportSection} />
+        <div className="mt-10 grid border-y border-black/10 lg:grid-cols-2">
           {franchiseSupportItems.map((item, index) => (
             <article
               key={item.title}
               className={classNames(
-                "border-b border-white/10 py-6 lg:p-6",
+                "border-b border-black/10 py-6 lg:p-6",
                 index % 2 === 0 && "lg:border-r",
                 index > 1 && "lg:border-b-0",
               )}
             >
-              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-white/34">
+              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-black/42">
                 {String(index + 1).padStart(2, "0")}
               </p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-white/58">{item.body}</p>
+              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.025em] text-black">{item.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-black/62">{item.body}</p>
             </article>
           ))}
         </div>
@@ -673,26 +667,25 @@ function FranchisePartnerKit() {
 
       <div className="grid gap-8">
         <div>
-          <SectionIntro contract={franchiseContent.audienceSection} tone="dark" />
-          <div className="mt-7 divide-y divide-white/10 border-y border-white/10">
+          <SectionIntro contract={franchiseContent.audienceSection} />
+          <div className="mt-7 divide-y divide-black/10 border-y border-black/10">
             {franchiseContent.audienceItems.map((item, index) => (
               <div key={item} className="grid grid-cols-[2.5rem_1fr] gap-4 py-4">
-                <span className="text-sm font-semibold text-white/34">{String(index + 1).padStart(2, "0")}</span>
-                <p className="text-sm leading-6 text-white/68">{item}</p>
+                <span className="text-sm font-semibold text-black/42">{String(index + 1).padStart(2, "0")}</span>
+                <p className="text-sm leading-6 text-black/68">{item}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0c0e] p-5">
-          <div className="absolute inset-0 bg-[linear-gradient(122deg,rgba(255,255,255,0.04)_0_16%,transparent_16%_28%,rgba(255,255,255,0.07)_28%_40%,transparent_40%_100%)]" />
+        <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-white p-5">
           <div className="relative z-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/40">Документы и материалы</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/44">Документы и материалы</p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <ButtonLink
                 href={documentLinks.franchisePresentation}
                 target="_blank"
-                tone="dark"
+                tone="light"
                 variant="secondary"
                 analytics="franchise_download_presentation"
               >
@@ -701,7 +694,7 @@ function FranchisePartnerKit() {
               <ButtonLink
                 href={documentLinks.deviceAndPackage}
                 target="_blank"
-                tone="dark"
+                tone="light"
                 variant="secondary"
                 analytics="franchise_download_product_pack"
               >
@@ -710,7 +703,7 @@ function FranchisePartnerKit() {
             </div>
             <div className="mt-7 grid gap-3">
               {franchisePillars.map((pillar) => (
-                <p key={pillar} className="border-t border-white/10 pt-3 text-sm leading-6 text-white/58">
+                <p key={pillar} className="border-t border-black/10 pt-3 text-sm leading-6 text-black/62">
                   {pillar}
                 </p>
               ))}
@@ -725,32 +718,31 @@ function FranchisePartnerKit() {
 function FranchiseFormAside({ items }: { items: typeof faqItems }) {
   return (
     <div className="grid gap-5">
-      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-[#0b0c0e] p-6 text-white shadow-[0_18px_54px_rgba(10,10,10,0.12)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.15),transparent_30%)]" />
+      <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-white p-6 text-black">
         <div className="relative z-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Перед заявкой</p>
-          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.045em]">Заполните короткую заявку</h3>
-          <p className="mt-4 text-sm leading-6 text-white/62">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/44">Перед заявкой</p>
+          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.025em]">Заполните короткую заявку</h3>
+          <p className="mt-4 text-sm leading-6 text-black/62">
             Достаточно контактов, города, формата запроса и комментария. Остальные детали уточняются в разговоре.
           </p>
           <FranchiseProductLineup compact />
-          <div className="mt-5 divide-y divide-white/10 border-y border-white/10">
+          <div className="mt-5 divide-y divide-black/10 border-y border-black/10">
             {["ФИО", "телефон и email", "город", "для себя / опт", "комментарий"].map((item) => (
-              <p key={item} className="py-3 text-sm text-white/70">
+              <p key={item} className="py-3 text-sm text-black/70">
                 {item}
               </p>
             ))}
           </div>
         </div>
       </div>
-      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+      <div className="rounded-[1rem] border border-black/10 bg-white p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">Не является публичной офертой</p>
         <p className="mt-4 text-sm leading-7 text-black/62">
           Информация на сайте носит справочный характер. Условия партнёрства и франчайзинга обсуждаются
           индивидуально. Заявка через форму не создаёт договорных обязательств.
         </p>
       </div>
-      <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+      <div className="rounded-[1rem] border border-black/10 bg-white p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/36">FAQ</p>
         <div className="mt-5">
           <FaqAccordion items={items} />
@@ -774,12 +766,11 @@ function PartnerProductShowcase() {
 
   return (
     <div className="mt-8 grid gap-5 xl:grid-cols-[0.34fr_0.66fr] xl:items-stretch">
-      <aside className="relative overflow-hidden rounded-[2rem] bg-[#0c0d0f] p-6 text-white shadow-[0_20px_70px_rgba(10,10,10,0.14)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(255,255,255,0.14),transparent_32%)]" />
+      <aside className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-white p-6 text-black">
         <div className="relative z-10 flex h-full flex-col">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Витрина</p>
-          <h3 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.045em]">STILNO CLICK ONE</h3>
-          <p className="mt-4 text-sm leading-6 text-white/62">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/44">Витрина</p>
+          <h3 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.025em]">STILNO CLICK ONE</h3>
+          <p className="mt-4 text-sm leading-6 text-black/62">
             Вкусы, параметры и карточки для первичного партнёрского запроса.
           </p>
           <div className="mt-6">
@@ -787,9 +778,9 @@ function PartnerProductShowcase() {
           </div>
           <div className="mt-auto grid grid-cols-2 gap-2 pt-6">
             {partnerMarketplaceSpecs.slice(0, 4).map((spec) => (
-              <div key={spec.label} className="rounded-[1rem] border border-white/10 bg-white/[0.04] p-3">
-                <p className="text-[0.62rem] uppercase tracking-[0.18em] text-white/34">{spec.label}</p>
-                <p className="mt-2 text-sm font-medium text-white">{spec.value}</p>
+              <div key={spec.label} className="rounded-[0.85rem] border border-black/10 bg-[#f6f6f3] p-3">
+                <p className="text-[0.62rem] uppercase tracking-[0.12em] text-black/42">{spec.label}</p>
+                <p className="mt-2 text-sm font-medium text-black">{spec.value}</p>
               </div>
             ))}
           </div>
@@ -805,7 +796,7 @@ function PartnerProductShowcase() {
           {showcaseVariants.map((variant) => (
             <article
               key={variant.id}
-              className="min-w-[17rem] snap-start rounded-[1.6rem] border border-black/10 bg-white p-4 shadow-[0_16px_46px_rgba(10,10,10,0.06)] sm:min-w-[19rem]"
+              className="min-w-[17rem] snap-start rounded-[1rem] border border-black/10 bg-white p-4 sm:min-w-[19rem]"
               data-product-showcase-card
             >
               <ProductPhotoCard
@@ -816,7 +807,7 @@ function PartnerProductShowcase() {
               />
               <div className="mt-4 flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/34">STILNO CLICK ONE</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-black/44">STILNO CLICK ONE</p>
                   <h3 className="mt-2 text-xl font-semibold leading-tight tracking-[-0.035em] text-black">
                     {variant.title}
                   </h3>
@@ -827,8 +818,8 @@ function PartnerProductShowcase() {
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {partnerMarketplaceSpecs.slice(1, 5).map((spec) => (
-                  <div key={`${variant.id}-${spec.label}`} className="rounded-[0.9rem] bg-black/[0.035] px-3 py-2">
-                    <p className="text-[0.58rem] uppercase tracking-[0.16em] text-black/34">{spec.label}</p>
+                  <div key={`${variant.id}-${spec.label}`} className="rounded-[0.75rem] bg-[#f6f6f3] px-3 py-2">
+                    <p className="text-[0.58rem] uppercase tracking-[0.12em] text-black/42">{spec.label}</p>
                     <p className="mt-1 text-sm font-medium text-black/78">{spec.value}</p>
                   </div>
                 ))}
@@ -851,27 +842,24 @@ function StatCard({
   value,
   label,
   note,
-  tone = "light",
 }: {
   value: string;
   label: string;
   note: string;
-  tone?: "dark" | "light";
 }) {
   return (
     <div
       className={classNames(
-        "rounded-[1.7rem] border p-5",
-        tone === "dark" ? "border-white/10 bg-white/[0.03]" : "border-black/10 bg-white",
+        "rounded-[1rem] border border-black/10 bg-white p-5",
       )}
     >
-      <div className={classNames("text-2xl font-semibold tracking-[-0.05em]", tone === "dark" ? "text-white" : "text-black")}>
+      <div className="text-2xl font-semibold tracking-[-0.04em] text-black">
         {value}
       </div>
-      <div className={classNames("mt-2 text-sm font-medium", tone === "dark" ? "text-white/80" : "text-black/80")}>
+      <div className="mt-2 text-sm font-medium text-black/80">
         {label}
       </div>
-      <div className={classNames("mt-3 text-sm leading-6", tone === "dark" ? "text-white/56" : "text-black/56")}>
+      <div className="mt-3 text-sm leading-6 text-black/56">
         {note}
       </div>
     </div>
@@ -884,7 +872,7 @@ function SpecsList({ product }: { product: Product }) {
       {product.specs.map((spec) => (
         <div
           key={spec.label}
-          className="flex items-start justify-between gap-5 rounded-[1.35rem] border border-black/10 bg-white px-4 py-4"
+          className="flex items-start justify-between gap-5 rounded-[1rem] border border-black/10 bg-white px-4 py-4"
         >
           <span className="text-sm text-black/54">{spec.label}</span>
           <span className="max-w-[22rem] text-right text-sm font-medium text-black">{spec.value}</span>
@@ -896,18 +884,17 @@ function SpecsList({ product }: { product: Product }) {
 
 function LegalWarningStrip() {
   return (
-    <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-[#080a0d] p-5 sm:p-6">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_50%,rgba(255,255,255,0.09),transparent_30%)]" />
+    <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-white p-5 sm:p-6">
       <div className="relative grid gap-5 sm:grid-cols-[7.5rem_1fr] lg:items-center">
-        <div className="inline-flex h-16 w-28 items-center justify-center rounded-full border border-white/14 bg-white/[0.06] text-3xl font-semibold tracking-[0.12em] text-white">
+        <div className="inline-flex h-16 w-28 items-center justify-center rounded-full border border-black/12 bg-[#f6f6f3] text-3xl font-semibold tracking-[0.08em] text-black">
           18+
         </div>
         <div className="min-w-0">
-          <h3 className="text-xl font-semibold tracking-[-0.04em] text-white sm:text-2xl">Ответственное потребление</h3>
-          <p className="mt-3 text-sm leading-6 text-white/62">
+          <h3 className="text-xl font-semibold tracking-[-0.025em] text-black sm:text-2xl">Ответственное потребление</h3>
+          <p className="mt-3 text-sm leading-6 text-black/62">
             Никотин вызывает зависимость. Продажа несовершеннолетним запрещена.
           </p>
-          <p className="mt-1 text-sm leading-6 text-white/62">
+          <p className="mt-1 text-sm leading-6 text-black/62">
             Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.
           </p>
         </div>
@@ -921,8 +908,8 @@ function Footer() {
   const legalLinks = siteSettings.footerLinks.slice(4);
 
   return (
-    <footer className="border-t border-white/8 bg-black">
-      <div className="border-b border-white/8">
+    <footer className="border-t border-black/10 bg-white">
+      <div className="border-b border-black/10">
         <div className="mx-auto max-w-[86rem] px-5 py-5 sm:px-6 lg:px-8">
           <LegalWarningStrip />
         </div>
@@ -930,36 +917,36 @@ function Footer() {
 
       <div className="mx-auto grid max-w-[86rem] gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.1fr_1fr_0.9fr_1.1fr] lg:px-8">
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-white/38">Бренд</p>
-          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.05em] text-white">STILNO</h2>
-          <p className="mt-4 text-sm leading-6 text-white/60">
+          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Бренд</p>
+          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">STILNO</h2>
+          <p className="mt-4 text-sm leading-6 text-black/62">
             Официальный сайт бренда STILNO. Информация предназначена для лиц старше 18 лет.
           </p>
-          <Link href="/responsible" className="mt-5 inline-flex text-sm font-medium text-white transition hover:text-white/72">
+          <Link href="/responsible" className="mt-5 inline-flex text-sm font-medium text-black transition hover:text-black/62">
             Правовая информация
           </Link>
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-white/38">Предупреждение</p>
-          <p className="mt-4 text-sm leading-6 text-white/60">
+          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Предупреждение</p>
+          <p className="mt-4 text-sm leading-6 text-black/62">
             18+. Никотин вызывает зависимость. Продажа несовершеннолетним запрещена. Дистанционная
             розничная продажа никотинсодержащей продукции не осуществляется.
           </p>
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-white/38">Навигация</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Навигация</p>
           <div className="mt-4 grid gap-2 text-sm">
             {siteSettings.primaryNav.map((item) => (
-              <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
+              <Link key={item.href} href={item.href} className="text-black/68 transition hover:text-black">
                 {item.label}
               </Link>
             ))}
-            <Link href="/responsible" className="text-white/68 transition hover:text-white">
+            <Link href="/responsible" className="text-black/68 transition hover:text-black">
               Ответственное потребление
             </Link>
-            <Link href="/faq" className="text-white/68 transition hover:text-white">
+            <Link href="/faq" className="text-black/68 transition hover:text-black">
               FAQ
             </Link>
           </div>
@@ -967,13 +954,13 @@ function Footer() {
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1">
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-white/38">Контакты</p>
-            <div className="mt-4 grid gap-3 text-sm text-white/68">
+            <p className="text-xs uppercase tracking-[0.22em] text-black/42">Контакты</p>
+            <div className="mt-4 grid gap-3 text-sm text-black/68">
               {siteSettings.contactLines.map((line) => (
                 <p key={line.label}>
-                  <span className="block text-white/36">{line.label}</span>
+                  <span className="block text-black/38">{line.label}</span>
                   {line.href ? (
-                    <Link href={line.href} className="mt-1 block transition hover:text-white">
+                    <Link href={line.href} className="mt-1 block transition hover:text-black">
                       {line.value}
                     </Link>
                   ) : (
@@ -985,15 +972,15 @@ function Footer() {
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-white/38">Материалы и legal</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-black/42">Материалы и legal</p>
             <div className="mt-4 grid gap-2 text-sm">
               {utilityLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
+                <Link key={item.href} href={item.href} className="text-black/68 transition hover:text-black">
                   {item.label}
                 </Link>
               ))}
               {legalLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="text-white/68 transition hover:text-white">
+                <Link key={item.href} href={item.href} className="text-black/68 transition hover:text-black">
                   {item.label}
                 </Link>
               ))}
@@ -1002,8 +989,8 @@ function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/8">
-        <div className="mx-auto flex max-w-[86rem] flex-col gap-3 px-5 py-5 text-sm text-white/42 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+      <div className="border-t border-black/10">
+        <div className="mx-auto flex max-w-[86rem] flex-col gap-3 px-5 py-5 text-sm text-black/42 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>© 2026 STILNO. Все права защищены.</p>
           <p>Информация на сайте носит справочный характер.</p>
         </div>
@@ -1021,11 +1008,10 @@ export function HomeTemplate() {
     <>
       <StructuredData data={buildJsonLd()} />
 
-      <section className="border-b border-white/8 bg-black">
+      <section className="border-b border-black/10 bg-white">
         <div className="mx-auto max-w-[86rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
           <PageHero
             contract={homeContent.hero}
-            tone="dark"
             media={
               <EditorialImageCard
                 src="/stilno/generated/home-hero-product.jpg"
@@ -1041,7 +1027,7 @@ export function HomeTemplate() {
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
           <div className="grid gap-10 xl:grid-cols-[0.82fr_1.18fr]">
             <SectionIntro contract={homeContent.productSection} />
-            <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
               <div className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
                 <EditorialImageCard
                   src="/stilno/generated/product-snapshot.jpg"
@@ -1049,8 +1035,8 @@ export function HomeTemplate() {
                   className="min-h-[24rem]"
                 />
                 <div>
-                  <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.02] p-5">
-                    <p className="text-xs uppercase tracking-[0.34em] text-black/36">Ключевые параметры</p>
+                  <div className="rounded-[1rem] border border-black/10 bg-black/[0.02] p-5">
+                    <p className="text-xs uppercase tracking-[0.22em] text-black/36">Ключевые параметры</p>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {launchMetrics.map((metric) => (
                         <div
@@ -1068,7 +1054,7 @@ export function HomeTemplate() {
               </div>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {qualityStandards.map((item) => (
-                  <article key={item.title} className="rounded-[1.6rem] border border-black/10 bg-[#f5f5f4] p-5">
+                  <article key={item.title} className="rounded-[1rem] border border-black/10 bg-[#f5f5f4] p-5">
                     <h3 className="text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
                     <p className="mt-3 text-sm leading-6 text-black/60">{item.body}</p>
                   </article>
@@ -1079,23 +1065,23 @@ export function HomeTemplate() {
         </div>
       </section>
 
-      <section className="border-y border-white/8 bg-black">
+      <section className="border-y border-black/10 bg-white">
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
           <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr]">
-            <SectionIntro contract={homeContent.partnersSection} tone="dark" />
-            <div className="rounded-[2.2rem] border border-white/10 bg-white/[0.03] p-6">
+            <SectionIntro contract={homeContent.partnersSection} />
+            <div className="rounded-[1rem] border border-black/10 bg-white p-5">
               <SvgAsset
                 src="/stilno/generated/partner-kit-visual.jpg"
                 alt="Партнёрский комплект STILNO"
-                className="w-full rounded-[1.4rem] border border-white/8"
+                className="w-full rounded-[1rem] border border-black/10"
               />
             </div>
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {partnershipScenarios.map((scenario) => (
-              <article key={scenario.title} className="rounded-[1.7rem] border border-white/8 bg-white/[0.03] p-5">
-                <h3 className="text-[1.35rem] font-semibold tracking-[-0.04em] text-white">{scenario.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/60">{scenario.body}</p>
+              <article key={scenario.title} className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
+                <h3 className="text-[1.35rem] font-semibold tracking-[-0.035em] text-black">{scenario.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-black/62">{scenario.body}</p>
               </article>
             ))}
           </div>
@@ -1113,29 +1099,29 @@ export function HomeTemplate() {
                 ))}
               </div>
             </div>
-            <div className="rounded-[2.2rem] border border-black/10 bg-white p-6 shadow-[0_18px_54px_rgba(10,10,10,0.06)]">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
               <SvgAsset
                 src="/stilno/generated/retail-request-visual.jpg"
                 alt="Розничный запрос STILNO без неподтверждённых точек"
-                className="w-full rounded-[1.4rem] border border-black/8"
+                className="w-full rounded-[1rem] border border-black/8"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-y border-white/8 bg-black">
+      <section className="border-y border-black/10 bg-white">
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
           <div className="grid gap-10 xl:grid-cols-[0.84fr_1.16fr] xl:items-start">
-            <SectionIntro contract={homeContent.responsibleSection} tone="dark" />
+            <SectionIntro contract={homeContent.responsibleSection} />
             <div className="grid gap-4">
-              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-4">
                 <LegalWarningStrip />
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {responsibilityNotes.map((item) => (
-                  <article key={item} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
-                    <p className="text-sm leading-6 text-white/66">{item}</p>
+                  <article key={item} className="rounded-[1rem] border border-black/10 bg-white p-5">
+                    <p className="text-sm leading-6 text-black/64">{item}</p>
                   </article>
                 ))}
               </div>
@@ -1159,12 +1145,12 @@ export function HomeTemplate() {
                 alt="Партнёрские материалы STILNO"
                 className="min-h-[18rem]"
               />
-              <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
-                <p className="text-xs uppercase tracking-[0.34em] text-white/36">Форма заявки</p>
-                <h3 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
+              <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+                <p className="text-xs uppercase tracking-[0.22em] text-black/42">Форма заявки</p>
+                <h3 className="mt-4 text-3xl font-semibold tracking-[-0.035em]">
                   Основной партнёрский контакт через сайт.
                 </h3>
-                <p className="mt-4 text-sm leading-6 text-white/66">
+                <p className="mt-4 text-sm leading-6 text-black/62">
                   Для розничного запроса используйте страницу «Где купить». Для B2B-обращений и запуска под
                   брендом используйте форму ниже.
                 </p>
@@ -1195,11 +1181,11 @@ function StoresIndexTemplate(page: ResolvedPage) {
         <PageHero
           contract={storesContent.hero}
           media={
-            <div className="rounded-[2.2rem] border border-black/10 bg-black p-4 shadow-[0_18px_54px_rgba(10,10,10,0.10)]">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-4">
               <SvgAsset
                 src="/stilno/generated/retail-request-visual.jpg"
                 alt="Статус розничной карты STILNO"
-                className="w-full rounded-[1.7rem]"
+                className="w-full rounded-[1rem]"
               />
             </div>
           }
@@ -1214,20 +1200,20 @@ function StoresIndexTemplate(page: ResolvedPage) {
               ))}
             </div>
           </div>
-          <div className="rounded-[2.2rem] border border-black/10 bg-black p-6 text-white shadow-[0_18px_54px_rgba(10,10,10,0.10)]">
-            <p className="text-xs uppercase tracking-[0.34em] text-white/36">Статус</p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
+          <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+            <p className="text-xs uppercase tracking-[0.22em] text-black/42">Статус</p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em]">
               Розничная карта появится после подтверждения точек.
             </h2>
-            <p className="mt-4 text-sm leading-7 text-white/64">
+            <p className="mt-4 text-sm leading-7 text-black/62">
               Пока список не опубликован, форма на странице собирает запросы по городам, розничным точкам и
               партнёрскому запуску.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {storesContent.statusCards.map((card) => (
-                <div key={card.label} className="rounded-[1.3rem] border border-white/10 bg-white/[0.04] p-4">
+                <div key={card.label} className="rounded-[1rem] border border-black/10 bg-white p-4">
                   <p className="text-xl font-semibold tracking-[-0.04em]">{card.value}</p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.2em] text-white/42">{card.label}</p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.16em] text-black/42">{card.label}</p>
                 </div>
               ))}
             </div>
@@ -1242,15 +1228,15 @@ function StoresIndexTemplate(page: ResolvedPage) {
               alt="Официальный розничный запрос STILNO"
               className="min-h-[18rem]"
             />
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-black/36">{storesContent.supportTitle}</p>
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">{storesContent.supportTitle}</p>
               <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.supportBody}</p>
             </div>
-            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_14px_40px_rgba(10,10,10,0.12)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Дисклеймер</p>
-              <p className="mt-4 text-sm leading-7 text-white/70">{storesContent.disclaimer}</p>
+            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/42">Дисклеймер</p>
+              <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.disclaimer}</p>
               <div className="mt-6">
-                <ButtonLink href="/franchise" variant="secondary" tone="dark" analytics="stores_partner_redirect">
+                <ButtonLink href="/franchise" variant="secondary" tone="light" analytics="stores_partner_redirect">
                   Стать партнёром
                 </ButtonLink>
               </div>
@@ -1282,7 +1268,7 @@ function CityTemplate(page: ResolvedPage) {
           }}
           compact
         />
-        <div className="mt-8 rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+        <div className="mt-8 rounded-[1rem] border border-black/10 bg-white p-6">
           <p className="text-base leading-7 text-black/64">
             Данные по городу временно недоступны. Для уточнения наличия или розничного запуска используйте форму на
             странице «Где купить».
@@ -1313,7 +1299,7 @@ function StoreTemplate(page: ResolvedPage) {
           compact
         />
         <div className="mt-10 grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+          <div className="rounded-[1rem] border border-black/10 bg-white p-6">
             <RichText paragraphs={[store.address, store.hours, store.phone]} />
           </div>
           <LeadForm type="retail" schema={formSchemas.retailBase} />
@@ -1338,7 +1324,7 @@ function AboutTemplate(page: ResolvedPage) {
           compact
         />
         <div className="mt-10 grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+          <div className="rounded-[1rem] border border-black/10 bg-white p-6">
             <RichText paragraphs={brandNarrative} />
           </div>
           <div className="grid gap-5">
@@ -1394,13 +1380,13 @@ function GalleryTemplate(page: ResolvedPage) {
 
             return (
               <section key={type}>
-                <div className="mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.38em] text-black/36">
+                <div className="mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-black/36">
                   <span className="h-px w-12 bg-black/18" />
                   <span>{label}</span>
                 </div>
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {items.map((item) => (
-                    <article key={item.id} className="rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+                    <article key={item.id} className="rounded-[1rem] border border-black/10 bg-white p-5">
                       <ProductPhotoCard src={item.media ?? featuredProduct.images[0]} alt={item.alt} aspect="square" />
                       <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-black">{item.title}</h3>
                       <p className="mt-3 text-sm leading-6 text-black/62">{item.caption}</p>
@@ -1420,10 +1406,10 @@ function ProductCard({ product }: { product: Product }) {
   const category = productCategories.find((item) => item.id === product.categoryId);
 
   return (
-    <article className="rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+    <article className="rounded-[1rem] border border-black/10 bg-white p-5">
       <ProductPhotoCard src={product.images[0]} alt={product.title} />
       <div className="mt-5 flex items-center justify-between gap-4">
-        <span className="text-xs uppercase tracking-[0.34em] text-black/36">{category?.title ?? "Продукт"}</span>
+        <span className="text-xs uppercase tracking-[0.22em] text-black/36">{category?.title ?? "Продукт"}</span>
         <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/54">
           {product.highlight}
         </span>
@@ -1462,11 +1448,11 @@ function ProductsIndexTemplate(page: ResolvedPage) {
         />
         <div className="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <ProductCard product={featuredProduct} />
-          <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-            <p className="text-xs uppercase tracking-[0.34em] text-black/36">Категория</p>
+          <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+            <p className="text-xs uppercase tracking-[0.22em] text-black/36">Категория</p>
             <div className="mt-5 grid gap-4">
               {productCategories.map((category) => (
-                <article key={category.id} className="rounded-[1.6rem] border border-black/10 bg-[#f5f5f4] p-5">
+                <article key={category.id} className="rounded-[1rem] border border-black/10 bg-[#f5f5f4] p-5">
                   <h3 className="text-2xl font-semibold tracking-[-0.03em] text-black">{category.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-black/60">{category.shortDescription}</p>
                   <div className="mt-4">
@@ -1554,26 +1540,26 @@ function ProductTemplate(page: ResolvedPage) {
         <div className="mt-12 grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
           <div>
             <SectionIntro contract={productPageContent.detailSection} />
-            <div className="mt-6 rounded-[2rem] border border-black/10 bg-[#f1f2f1] p-5">
+            <div className="mt-6 rounded-[1rem] border border-black/10 bg-[#f1f2f1] p-5">
               <SpecsList product={product} />
             </div>
           </div>
           <div className="grid gap-5">
-            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Предупреждения 18+</p>
+            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/42">Предупреждения 18+</p>
               <div className="mt-5 grid gap-3">
                 {product.warnings.map((warning) => (
-                  <div key={warning} className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm leading-6 text-white/82">
+                  <div key={warning} className="rounded-[1rem] border border-black/10 bg-white px-4 py-4 text-sm leading-6 text-black/66">
                     {warning}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Факты и маркировка</p>
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Факты и маркировка</p>
               <div className="mt-5 grid gap-3">
                 {product.facts.map((fact) => (
-                  <div key={fact} className="rounded-[1.35rem] border border-black/10 bg-[#f5f5f4] px-4 py-4 text-sm leading-6 text-black/64">
+                  <div key={fact} className="rounded-[1rem] border border-black/10 bg-[#f5f5f4] px-4 py-4 text-sm leading-6 text-black/64">
                     {fact}
                   </div>
                 ))}
@@ -1586,7 +1572,7 @@ function ProductTemplate(page: ResolvedPage) {
           <SectionIntro contract={productPageContent.packagingSection} />
           <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {product.variants.map((variant) => (
-              <article key={variant.id} className="rounded-[1.7rem] border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(10,10,10,0.05)]">
+              <article key={variant.id} className="rounded-[1rem] border border-black/10 bg-white p-4">
                 <ProductPhotoCard
                   src={variant.packaging ?? variant.image ?? product.images[0]}
                   alt={`${product.title} — ${variant.title}`}
@@ -1600,24 +1586,24 @@ function ProductTemplate(page: ResolvedPage) {
           </div>
         </div>
 
-        <div className="mt-12 rounded-[2.2rem] border border-white/10 bg-black p-6 text-white">
-          <p className="text-xs uppercase tracking-[0.34em] text-white/36">Дальнейшие действия</p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">Розничный запрос, партнёрство и материалы.</h2>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-white/66">
+        <div className="mt-12 rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Дальнейшие действия</p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em]">Розничный запрос, партнёрство и материалы.</h2>
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-black/62">
             Сайт не продаёт продукт дистанционно. Дальнейшие действия по наличию, B2B-контакту и партнёрству проходят
             через отдельные формы и документы.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/stores#stores-request" tone="dark" analytics="product_retail_request">
+            <ButtonLink href="/stores#stores-request" tone="light" analytics="product_retail_request">
               Оставить розничный запрос
             </ButtonLink>
-            <ButtonLink href="/partners" tone="dark" variant="secondary" analytics="product_partner_request">
+            <ButtonLink href="/partners" tone="light" variant="secondary" analytics="product_partner_request">
               Запросить партнёрство
             </ButtonLink>
             <ButtonLink
               href={documentLinks.franchisePresentation}
               target="_blank"
-              tone="dark"
+              tone="light"
               variant="secondary"
               analytics="product_presentation_download"
             >
@@ -1675,21 +1661,21 @@ function PartnersTemplate(page: ResolvedPage) {
         <div id="partner-form" className="mt-12 grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
           <LeadForm type="partner" schema={formSchemas.partnerBase} />
           <div className="grid gap-4">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Что важно</p>
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Что важно</p>
               <p className="mt-4 text-sm leading-7 text-black/62">
                 Страница «Партнёрам» не обещает доходность и не дублирует франчайзинговый раздел. Она нужна для опта,
                 регионального B2B-контакта и действующей розницы.
               </p>
             </div>
-            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white">
-              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Нужен запуск под брендом?</p>
-              <p className="mt-4 text-sm leading-7 text-white/68">
+            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/42">Нужен запуск под брендом?</p>
+              <p className="mt-4 text-sm leading-7 text-black/64">
                 Для запуска под брендом STILNO используйте отдельную страницу франчайзинга и соответствующую
                 заявку.
               </p>
               <div className="mt-6">
-                <ButtonLink href="/franchise" tone="dark" variant="secondary" analytics="partners_to_franchise">
+                <ButtonLink href="/franchise" tone="light" variant="secondary" analytics="partners_to_franchise">
                   Открыть франчайзинг
                 </ButtonLink>
               </div>
@@ -1705,19 +1691,18 @@ function ResponsibleTemplate(page: ResolvedPage) {
   const responsibleFaq = faqItems.filter((item) => item.scope === "responsible" || item.scope === "products");
 
   return (
-    <section className="bg-black">
+    <section className="bg-[var(--color-page)]">
       <StructuredData data={buildJsonLd(page)} />
       <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
-        <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+        <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <PageHero
           contract={{
             eyebrow: "Ответственное потребление",
             title: "Правовые ограничения и продуктовая коммуникация STILNO",
             body: page.description,
           }}
-          tone="dark"
           media={
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-4">
               <LegalWarningStrip />
             </div>
           }
@@ -1725,8 +1710,8 @@ function ResponsibleTemplate(page: ResolvedPage) {
         />
         <div className="mt-12 grid gap-5 md:grid-cols-2">
           {responsibilityNotes.map((item) => (
-            <article key={item} className="rounded-[1.7rem] border border-white/8 bg-white/[0.03] p-5">
-              <p className="text-sm leading-6 text-white/66">{item}</p>
+            <article key={item} className="rounded-[1rem] border border-black/10 bg-white p-5">
+              <p className="text-sm leading-6 text-black/64">{item}</p>
             </article>
           ))}
         </div>
@@ -1737,10 +1722,9 @@ function ResponsibleTemplate(page: ResolvedPage) {
               title: "Частые вопросы по возрастным ограничениям и правовой подаче.",
               body: "Блок собран отдельно от продуктового hero, чтобы предупреждения не терялись в визуальном слое.",
             }}
-            tone="dark"
           />
           <div className="mt-8">
-            <FaqAccordion items={responsibleFaq} tone="dark" />
+            <FaqAccordion items={responsibleFaq} />
           </div>
         </div>
       </div>
@@ -1753,28 +1737,28 @@ function FranchiseTemplate(page: ResolvedPage) {
 
   return (
     <>
-      <section className="border-b border-white/8 bg-black">
+      <section className="border-b border-black/10 bg-white">
         <StructuredData data={buildJsonLd(page)} />
         <div className="mx-auto max-w-[86rem] px-5 py-12 sm:px-6 lg:px-8 lg:pb-14 lg:pt-16">
-          <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
           <div className="grid gap-10 py-8 xl:grid-cols-[0.82fr_1.18fr] xl:items-center">
             <div>
-              <div className="mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-white/42">
-                <span className="h-px w-12 bg-white/22" />
+              <div className="mb-5 inline-flex max-w-full items-center gap-3 text-[0.72rem] uppercase tracking-[0.18em] text-black/44">
+                <span className="h-px w-12 bg-black/20" />
                 <span>{franchiseContent.hero.eyebrow}</span>
               </div>
-              <h1 className="max-w-4xl text-5xl font-semibold leading-[0.96] tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.8rem]">
+              <h1 className="max-w-4xl text-5xl font-semibold leading-[0.96] tracking-[-0.04em] text-black sm:text-6xl lg:text-[4.6rem]">
                 {franchiseContent.hero.title}
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">{franchiseContent.hero.body}</p>
-              <ActionGroup actions={franchiseContent.hero.actions} tone="dark" analyticsPrefix="franchise_hero" />
-              <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-5 border-y border-white/10 py-5 sm:grid-cols-4">
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-black/64">{franchiseContent.hero.body}</p>
+              <ActionGroup actions={franchiseContent.hero.actions} analyticsPrefix="franchise_hero" />
+              <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-5 border-y border-black/10 py-5 sm:grid-cols-4">
                 {franchiseHeroSignals.map((signal) => (
                   <div key={signal.label}>
-                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/32">
+                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-black/38">
                       {signal.label}
                     </p>
-                    <p className="mt-2 text-sm font-medium text-white/78">{signal.value}</p>
+                    <p className="mt-2 text-sm font-medium text-black/78">{signal.value}</p>
                   </div>
                 ))}
               </div>
@@ -1808,7 +1792,7 @@ function FranchiseTemplate(page: ResolvedPage) {
         </div>
       </section>
 
-      <section className="border-y border-white/8 bg-black">
+      <section className="border-y border-black/10 bg-white">
         <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-6 lg:px-8">
           <FranchisePartnerKit />
         </div>
@@ -1842,7 +1826,7 @@ function CareersTemplate(page: ResolvedPage) {
             compact
           />
           <div className="mt-10 grid gap-6 xl:grid-cols-[0.96fr_1.04fr]">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
               <p className="text-base leading-7 text-black/64">
                 Если открытые вакансии ещё не опубликованы, вы можете отправить общий карьерный отклик в команду
                 STILNO.
@@ -1871,8 +1855,8 @@ function CareersTemplate(page: ResolvedPage) {
         <div className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-4">
             {vacancies.map((vacancy) => (
-              <article key={vacancy.id} className="rounded-[1.8rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-                <p className="text-xs uppercase tracking-[0.34em] text-black/36">{vacancy.department}</p>
+              <article key={vacancy.id} className="rounded-[1rem] border border-black/10 bg-white p-6">
+                <p className="text-xs uppercase tracking-[0.22em] text-black/36">{vacancy.department}</p>
                 <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">{vacancy.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-black/62">{vacancy.description[0]}</p>
                 <div className="mt-5">
@@ -1911,8 +1895,8 @@ function VacancyTemplate(page: ResolvedPage) {
         />
         <div className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-5">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Что предстоит делать</p>
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Что предстоит делать</p>
               <div className="mt-4 grid gap-3 text-sm leading-6 text-black/64">
                 {vacancy.description.map((item) => (
                   <p key={item}>{item}</p>
@@ -1920,17 +1904,17 @@ function VacancyTemplate(page: ResolvedPage) {
               </div>
             </div>
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-                <p className="text-xs uppercase tracking-[0.34em] text-black/36">Требования</p>
+              <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Требования</p>
                 <div className="mt-4 grid gap-3 text-sm leading-6 text-black/64">
                   {vacancy.requirements.map((item) => (
                     <p key={item}>{item}</p>
                   ))}
                 </div>
               </div>
-              <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
-                <p className="text-xs uppercase tracking-[0.34em] text-white/36">Условия</p>
-                <div className="mt-4 grid gap-3 text-sm leading-6 text-white/70">
+              <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+                <p className="text-xs uppercase tracking-[0.22em] text-black/42">Условия</p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-black/64">
                   {vacancy.conditions.map((item) => (
                     <p key={item}>{item}</p>
                   ))}
@@ -1961,17 +1945,17 @@ function ContactsTemplate(page: ResolvedPage) {
 
         <div className="mt-12 grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
           <div className="grid gap-5">
-            <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-black/36">Маршрутизация обращений</p>
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Маршрутизация обращений</p>
               <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
                 <p>Розничные запросы идут через страницу «Где купить» и общую розничную форму.</p>
                 <p>Оптовые и региональные обращения идут через страницу «Партнёрам».</p>
                 <p>Запуск под брендом STILNO обрабатывается через отдельный раздел франчайзинга.</p>
               </div>
             </div>
-            <div className="rounded-[2rem] border border-black/10 bg-black p-6 text-white shadow-[0_16px_44px_rgba(10,10,10,0.12)]">
-              <p className="text-xs uppercase tracking-[0.34em] text-white/36">Юридические данные</p>
-              <div className="mt-5 grid gap-3 text-sm leading-6 text-white/68">
+            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/42">Юридические данные</p>
+              <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
                 <p>{companyDetails.companyName}</p>
                 <p>{companyDetails.legalAddress}</p>
                 <p>{companyDetails.productionAddress}</p>
@@ -2007,7 +1991,7 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
             }}
             compact
           />
-          <div className="mt-8 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+          <div className="mt-8 rounded-[1rem] border border-black/10 bg-white p-8">
             <p className="text-base leading-7 text-black/68">
               Сейчас сайт сосредоточен на продукте, партнёрских обращениях, франчайзинге и правовой информации.
             </p>
@@ -2032,10 +2016,10 @@ function ArticlesIndexTemplate(page: ResolvedPage) {
         />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {articles.map((article) => (
-            <article key={article.id} className="rounded-[2rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+            <article key={article.id} className="rounded-[1rem] border border-black/10 bg-white p-5">
               <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
               <div className="mt-5 flex items-center justify-between gap-4">
-                <span className="text-xs uppercase tracking-[0.34em] text-black/36">{article.category}</span>
+                <span className="text-xs uppercase tracking-[0.22em] text-black/36">{article.category}</span>
                 <span className="text-sm text-black/42">{article.publishedAt}</span>
               </div>
               <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-black">{article.title}</h3>
@@ -2078,7 +2062,7 @@ function ArticleTemplate(page: ResolvedPage) {
         <div className="mt-10">
           <ProductPhotoCard src={article.coverImage ?? featuredProduct.images[0]} alt={article.title} />
         </div>
-        <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+        <div className="mt-10 rounded-[1rem] border border-black/10 bg-white p-8">
           <RichText paragraphs={article.body} />
         </div>
       </div>
@@ -2109,7 +2093,7 @@ function FaqTemplate(page: ResolvedPage) {
 
             return (
               <section key={group.id}>
-                <div className="mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.38em] text-black/36">
+                <div className="mb-5 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-black/36">
                   <span className="h-px w-12 bg-black/18" />
                   <span>{group.title}</span>
                 </div>
@@ -2143,16 +2127,16 @@ function ThankYouTemplate(page: ResolvedPage) {
   const key = page.thankYouType ?? "retail";
 
   return (
-    <section className="grid min-h-[70svh] place-items-center bg-black px-5 py-16 sm:px-6 lg:px-8">
-      <div className="w-full max-w-3xl rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_42%),linear-gradient(145deg,#090909,#17181b)] p-8 text-white shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-10">
-        <p className="text-xs uppercase tracking-[0.42em] text-white/38">Спасибо</p>
-        <h1 className="mt-6 text-5xl font-semibold tracking-[-0.06em]">{labels[key]}</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-white/68">{nextSteps[key]}</p>
+    <section className="grid min-h-[70svh] place-items-center bg-white px-5 py-16 sm:px-6 lg:px-8">
+      <div className="w-full max-w-3xl rounded-[1rem] border border-black/10 bg-white p-8 text-black sm:p-10">
+        <p className="text-xs uppercase tracking-[0.22em] text-black/42">Спасибо</p>
+        <h1 className="mt-6 text-5xl font-semibold tracking-[-0.05em]">{labels[key]}</h1>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-black/64">{nextSteps[key]}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/" analytics="thankyou_home" variant="secondary" tone="dark">
+          <ButtonLink href="/" analytics="thankyou_home" variant="secondary" tone="light">
             На главную
           </ButtonLink>
-          <ButtonLink href="/contacts" analytics="thankyou_contacts" variant="secondary" tone="dark">
+          <ButtonLink href="/contacts" analytics="thankyou_contacts" variant="secondary" tone="light">
             Контакты
           </ButtonLink>
         </div>
@@ -2180,7 +2164,7 @@ function LegalTemplate(page: ResolvedPage) {
           }}
           compact
         />
-        <div className="mt-10 rounded-[2rem] border border-black/10 bg-white p-8 shadow-[0_16px_44px_rgba(10,10,10,0.05)]">
+        <div className="mt-10 rounded-[1rem] border border-black/10 bg-white p-8">
           <RichText paragraphs={legalPage.body} />
         </div>
       </div>
@@ -2195,7 +2179,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <AnalyticsLoader version={siteSettings.consentVersion} />
       <AgeGate version={siteSettings.ageGateVersion} legalHref="/legal/age-18" />
       <CookieBanner version={siteSettings.consentVersion} legalHref="/legal/cookies" />
-      <div className="min-h-screen bg-[var(--color-page)] text-white">
+      <div className="min-h-screen bg-[var(--color-page)] text-black">
         <SiteHeader navItems={siteSettings.primaryNav} primaryCta={siteSettings.primaryCta} />
         <main>{children}</main>
         <Footer />

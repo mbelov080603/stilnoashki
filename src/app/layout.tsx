@@ -64,8 +64,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
-  colorScheme: "dark light",
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -75,7 +75,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`${manrope.variable} ${plexMono.variable} h-full scroll-smooth`}>
-      <body className="min-h-full bg-black antialiased">
+      <body className="min-h-full bg-white antialiased">
         <SiteShell>{children}</SiteShell>
       </body>
     </html>
