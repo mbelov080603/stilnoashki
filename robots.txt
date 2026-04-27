@@ -1,5 +1,7 @@
 User-Agent: *
-Disallow: /
+Allow: /
+Disallow: /thank-you/
+Disallow: /api/
 
-Host: http://localhost:3000
-Sitemap: http://localhost:3000/sitemap.xml
+Host: https://mbelov080603.github.io/stilnoashki
+Sitemap: https://mbelov080603.github.io/stilnoashki/sitemap.xml
