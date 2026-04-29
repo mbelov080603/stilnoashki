@@ -1,6 +1,3 @@
-import { appendFile, mkdir } from "node:fs/promises";
-import { join } from "node:path";
-
 import { NextResponse } from "next/server";
 
 type LeadPayload = {
@@ -14,6 +11,9 @@ type LeadPayload = {
 
 const MIN_SUBMIT_DELAY_MS = 1500;
 const LEAD_TYPES = new Set(["retail", "franchise", "partner", "career"]);
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 6;
+const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
 
 function normalizeField(value?: string) {
   return value?.trim().replace(/\s+/g, " ") ?? "";
@@ -27,11 +27,32 @@ function isValidPhone(value: string) {
   return value.replace(/[^\d]/g, "").length >= 10;
 }
 
-async function appendLeadToLocalStorage(lead: Record<string, unknown>) {
-  const leadsDir = join(process.env.TMPDIR || "/tmp", "stilno-leads");
-  await mkdir(leadsDir, { recursive: true });
-  await appendFile(join(leadsDir, "incoming.ndjson"), `${JSON.stringify(lead)}\n`, "utf8");
-  return true;
+function escapeHtml(value: unknown) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getClientKey(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const realIp = request.headers.get("x-real-ip")?.trim();
+  return forwardedFor || realIp || "unknown";
+}
+
+function isRateLimited(key: string) {
+  const now = Date.now();
+  const current = rateLimitBuckets.get(key);
+
+  if (!current || current.resetAt <= now) {
+    rateLimitBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  current.count += 1;
+  return current.count > RATE_LIMIT_MAX;
 }
 
 async function sendLeadToWebhook(lead: Record<string, unknown>) {
@@ -67,7 +88,7 @@ async function sendLeadByEmail(lead: Record<string, unknown>) {
   }
 
   const lines = Object.entries(lead)
-    .map(([key, value]) => `<p><strong>${key}:</strong> ${typeof value === "string" ? value : JSON.stringify(value)}</p>`)
+    .map(([key, value]) => `<p><strong>${escapeHtml(key)}:</strong> ${escapeHtml(typeof value === "string" ? value : JSON.stringify(value))}</p>`)
     .join("");
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -162,6 +183,14 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
 
 export async function POST(request: Request) {
   let payload: LeadPayload;
+  const clientKey = getClientKey(request);
+
+  if (isRateLimited(clientKey)) {
+    return NextResponse.json(
+      { ok: false, message: "Слишком много отправок. Повторите попытку позже." },
+      { status: 429 },
+    );
+  }
 
   try {
     payload = (await request.json()) as LeadPayload;
@@ -210,11 +239,24 @@ export async function POST(request: Request) {
     consents,
   };
 
-  const deliveryResults = await Promise.allSettled([
-    appendLeadToLocalStorage(lead),
-    sendLeadToWebhook(lead),
-    sendLeadByEmail(lead),
-  ]);
+  const hasDurableDelivery =
+    Boolean(process.env.LEADS_WEBHOOK_URL?.trim()) ||
+    Boolean(process.env.RESEND_API_KEY?.trim() && process.env.LEADS_NOTIFY_EMAIL?.trim());
+
+  if (!hasDurableDelivery) {
+    console.error("stilno.lead.delivery_not_configured", {
+      leadId: lead.leadId,
+      type: lead.type,
+      pageUrl: lead.pageUrl,
+    });
+
+    return NextResponse.json(
+      { ok: false, message: "Канал приёма заявок временно недоступен. Повторите попытку позже." },
+      { status: 503 },
+    );
+  }
+
+  const deliveryResults = await Promise.allSettled([sendLeadToWebhook(lead), sendLeadByEmail(lead)]);
 
   const delivered = deliveryResults.some(
     (result) => result.status === "fulfilled" && result.value === true,
@@ -227,7 +269,12 @@ export async function POST(request: Request) {
     );
   }
 
-  console.info("stilno.lead.accepted", lead);
+  console.info("stilno.lead.accepted", {
+    leadId: lead.leadId,
+    type: lead.type,
+    pageUrl: lead.pageUrl,
+    delivered,
+  });
 
   return NextResponse.json({
     ok: true,

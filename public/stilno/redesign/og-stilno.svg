@@ -1,0 +1,22 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">STILNO CLICK ONE</title>
+<desc id="desc">Open Graph image for the official STILNO website.</desc>
+<rect width="1200" height="630" fill="#F5F5F2"/>
+<path d="M80 110H1120M80 520H1120M350 60V570M820 60V570" stroke="#0B1018" stroke-opacity="0.12"/>
+<text x="80" y="150" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="750" letter-spacing="8">STILNO</text>
+<text x="80" y="250" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="84" font-weight="780" letter-spacing="-2.5">CLICK ONE</text>
+<text x="80" y="314" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="28">Официальный сайт бренда 18+</text>
+<text x="80" y="374" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="22">Продукт · проверка оригинальности · партнёрство · где купить</text>
+<g transform="translate(760 120)">
+  <rect x="0" y="0" width="128" height="330" rx="42" fill="#050608"/>
+  <rect x="36" y="34" width="56" height="40" rx="20" fill="#2B2E2F"/>
+  <text x="82" y="268" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="7" transform="rotate(-90 82 268)">STILNO</text>
+  <rect x="166" y="36" width="286" height="270" rx="32" fill="#FFFFFF" stroke="#0B1018" stroke-opacity="0.12"/>
+  <rect x="198" y="94" width="222" height="72" rx="22" fill="#EADFBF"/>
+  <text x="198" y="220" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="750">STILNO CLICK ONE</text>
+  <text x="198" y="256" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="17">10 мл · Type-C · 850 мА·ч</text>
+</g>
+<rect x="80" y="458" width="132" height="54" rx="27" fill="#0B1018"/>
+<text x="122" y="493" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">18+</text>
+<text x="240" y="493" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="18">Никотин вызывает зависимость. Продажа несовершеннолетним запрещена.</text>
+</svg>

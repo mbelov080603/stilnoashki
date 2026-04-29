@@ -65,6 +65,9 @@ export function getBreadcrumbs(pathname: string[], title: string) {
     ["gallery", "Галерея"],
     ["products", "Продукт"],
     ["partners", "Партнёры"],
+    ["media-kit", "Партнёрский пакет"],
+    ["verify", "Проверка оригинальности"],
+    ["support", "Поддержка"],
     ["responsible", "Ответственное потребление"],
     ["franchise", "Франчайзинг"],
     ["careers", "Вакансии"],
@@ -94,7 +97,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
         kind: "stores-index",
         title: "Где купить STILNO",
         description:
-          "Розничная карта STILNO публикуется после подтверждения городов и партнёрских точек. До публикации списка можно оставить запрос по вашему городу.",
+          "Опубликованная точка STILNO в Москве, телефон, маршрут и форма розничного запроса без дистанционной продажи.",
         pathname: slug,
         stores,
       };
@@ -125,7 +128,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     return {
       kind: "store",
       title: `${store.title} — ${city.name}`,
-      description: `${store.address}. ${store.hours}.`,
+      description: `${store.address}. ${store.inventoryStatus ?? store.hours}.`,
       pathname: slug,
       city,
       store,
@@ -190,11 +193,45 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
   }
 
   if (section === "partners") {
+    if (second === "media-kit") {
+      return {
+        kind: "media-kit",
+        title: "Партнёрский пакет STILNO",
+        description:
+          "Презентация, продуктовая база, медиафайлы и правила категории 18+ для партнёрских запросов STILNO.",
+        pathname: slug,
+      };
+    }
+
+    if (second) {
+      return null;
+    }
+
     return {
       kind: "partners",
       title: "Партнёрам STILNO",
       description:
         "Оптовые, региональные и партнёрские запросы по бренду STILNO принимаются через форму сайта и обсуждаются индивидуально.",
+      pathname: slug,
+    };
+  }
+
+  if (section === "verify") {
+    return {
+      kind: "verify",
+      title: "Проверка оригинальности STILNO",
+      description:
+        "Проверка кода с упаковки STILNO CLICK ONE, статус оригинальности и безопасный маршрут обращения.",
+      pathname: slug,
+    };
+  }
+
+  if (section === "support") {
+    return {
+      kind: "support",
+      title: "Поддержка STILNO",
+      description:
+        "Поддержка по оригинальности, качеству, гарантийным обращениям, утилизации и правилам категории 18+.",
       pathname: slug,
     };
   }
@@ -225,7 +262,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
         kind: "careers-index",
         title: "Вакансии STILNO",
         description:
-          "Общие карьерные обращения STILNO для будущих запусков, розничных ролей и брендовых функций.",
+          "Открытые роли STILNO для B2B, trade-маркетинга, розничных запусков и брендовых функций.",
         pathname: slug,
       };
     }
@@ -329,6 +366,9 @@ export function getAllStaticPaths() {
     ...productCategories.map((category) => ["products", category.slug]),
     ...products.map((product) => ["products", product.slug]),
     ["partners"],
+    ["partners", "media-kit"],
+    ["verify"],
+    ["support"],
     ["responsible"],
     ["franchise"],
     ["careers"],

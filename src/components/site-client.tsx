@@ -14,7 +14,7 @@ import {
 } from "react";
 
 import { MediaSlot } from "@/components/media-slot";
-import { analyticsIds, isStaticExport } from "@/lib/site-data";
+import { analyticsIds, companyDetails, isStaticExport } from "@/lib/site-data";
 import type {
   CtaLink,
   LeadFormSchema,
@@ -22,6 +22,11 @@ import type {
   Product,
   ProductVariant,
 } from "@/lib/site-data";
+import {
+  verifyCodeLocally,
+  type VerificationRecord,
+  type VerificationStatus,
+} from "@/lib/verification";
 
 const AGE_KEY = "stilno:age-gate";
 const COOKIE_KEY = "stilno:cookie-consent";
@@ -32,6 +37,11 @@ type ConsentState = {
   ageGate: true;
   analytics: boolean;
 };
+
+type VerificationDetailsRecord = Pick<
+  VerificationRecord,
+  "product" | "flavor" | "batch" | "expiresAt" | "checks"
+>;
 
 function trapFocus(event: KeyboardEvent, containerRef: RefObject<HTMLElement | null>) {
   if (event.key !== "Tab") {
@@ -482,6 +492,7 @@ export function AgeGate({
             className={`rounded-full px-6 py-3 text-sm font-medium transition ${ctaClassName("primary")}`}
             onClick={() => {
               window.localStorage.setItem(AGE_KEY, version);
+              window.dispatchEvent(new Event("stilno:age-accepted"));
               pushAnalytics("age_gate_accept", { version });
               setVisible(false);
             }}
@@ -526,13 +537,23 @@ export function CookieBanner({
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
   useEffect(() => {
-    const stored = readConsent(version);
-    const frame = window.requestAnimationFrame(() => {
-      setVisible(!stored);
+    function syncVisible() {
+      const stored = readConsent(version);
+      const ageAccepted = window.localStorage.getItem(AGE_KEY) === version;
+      setVisible(ageAccepted && !stored);
       setAnalyticsEnabled(Boolean(stored?.analytics));
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      syncVisible();
     });
 
-    return () => window.cancelAnimationFrame(frame);
+    window.addEventListener("stilno:age-accepted", syncVisible);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("stilno:age-accepted", syncVisible);
+    };
   }, [version]);
 
   function saveConsent(analytics: boolean) {
@@ -552,8 +573,8 @@ export function CookieBanner({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-3 z-40 px-4">
-      <div className="mx-auto max-w-4xl rounded-[1rem] border border-black/10 bg-white px-5 py-5 text-black sm:px-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-3 z-[70] px-4">
+      <div className="pointer-events-auto mx-auto max-w-4xl rounded-[1rem] border border-black/10 bg-white px-5 py-5 text-black shadow-[0_24px_70px_rgba(0,0,0,0.12)] sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-medium text-black">Cookie-файлы</p>
@@ -641,8 +662,12 @@ export function LeadForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successHint, setSuccessHint] = useState<string | null>(null);
-  const [startedAt] = useState(() => Date.now());
+  const [startedAt, setStartedAt] = useState(0);
   const theme = schema.theme ?? "dark";
+
+  useEffect(() => {
+    setStartedAt(Date.now());
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -661,27 +686,10 @@ export function LeadForm({
     );
 
     if (isStaticExport) {
-      const lead = {
-        type,
-        pageUrl: pathname,
-        createdAt: new Date().toISOString(),
-        fields: fieldsPayload,
-        consents: consentsPayload,
-      };
-
-      try {
-        const previousLeads = JSON.parse(localStorage.getItem("stilno:static-leads") ?? "[]") as unknown[];
-        localStorage.setItem("stilno:static-leads", JSON.stringify([...previousLeads.slice(-9), lead]));
-      } catch {
-        // The static preview still shows the success state if localStorage is unavailable.
-      }
-
-      form.reset();
-      setSuccessHint(schema.successMessage);
-      pushAnalytics("lead_submit_static", { type, page: pathname });
-      startTransition(() => {
-        router.prefetch(`/thank-you/${type}`);
-      });
+      setError(
+        `Эта статическая версия сайта не принимает заявки напрямую. Напишите на ${companyDetails.contactEmail} или используйте production-версию сайта.`,
+      );
+      pushAnalytics("lead_submit_static_blocked", { type, page: pathname });
       setIsSubmitting(false);
       return;
     }
@@ -711,7 +719,7 @@ export function LeadForm({
       setSuccessHint(schema.successMessage);
       pushAnalytics("lead_submit", { type, page: pathname });
       startTransition(() => {
-        router.prefetch(`/thank-you/${type}`);
+        router.push(`/thank-you/${type}`);
       });
     } catch (submissionError) {
       setError(
@@ -817,12 +825,14 @@ export function LeadForm({
           {schema.disclaimer}
         </p>
       ) : null}
-      {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
-      {successHint ? (
-        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-emerald-700" : "text-emerald-700"}`}>
-          {successHint}
-        </p>
-      ) : null}
+      <div aria-live="polite">
+        {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
+        {successHint ? (
+          <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-emerald-700" : "text-emerald-700"}`}>
+            {successHint}
+          </p>
+        ) : null}
+      </div>
 
       <button
         type="submit"
@@ -852,7 +862,7 @@ export function VariantPicker({ product }: { product: Product }) {
       <MediaSlot
         slotId={`product-variant-${activeVariant.id}`}
         title={activeVariant.title}
-        note="Слот подготовлен для нового фото выбранного вкуса."
+        note="Визуал выбранного вкуса STILNO CLICK ONE."
         aspect="square"
       />
 
@@ -947,6 +957,205 @@ export function FaqAccordion({
   );
 }
 
+export function VerifyChecker() {
+  const [code, setCode] = useState("");
+  const [result, setResult] = useState<{
+    tone: "idle" | "success" | "warning" | "danger";
+    title: string;
+    body: string;
+    details?: Array<{ label: string; value: string }>;
+  }>({
+    tone: "idle",
+    title: "Введите код с упаковки",
+    body: "Код проверяется без передачи персональных данных. Если упаковка повреждена, обратитесь в поддержку STILNO.",
+  });
+  const [isChecking, setIsChecking] = useState(false);
+
+  function normalizeCode(value: string) {
+    return value.trim().replace(/\s+/g, "").toUpperCase();
+  }
+
+  function getTone(status: VerificationStatus) {
+    if (status === "valid") {
+      return "success";
+    }
+
+    if (status === "revoked") {
+      return "danger";
+    }
+
+    return "warning";
+  }
+
+  function getDetails({
+    normalizedCode,
+    record,
+    checkId,
+  }: {
+    normalizedCode: string;
+    record?: VerificationDetailsRecord;
+    checkId?: string;
+  }) {
+    return [
+      { label: "Код", value: normalizedCode },
+      record ? { label: "Продукт", value: record.product } : undefined,
+      record ? { label: "Вкус", value: record.flavor } : undefined,
+      record ? { label: "Партия", value: record.batch } : undefined,
+      record ? { label: "Срок годности", value: record.expiresAt } : undefined,
+      record ? { label: "Проверок", value: String(record.checks) } : undefined,
+      checkId ? { label: "ID проверки", value: checkId } : undefined,
+    ].filter((item): item is { label: string; value: string } => Boolean(item));
+  }
+
+  async function handleCheck(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const normalized = normalizeCode(code);
+
+    if (normalized.length < 8) {
+      setResult({
+        tone: "warning",
+        title: "Код слишком короткий",
+        body: "Проверьте защитную наклейку или QR-код на упаковке STILNO CLICK ONE и повторите ввод.",
+      });
+      pushAnalytics("verify_code_invalid_length");
+      return;
+    }
+
+    if (!/^STILNO-[A-Z0-9-]{4,}$/.test(normalized)) {
+      setResult({
+        tone: "warning",
+        title: "Код не похож на код STILNO",
+        body:
+          "Не используйте продукт из сомнительного источника. Отправьте фото упаковки и код в поддержку для ручной проверки.",
+      });
+      pushAnalytics("verify_code_unknown_format");
+      return;
+    }
+
+    if (isStaticExport) {
+      const staticResult = verifyCodeLocally(normalized);
+      setResult({
+        tone: getTone(staticResult.status),
+        title: staticResult.title,
+        body: staticResult.message,
+        details: getDetails({
+          normalizedCode: staticResult.normalizedCode,
+          record: staticResult.record,
+          checkId: `STATIC-${staticResult.normalizedCode}`,
+        }),
+      });
+      pushAnalytics("verify_code_result", { mode: "static", status: staticResult.status });
+      return;
+    }
+
+    setIsChecking(true);
+
+    try {
+      const response = await fetch("/api/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: normalized }),
+      });
+      const data = (await response.json()) as {
+        ok?: boolean;
+        status?: VerificationStatus;
+        title?: string;
+        message?: string;
+        checkedAt?: string;
+        checkId?: string;
+        normalizedCode?: string;
+        record?: {
+          product: string;
+          flavor: string;
+          batch: string;
+          manufacturedAt: string;
+          expiresAt: string;
+          checks: number;
+        };
+      };
+
+      if (!response.ok || !data.ok || !data.status) {
+        throw new Error(data.message ?? "Не удалось проверить код.");
+      }
+
+      setResult({
+        tone: getTone(data.status),
+        title: data.title ?? "Результат проверки",
+        body: data.message ?? "Проверка завершена.",
+        details: getDetails({
+          normalizedCode: data.normalizedCode ?? normalized,
+          record: data.record,
+          checkId: data.checkId,
+        }),
+      });
+      pushAnalytics("verify_code_result", { status: data.status });
+    } catch (checkError) {
+      setResult({
+        tone: "warning",
+        title: "Проверка временно недоступна",
+        body:
+          checkError instanceof Error
+            ? checkError.message
+            : "Повторите попытку позже или обратитесь в поддержку STILNO.",
+      });
+      pushAnalytics("verify_code_failed");
+    } finally {
+      setIsChecking(false);
+    }
+  }
+
+  const toneClass =
+    result.tone === "success"
+      ? "border-emerald-700/20 bg-emerald-50 text-emerald-950"
+      : result.tone === "danger"
+        ? "border-red-700/20 bg-red-50 text-red-950"
+      : result.tone === "warning"
+        ? "border-amber-700/20 bg-amber-50 text-amber-950"
+        : "border-black/10 bg-[#f6f6f3] text-black";
+
+  return (
+    <div className="rounded-[1rem] border border-black/10 bg-white p-6">
+      <form onSubmit={handleCheck} className="grid gap-4">
+        <label className="grid gap-2 text-sm text-black/68">
+          Код проверки
+          <input
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            placeholder="STILNO-XXXX-XXXX"
+            className="rounded-[1rem] border border-black/12 bg-white px-4 py-3 text-black outline-none transition placeholder:text-black/34 focus:border-black/36"
+            autoComplete="off"
+            inputMode="text"
+          />
+        </label>
+        <button
+          type="submit"
+          className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-medium transition ${ctaClassName(
+            "primary",
+          )}`}
+        >
+          {isChecking ? "Проверяем..." : "Проверить код"}
+        </button>
+      </form>
+      <div className={`mt-5 rounded-[1rem] border p-5 ${toneClass}`} aria-live="polite">
+        <p className="text-lg font-semibold tracking-[-0.03em]">{result.title}</p>
+        <p className="mt-2 text-sm leading-6 opacity-75">{result.body}</p>
+        {result.details?.length ? (
+          <dl className="mt-5 grid gap-3 rounded-[0.9rem] border border-current/10 bg-white/40 p-4 text-sm sm:grid-cols-2">
+            {result.details.map((item) => (
+              <div key={item.label}>
+                <dt className="text-xs uppercase tracking-[0.16em] opacity-55">{item.label}</dt>
+                <dd className="mt-1 font-medium">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function VariantPickerFallback({ product }: { product: Product }) {
   const firstVariant = useMemo(() => product.variants[0], [product.variants]);
 
@@ -955,7 +1164,7 @@ export function VariantPickerFallback({ product }: { product: Product }) {
       <MediaSlot
         slotId="product-variant-fallback"
         title={product.title}
-        note="Слот подготовлен для нового фото продукта."
+        note="Визуал продукта STILNO CLICK ONE."
         aspect="square"
       />
       <div className="rounded-[1rem] border border-black/10 bg-white p-6">

@@ -1,0 +1,54 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">STILNO Moscow store locator</title>
+<desc id="desc">Store locator card for STILNO in Moscow, Business Center Vavilon.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1440" y2="900" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F8F8F5"/>
+    <stop offset="1" stop-color="#E8ECE8"/>
+  </linearGradient>
+  <filter id="shadow" x="-60" y="-60" width="1560" height="1020" filterUnits="userSpaceOnUse">
+    <feDropShadow dx="0" dy="30" stdDeviation="42" flood-color="#0B1018" flood-opacity="0.15"/>
+  </filter>
+</defs>
+<rect width="1440" height="900" rx="42" fill="url(#bg)"/>
+<g opacity="0.16">
+  <path d="M110 140H1330" stroke="#0B1018"/>
+  <path d="M110 450H1330" stroke="#0B1018"/>
+  <path d="M110 760H1330" stroke="#0B1018"/>
+  <path d="M360 80V820" stroke="#0B1018"/>
+  <path d="M760 80V820" stroke="#0B1018"/>
+  <path d="M1160 80V820" stroke="#0B1018"/>
+</g>
+<text x="110" y="128" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="750" letter-spacing="-1.5">Где купить STILNO</text>
+<text x="110" y="174" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="21">Москва · Бизнес центр Вавилон · +7 999 244-28-36</text>
+<g filter="url(#shadow)">
+  <g transform="translate(110 236)">
+    <rect width="520" height="500" rx="34" fill="#0B1018"/>
+    <text x="42" y="72" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700">STILNO</text>
+    <text x="42" y="114" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="18">Опубликованная точка 18+</text>
+    <rect x="42" y="166" width="430" height="94" rx="24" fill="#FFFFFF" fill-opacity="0.07"/>
+    <text x="70" y="206" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="3">АДРЕС</text>
+    <text x="70" y="238" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="650">Москва, Бизнес центр Вавилон</text>
+    <rect x="42" y="286" width="430" height="94" rx="24" fill="#FFFFFF" fill-opacity="0.07"/>
+    <text x="70" y="326" fill="#AAB3BE" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="3">ТЕЛЕФОН</text>
+    <text x="70" y="358" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="650">+7 999 244-28-36</text>
+    <rect x="42" y="420" width="178" height="52" rx="26" fill="#F5F7FA"/>
+    <text x="72" y="453" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="650">Маршрут</text>
+    <rect x="238" y="420" width="176" height="52" rx="26" fill="transparent" stroke="#FFFFFF" stroke-opacity="0.2"/>
+    <text x="268" y="453" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="650">Позвонить</text>
+  </g>
+  <g transform="translate(700 236)">
+    <rect width="560" height="500" rx="34" fill="#FFFFFF"/>
+    <rect x="1" y="1" width="558" height="498" rx="33" stroke="#0B1018" stroke-opacity="0.1"/>
+    <rect x="44" y="54" width="472" height="354" rx="28" fill="#F1F3EF"/>
+    <g opacity="0.62">
+      <path d="M44 146H516M44 238H516M44 330H516" stroke="#C7CDC7"/>
+      <path d="M138 54V408M232 54V408M326 54V408M420 54V408" stroke="#C7CDC7"/>
+    </g>
+    <path d="M280 122C342 122 392 172 392 234C392 314 280 414 280 414C280 414 168 314 168 234C168 172 218 122 280 122Z" fill="#0B1018"/>
+    <circle cx="280" cy="234" r="48" fill="#F5F7FA"/>
+    <text x="238" y="242" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="750">STILNO</text>
+    <text x="44" y="454" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="18">Перед визитом уточняйте наличие STILNO CLICK ONE.</text>
+  </g>
+</g>
+</svg>

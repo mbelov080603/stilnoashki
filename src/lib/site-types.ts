@@ -42,6 +42,9 @@ export type Store = {
   coordinates: [number, number];
   phone: string;
   hours: string;
+  directionsHref?: string;
+  inventoryStatus?: string;
+  verifiedAt?: string;
   services: string[];
   categories: string[];
   featured: boolean;
@@ -128,7 +131,8 @@ export type FAQItem = {
     | "products"
     | "franchise"
     | "careers"
-    | "responsible";
+    | "responsible"
+    | "support";
   question: string;
   answer: string;
 };
@@ -165,6 +169,9 @@ export type ResolvedPage = {
     | "product-category"
     | "product"
     | "partners"
+    | "media-kit"
+    | "verify"
+    | "support"
     | "responsible"
     | "franchise"
     | "careers-index"

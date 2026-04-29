@@ -1,19 +1,68 @@
+import Image from "next/image";
+
+import { assetPath, mediaAssets } from "@/lib/site-config";
+
 type MediaSlotAspect = "wide" | "square" | "portrait";
+type MediaSlotRole = "product" | "store" | "partner" | "brand";
 
 function classNames(...values: Array<string | false | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
 const aspectClass: Record<MediaSlotAspect, string> = {
-  wide: "min-h-[18rem] aspect-[16/10]",
-  square: "min-h-[15rem] aspect-square",
-  portrait: "min-h-[20rem] aspect-[4/5]",
+  wide: "min-h-[16rem] sm:min-h-[18rem] lg:aspect-[16/10]",
+  square: "min-h-[14rem] sm:min-h-[15rem] lg:aspect-square",
+  portrait: "min-h-[18rem] sm:min-h-[20rem] lg:aspect-[4/5]",
 };
+
+function getRole(slotId: string): MediaSlotRole {
+  if (/store|city|retail/i.test(slotId)) {
+    return "store";
+  }
+
+  if (/partner|b2b|support/i.test(slotId)) {
+    return "partner";
+  }
+
+  if (/franchise|process/i.test(slotId)) {
+    return "partner";
+  }
+
+  if (/article|career|about|brand|responsible|legal/i.test(slotId)) {
+    return "brand";
+  }
+
+  return "product";
+}
+
+function getAsset(slotId: string, role: MediaSlotRole) {
+  if (/franchise|process/i.test(slotId)) {
+    return mediaAssets.franchise;
+  }
+
+  if (/responsible|legal/i.test(slotId)) {
+    return mediaAssets.responsible;
+  }
+
+  if (role === "store") {
+    return mediaAssets.stores;
+  }
+
+  if (role === "partner") {
+    return mediaAssets.partner;
+  }
+
+  if (role === "brand") {
+    return mediaAssets.responsible;
+  }
+
+  return mediaAssets.product;
+}
 
 export function MediaSlot({
   slotId,
-  title = "Место для фото",
-  note = "Изображение будет добавлено позже.",
+  title = "STILNO CLICK ONE",
+  note,
   aspect = "wide",
   className,
 }: {
@@ -23,24 +72,30 @@ export function MediaSlot({
   aspect?: MediaSlotAspect;
   className?: string;
 }) {
+  const role = getRole(slotId);
+  const asset = getAsset(slotId, role);
+
   return (
-    <div
+    <figure
       className={classNames(
-        "relative overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5",
+        "relative w-full min-w-0 max-w-full overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3]",
         aspectClass[aspect],
         className,
       )}
-      data-media-slot={slotId}
+      data-visual-slot={role}
       aria-label={title}
     >
-      <div className="absolute inset-5 rounded-[0.75rem] border border-dashed border-black/16" aria-hidden="true" />
-      <div className="relative flex h-full min-h-[inherit] items-center justify-center text-center">
-        <div className="max-w-[18rem]">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-black/34">{slotId}</p>
-          <p className="mt-3 text-lg font-semibold tracking-[-0.02em] text-black/72">{title}</p>
-          <p className="mt-2 text-sm leading-6 text-black/46">{note}</p>
-        </div>
-      </div>
-    </div>
+      <Image
+        src={assetPath(asset)}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="(min-width: 1280px) 44rem, 100vw"
+        className="object-cover"
+        loading="eager"
+        unoptimized
+      />
+      {note ? <figcaption className="sr-only">{note}</figcaption> : null}
+    </figure>
   );
 }

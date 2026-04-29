@@ -37,7 +37,8 @@ export const isIndexableDeployment = Boolean(
       : undefined) ??
     normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL),
 );
-export const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
+export const isStaticExport =
+  process.env.NEXT_PUBLIC_STATIC_EXPORT === "true" || process.env.GITHUB_PAGES === "true";
 export const siteBasePath =
   process.env.NEXT_PUBLIC_BASE_PATH?.trim() ||
   (process.env.GITHUB_PAGES === "true" ? "/stilnoashki" : "");
@@ -54,6 +55,15 @@ export function assetPath(path: string) {
   return `${siteBasePath}${path}`;
 }
 
+export function assetUrl(path: string) {
+  const resolvedPath = assetPath(path);
+  if (/^https?:\/\//.test(resolvedPath)) {
+    return resolvedPath;
+  }
+
+  return `${new URL(siteOrigin).origin}${resolvedPath}`;
+}
+
 export const analyticsIds = {
   gtm: process.env.NEXT_PUBLIC_GTM_ID?.trim() || "",
   ga4: process.env.NEXT_PUBLIC_GA4_ID?.trim() || "",
@@ -63,6 +73,16 @@ export const analyticsIds = {
 export const documentLinks = {
   franchisePresentation: "/stilno/docs/stilno-business-presentation.pdf",
   deviceAndPackage: "/stilno/docs/stilno-click-one-device-package.pdf",
+};
+
+export const mediaAssets = {
+  product: "/stilno/redesign/product-click-one.svg",
+  stores: "/stilno/redesign/stores-moscow-vavilon.svg",
+  storesPoint: "/stilno/redesign/stores-moscow-vavilon.svg",
+  partner: "/stilno/redesign/partner-support-system.svg",
+  franchise: "/stilno/redesign/franchise-process.svg",
+  responsible: "/stilno/redesign/legal-18-footer-strip.svg",
+  og: "/stilno/redesign/og-stilno.svg",
 };
 
 export const companyDetails = {
@@ -75,6 +95,9 @@ export const companyDetails = {
   storageConditions: "Хранить при температуре от 0°C до 30°C в недоступном для детей месте.",
   shelfLife: "4 года",
   gost: "ГОСТ Р 58109-2018",
+  contactEmail: "partners@stilno.ru",
+  supportEmail: "support@stilno.ru",
+  responseSla: "Ответ по заявке: до 1 рабочего дня",
 };
 
 export const siteSettings = {
@@ -84,6 +107,7 @@ export const siteSettings = {
     "STILNO CLICK ONE: официальный сайт бренда 18+ с информацией о продукте, партнёрстве, франчайзинге, розничных запросах и правовых ограничениях категории.",
   primaryNav: [
     { label: "Продукт", href: "/products/stilno-click-one" },
+    { label: "Проверка", href: "/verify" },
     { label: "Партнёрам", href: "/partners" },
     { label: "Где купить", href: "/stores" },
     { label: "Франчайзинг", href: "/franchise" },
@@ -98,6 +122,9 @@ export const siteSettings = {
     { label: "Галерея", href: "/gallery" },
     { label: "Вакансии", href: "/careers" },
     { label: "Материалы", href: "/articles" },
+    { label: "Проверка оригинальности", href: "/verify" },
+    { label: "Поддержка", href: "/support" },
+    { label: "Партнёрский пакет", href: "/partners/media-kit" },
     { label: "Вопросы и ответы", href: "/faq" },
     { label: "Политика обработки данных", href: "/legal/privacy" },
     { label: "Согласие на обработку данных", href: "/legal/consent" },
@@ -114,6 +141,20 @@ export const siteSettings = {
       value:
         "Розничные, партнёрские и франчайзинговые запросы принимаются через формы сайта.",
       href: "/contacts",
+    },
+    {
+      label: "B2B email",
+      value: companyDetails.contactEmail,
+      href: `mailto:${companyDetails.contactEmail}`,
+    },
+    {
+      label: "Поддержка",
+      value: companyDetails.supportEmail,
+      href: `mailto:${companyDetails.supportEmail}`,
+    },
+    {
+      label: "Регламент ответа",
+      value: companyDetails.responseSla,
     },
   ] satisfies ContactLine[],
   socialLinks: [] as SocialLink[],

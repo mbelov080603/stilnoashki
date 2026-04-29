@@ -1,0 +1,54 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">STILNO CLICK ONE product render</title>
+<desc id="desc">Product and package render for STILNO CLICK ONE with nicotine warning and key specifications.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1440" y2="900" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#FFFFFF"/>
+    <stop offset="0.52" stop-color="#F4F5F1"/>
+    <stop offset="1" stop-color="#E1E4DF"/>
+  </linearGradient>
+  <filter id="shadow" x="-80" y="-80" width="1600" height="1060" filterUnits="userSpaceOnUse">
+    <feDropShadow dx="0" dy="34" stdDeviation="48" flood-color="#0B1018" flood-opacity="0.16"/>
+  </filter>
+</defs>
+<rect width="1440" height="900" rx="42" fill="url(#bg)"/>
+<g opacity="0.18">
+  <path d="M110 112H1330" stroke="#0B1018"/>
+  <path d="M110 720H1330" stroke="#0B1018"/>
+  <path d="M312 70V830" stroke="#0B1018"/>
+  <path d="M748 70V830" stroke="#0B1018"/>
+  <path d="M1130 70V830" stroke="#0B1018"/>
+</g>
+<text x="110" y="145" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700" letter-spacing="8">STILNO CLICK ONE</text>
+<text x="110" y="188" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="20">Никотинсодержащая линия для совершеннолетних пользователей 18+.</text>
+<g filter="url(#shadow)">
+  <g transform="translate(250 248)">
+    <rect x="0" y="0" width="188" height="430" rx="58" fill="#050608"/>
+    <rect x="52" y="42" width="84" height="58" rx="29" fill="#2B2E2F"/>
+    <path d="M94 122V338" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="3"/>
+    <text x="112" y="350" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="18" letter-spacing="9" transform="rotate(-90 112 350)">STILNO</text>
+  </g>
+  <g transform="translate(602 188)">
+    <rect width="548" height="518" rx="44" fill="#FFFFFF"/>
+    <rect x="1" y="1" width="546" height="516" rx="43" stroke="#0B1018" stroke-opacity="0.12"/>
+    <text x="54" y="72" fill="#8A949F" font-family="Inter, Arial, sans-serif" font-size="17" letter-spacing="6">CLICK ONE</text>
+    <text x="386" y="72" fill="#8A949F" font-family="Inter, Arial, sans-serif" font-size="17" letter-spacing="3">20 МГ/СМ³</text>
+    <rect x="54" y="122" width="440" height="126" rx="26" fill="#EADFBF" stroke="#0B1018" stroke-opacity="0.14"/>
+    <rect x="376" y="158" width="90" height="44" rx="22" fill="#FFFFFF"/>
+    <text x="401" y="186" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="650">Чай</text>
+    <text x="54" y="314" fill="#0B1018" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="750" letter-spacing="-1">STILNO CLICK ONE</text>
+    <text x="54" y="356" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="20">Устройство, картридж и упаковка в единой продуктовой подаче.</text>
+    <rect x="54" y="406" width="142" height="44" rx="22" fill="#F4F5F1" stroke="#0B1018" stroke-opacity="0.1"/>
+    <text x="89" y="434" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="3">10 МЛ</text>
+    <rect x="216" y="406" width="142" height="44" rx="22" fill="#F4F5F1" stroke="#0B1018" stroke-opacity="0.1"/>
+    <text x="258" y="434" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="3">TYPE-C</text>
+    <rect x="378" y="406" width="116" height="44" rx="22" fill="#F4F5F1" stroke="#0B1018" stroke-opacity="0.1"/>
+    <text x="404" y="434" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="2">850 МА·Ч</text>
+  </g>
+</g>
+<g transform="translate(110 764)">
+  <rect width="174" height="56" rx="28" fill="#0B1018"/>
+  <text x="42" y="36" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="650">18+</text>
+  <text x="212" y="36" fill="#687382" font-family="Inter, Arial, sans-serif" font-size="18">Никотин вызывает зависимость. Продажа несовершеннолетним запрещена.</text>
+</g>
+</svg>

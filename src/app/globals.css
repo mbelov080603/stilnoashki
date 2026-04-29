@@ -30,6 +30,17 @@
   box-sizing: border-box;
 }
 
+:where(.grid > *, .flex > *) {
+  min-width: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
 html {
   scroll-behavior: smooth;
 }
