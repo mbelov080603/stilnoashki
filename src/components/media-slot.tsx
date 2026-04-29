@@ -4,6 +4,11 @@ import { assetPath, mediaAssets } from "@/lib/site-config";
 
 type MediaSlotAspect = "wide" | "square" | "portrait";
 type MediaSlotRole = "product" | "store" | "partner" | "brand";
+type MediaVisual = {
+  src: string;
+  fit?: "cover" | "contain";
+  position?: string;
+};
 
 function classNames(...values: Array<string | false | undefined>) {
   return values.filter(Boolean).join(" ");
@@ -14,6 +19,63 @@ const aspectClass: Record<MediaSlotAspect, string> = {
   square: "min-h-[14rem] sm:min-h-[15rem] lg:aspect-square",
   portrait: "min-h-[18rem] sm:min-h-[20rem] lg:aspect-[4/5]",
 };
+
+const slotVisuals: Array<[RegExp, MediaVisual]> = [
+  [/home-hero|product-hero|gallery-hero/i, { src: mediaAssets.productHero, position: "50% 50%" }],
+  [/home-product|product-card|category-|verify-product/i, { src: mediaAssets.product, position: "50% 50%" }],
+  [/product-variant-ananas-mango|variant-ananas-mango|partner-variant-ananas-mango/i, {
+    src: mediaAssets.product,
+    position: "50% 50%",
+  }],
+  [/vishnya-limon-persik|gallery-device-front/i, {
+    src: mediaAssets.productCloseVishnya,
+    position: "50% 50%",
+  }],
+  [/slivochnaya-klubnika-mango|gallery-flavour-series-2/i, {
+    src: mediaAssets.productRetailShelf,
+    position: "50% 50%",
+  }],
+  [/gallery-packaging-series|gallery-packaging-front|gallery-warning-layer/i, {
+    src: mediaAssets.productRetailCounter,
+    position: "50% 50%",
+  }],
+  [/gallery-current-line/i, { src: mediaAssets.productRetailShelf, position: "50% 50%" }],
+  [/gallery-device-silhouette|gallery-logotype-closeup/i, {
+    src: mediaAssets.lifestyleHand,
+    position: "50% 50%",
+  }],
+  [/gallery-device-front/i, { src: mediaAssets.productCloseVishnya, position: "50% 50%" }],
+  [/gallery-technical-flat/i, { src: mediaAssets.productBoardroom, position: "50% 50%" }],
+  [/stores-hero|stores-request|home-stores|store|city|retail/i, {
+    src: mediaAssets.stores,
+    position: "50% 50%",
+  }],
+  [/home-partners|partners-hero|partner-media-kit/i, {
+    src: mediaAssets.productRetailShelf,
+    position: "50% 50%",
+  }],
+  [/partner-variant-|product-variant-|variant-|product-variant-fallback/i, {
+    src: mediaAssets.lifestyleHand,
+    position: "50% 50%",
+  }],
+  [/franchise-lineup|franchise/i, { src: mediaAssets.lobbyProduct, position: "50% 50%" }],
+  [/support-system|support/i, { src: mediaAssets.production, position: "50% 50%" }],
+  [/about-secondary/i, { src: mediaAssets.production, position: "50% 50%" }],
+  [/about-primary|brand/i, { src: mediaAssets.productPremiumShelf, position: "50% 50%" }],
+  [/home-faq-side/i, { src: mediaAssets.lifestyleHandPack, position: "50% 50%" }],
+  [/article-card-how-to-check-original|article-how-to-check-original/i, {
+    src: mediaAssets.product,
+    position: "50% 50%",
+  }],
+  [/article-card-retail-18-rules|article-retail-18-rules/i, {
+    src: mediaAssets.productRetailCounter,
+    position: "50% 50%",
+  }],
+  [/article-card-partner-kit-overview|article-partner-kit-overview/i, {
+    src: mediaAssets.productRetailShelf,
+    position: "50% 50%",
+  }],
+];
 
 function getRole(slotId: string): MediaSlotRole {
   if (/store|city|retail/i.test(slotId)) {
@@ -35,28 +97,34 @@ function getRole(slotId: string): MediaSlotRole {
   return "product";
 }
 
-function getAsset(slotId: string, role: MediaSlotRole) {
+function getVisual(slotId: string, role: MediaSlotRole): MediaVisual {
+  const matchedVisual = slotVisuals.find(([pattern]) => pattern.test(slotId));
+
+  if (matchedVisual) {
+    return matchedVisual[1];
+  }
+
   if (/franchise|process/i.test(slotId)) {
-    return mediaAssets.franchise;
+    return { src: mediaAssets.franchise };
   }
 
   if (/responsible|legal/i.test(slotId)) {
-    return mediaAssets.responsible;
+    return { src: mediaAssets.responsible };
   }
 
   if (role === "store") {
-    return mediaAssets.stores;
+    return { src: mediaAssets.stores };
   }
 
   if (role === "partner") {
-    return mediaAssets.partner;
+    return { src: mediaAssets.partner };
   }
 
   if (role === "brand") {
-    return mediaAssets.responsible;
+    return { src: mediaAssets.productPremiumShelf };
   }
 
-  return mediaAssets.product;
+  return { src: mediaAssets.product };
 }
 
 export function MediaSlot({
@@ -73,7 +141,8 @@ export function MediaSlot({
   className?: string;
 }) {
   const role = getRole(slotId);
-  const asset = getAsset(slotId, role);
+  const visual = getVisual(slotId, role);
+  const fitClassName = visual.fit === "contain" ? "object-contain" : "object-cover";
 
   return (
     <figure
@@ -86,12 +155,13 @@ export function MediaSlot({
       aria-label={title}
     >
       <Image
-        src={assetPath(asset)}
+        src={assetPath(visual.src)}
         alt=""
         aria-hidden="true"
         fill
         sizes="(min-width: 1280px) 44rem, 100vw"
-        className="object-cover"
+        className={fitClassName}
+        style={{ objectPosition: visual.position ?? "50% 50%" }}
         loading="eager"
         unoptimized
       />

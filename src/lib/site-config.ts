@@ -76,13 +76,29 @@ export const documentLinks = {
 };
 
 export const mediaAssets = {
-  product: "/stilno/redesign/product-click-one.svg",
-  stores: "/stilno/redesign/stores-moscow-vavilon.svg",
-  storesPoint: "/stilno/redesign/stores-moscow-vavilon.svg",
-  partner: "/stilno/redesign/partner-support-system.svg",
-  franchise: "/stilno/redesign/franchise-process.svg",
+  product: "/stilno/photos/product-pack-ananas-mango.jpg",
+  productHero: "/stilno/photos/cafe-product.webp",
+  productDesk: "/stilno/photos/office-desk.webp",
+  productBoardroom: "/stilno/photos/boardroom-product.webp",
+  productConference: "/stilno/photos/conference-product.webp",
+  productLounge: "/stilno/photos/lounge-product.webp",
+  productRetailCounter: "/stilno/photos/retail-counter.webp",
+  productRetailShelf: "/stilno/photos/retail-shelf.webp",
+  productShelfNight: "/stilno/photos/shelf-night.webp",
+  productPremiumShelf: "/stilno/photos/premium-shelf-books.webp",
+  productCloseVishnya: "/stilno/photos/product-close-vishnya.webp",
+  lobbyProduct: "/stilno/photos/lobby-product.webp",
+  lifestyleHand: "/stilno/photos/lifestyle-hand-car.webp",
+  lifestyleHandPack: "/stilno/photos/car-hand-pack.webp",
+  lifestylePocket: "/stilno/photos/lifestyle-pocket.webp",
+  lifestyleDesk: "/stilno/photos/business-desk.webp",
+  production: "/stilno/photos/production-line.webp",
+  stores: "/stilno/photos/retail-counter.webp",
+  storesPoint: "/stilno/photos/retail-counter.webp",
+  partner: "/stilno/photos/business-desk.webp",
+  franchise: "/stilno/photos/lobby-product.webp",
   responsible: "/stilno/redesign/legal-18-footer-strip.svg",
-  og: "/stilno/redesign/og-stilno.svg",
+  og: "/stilno/photos/product-pack-ananas-mango.jpg",
 };
 
 export const companyDetails = {

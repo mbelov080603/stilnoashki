@@ -173,9 +173,9 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: "gallery-flavour-series-1",
-    title: "Вкусовая метка / Мята",
+    title: "Вкусовая метка / Ананас Манго",
     type: "packaging",
-    alt: "STILNO CLICK ONE Мята",
+    alt: "STILNO CLICK ONE Ананас Манго",
     caption: "У вкусовой линии общий графический каркас: меняется только вкусовая метка, не ломая премиальную серийность.",
   },
   {
@@ -201,16 +201,16 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: "gallery-device-front",
-    title: "Фронт устройства / Черника Клюква Вишня",
+    title: "Фронт устройства / Вишня Лимон Персик",
     type: "device",
-    alt: "STILNO CLICK ONE Черника Клюква Вишня",
+    alt: "STILNO CLICK ONE Вишня Лимон Персик",
     caption: "Устройство остаётся главным объектом кадра: спокойная подача продукта важнее декоративных спецэффектов.",
   },
   {
     id: "gallery-current-line",
-    title: "Текущая линия / Ягодный энергетик",
+    title: "Текущая линия / витрина",
     type: "close-up",
-    alt: "STILNO CLICK ONE Ягодный Энергетик",
+    alt: "Витрина STILNO CLICK ONE",
     caption: "Текущая опубликованная вкусовая линия собрана на актуальных упаковочных материалах и не содержит вымышленных SKU.",
   },
 ];

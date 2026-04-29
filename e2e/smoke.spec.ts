@@ -151,7 +151,7 @@ test("SEO metadata includes canonical and OG image", async ({ page }) => {
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/verify");
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    "http://localhost:3010/stilno/redesign/og-stilno.svg",
+    "http://localhost:3010/stilno/photos/product-pack-ananas-mango.jpg",
   );
 });
 
