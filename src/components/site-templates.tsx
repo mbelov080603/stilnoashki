@@ -208,7 +208,7 @@ function PageHero({
         ) : null}
         <h1
           className={classNames(
-            "max-w-4xl break-words text-[2.65rem] font-semibold leading-[1.03] sm:text-[3.75rem] sm:leading-[1] lg:text-[4.9rem] lg:leading-[0.98]",
+            "max-w-4xl break-words text-[2.35rem] font-semibold leading-[1.06] sm:text-[3.35rem] sm:leading-[1.03] lg:text-[4.65rem] lg:leading-[1]",
             tone === "dark" ? "text-white" : "text-black",
           )}
         >
