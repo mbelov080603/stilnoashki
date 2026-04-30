@@ -231,12 +231,12 @@ export function SiteHeader({
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/10 bg-white/92 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[86rem] items-center justify-between gap-5 px-5 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-black/10 bg-[#fbfaf7]/92 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-5 px-5 py-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           data-analytics="nav_logo"
-          className="inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.22em] text-black"
+          className="inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.28em] text-black"
         >
           STILNO
         </Link>
@@ -247,7 +247,7 @@ export function SiteHeader({
               key={item.href}
               href={item.href}
               data-analytics={`nav_${item.href.replace(/\W+/g, "_")}`}
-              className="text-[0.95rem] text-black/64 transition hover:text-black"
+            className="text-[0.92rem] text-black/58 transition hover:text-black"
             >
               {item.label}
             </Link>
@@ -258,7 +258,7 @@ export function SiteHeader({
           <Link
             href={primaryCta.href}
             data-analytics="primary_cta"
-            className={`rounded-full px-5 py-2.5 text-sm font-medium transition ${ctaClassName(
+            className={`rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)] ${ctaClassName(
               primaryCta.variant,
             )}`}
           >
@@ -269,7 +269,7 @@ export function SiteHeader({
         <button
           ref={buttonRef}
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-black xl:hidden"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white text-black shadow-[0_10px_28px_rgba(0,0,0,0.06)] xl:hidden"
           onClick={() => setMenuOpen((current) => !current)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -289,7 +289,7 @@ export function SiteHeader({
         <div
           id="mobile-menu"
           ref={menuRef}
-          className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1rem] border border-black/10 bg-white p-4 xl:hidden"
+        className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border border-black/10 bg-[#fbfaf7] p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Мобильное меню"
@@ -300,7 +300,7 @@ export function SiteHeader({
                 key={item.href}
                 href={item.href}
                 data-analytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
-                className="rounded-[0.8rem] border border-black/10 px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
+                className="rounded-[0.9rem] border border-black/10 bg-white px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -455,71 +455,81 @@ export function AgeGate({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/92 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080807]/86 px-4 backdrop-blur-xl">
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="age-gate-title"
-        className="relative w-full max-w-3xl overflow-hidden rounded-[1rem] border border-black/10 bg-white p-7 text-black sm:p-10"
+        className="relative w-full max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#11100e] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:p-7 lg:p-8"
       >
-        <div className="absolute inset-x-0 top-0 h-px bg-black/20" />
-        <div className="mb-6 inline-flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-black/44">
-          <span className="h-px w-10 bg-black/20" />
-          <span>18+</span>
-        </div>
-        <h2
-          id="age-gate-title"
-          className="max-w-2xl text-3xl font-semibold leading-[1.04] tracking-[-0.05em] sm:text-5xl"
-        >
-          Сайт содержит информацию о никотинсодержащей продукции и предназначен только для лиц старше 18 лет.
-        </h2>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-black/64 sm:text-lg">
-          Подтвердите, что вам исполнилось 18 лет.
-        </p>
+        <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-stretch">
+          <div className="flex min-w-0 flex-col p-2 sm:p-3">
+            <div className="mb-6 inline-flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.22em] text-white/44">
+              <span className="h-px w-10 bg-white/24" />
+              <span>18+</span>
+            </div>
+            <h2
+              id="age-gate-title"
+              className="max-w-2xl text-3xl font-semibold leading-[0.98] tracking-[-0.055em] sm:text-5xl"
+            >
+              STILNO доступен только совершеннолетним пользователям.
+            </h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/62 sm:text-lg">
+              Сайт содержит справочную информацию о никотинсодержащей продукции. Подтвердите, что вам исполнилось 18 лет.
+            </p>
 
-        {denied ? (
-          <div className="mt-8 rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-5">
-            <p className="text-base leading-7 text-black/76">
-              Доступ к сайту ограничен. Продажа никотинсодержащей продукции несовершеннолетним запрещена.
+            {denied ? (
+              <div className="mt-7 rounded-[1.15rem] border border-white/12 bg-white/[0.08] p-5">
+                <p className="text-base leading-7 text-white/76">
+                  Доступ к сайту ограничен. Продажа никотинсодержащей продукции несовершеннолетним запрещена.
+                </p>
+              </div>
+            ) : null}
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                className="rounded-full border border-[#e7c89f] bg-[#e7c89f] px-6 py-3 text-sm font-medium text-black transition hover:bg-[#f0d8b8]"
+                onClick={() => {
+                  window.localStorage.setItem(AGE_KEY, version);
+                  window.dispatchEvent(new Event("stilno:age-accepted"));
+                  pushAnalytics("age_gate_accept", { version });
+                  setVisible(false);
+                }}
+              >
+                Мне есть 18 лет
+              </button>
+              <button
+                type="button"
+                className="rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+                onClick={() => {
+                  pushAnalytics("age_gate_decline", { version });
+                  setDenied(true);
+                }}
+              >
+                Мне нет 18 лет
+              </button>
+            </div>
+            <p className="mt-5 text-sm leading-6 text-white/46">
+              Подробные возрастные ограничения описаны в{" "}
+              <Link
+                href={legalHref}
+                className="underline decoration-white/24 underline-offset-4 transition hover:text-white"
+              >
+                правовой информации
+              </Link>
+              .
             </p>
           </div>
-        ) : null}
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            className={`rounded-full px-6 py-3 text-sm font-medium transition ${ctaClassName("primary")}`}
-            onClick={() => {
-              window.localStorage.setItem(AGE_KEY, version);
-              window.dispatchEvent(new Event("stilno:age-accepted"));
-              pushAnalytics("age_gate_accept", { version });
-              setVisible(false);
-            }}
-          >
-            Мне есть 18 лет
-          </button>
-          <button
-            type="button"
-            className={`rounded-full px-6 py-3 text-sm transition ${ctaClassName("secondary")}`}
-            onClick={() => {
-              pushAnalytics("age_gate_decline", { version });
-              setDenied(true);
-            }}
-          >
-            Мне нет 18 лет
-          </button>
+          <MediaSlot
+            slotId="age-gate-product"
+            title="STILNO CLICK ONE"
+            note="Визуал продукта STILNO в возрастном подтверждении."
+            aspect="portrait"
+            className="hidden min-h-[34rem] border-white/10 lg:block"
+          />
         </div>
-        <p className="mt-5 text-sm leading-6 text-black/50">
-          Подробные возрастные ограничения описаны в{" "}
-          <Link
-            href={legalHref}
-            className="underline decoration-black/18 underline-offset-4 transition hover:text-black"
-          >
-            правовой информации
-          </Link>
-          .
-        </p>
       </div>
     </div>
   );
@@ -574,14 +584,14 @@ export function CookieBanner({
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-3 z-[70] px-4">
-      <div className="pointer-events-auto mx-auto max-w-4xl rounded-[1rem] border border-black/10 bg-white px-5 py-5 text-black shadow-[0_24px_70px_rgba(0,0,0,0.12)] sm:px-6">
+      <div className="pointer-events-auto mx-auto max-w-4xl rounded-[1.2rem] border border-white/12 bg-[#11100e] px-5 py-5 text-white shadow-[0_28px_85px_rgba(0,0,0,0.28)] sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <p className="text-sm font-medium text-black">Cookie-файлы</p>
-            <p className="mt-1 text-sm leading-6 text-black/62">
+            <p className="text-sm font-medium text-white">Cookie-файлы</p>
+            <p className="mt-1 text-sm leading-6 text-white/62">
               Мы используем необходимые cookie для работы сайта и сохранения подтверждения возраста.
               Аналитические cookie подключаются только с вашего согласия. Подробнее — в{" "}
-              <Link href={legalHref} className="underline decoration-black/18 underline-offset-4">
+              <Link href={legalHref} className="underline decoration-white/24 underline-offset-4 hover:text-white">
                 Политике cookies
               </Link>
               .
@@ -590,21 +600,21 @@ export function CookieBanner({
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${ctaClassName("primary")}`}
+              className="rounded-full border border-[#e7c89f] bg-[#e7c89f] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#f0d8b8]"
               onClick={() => saveConsent(true)}
             >
               Принять все
             </button>
             <button
               type="button"
-              className={`rounded-full px-4 py-2 text-sm transition ${ctaClassName("secondary")}`}
+              className="rounded-full border border-white/18 bg-white/[0.07] px-4 py-2 text-sm text-white transition hover:border-white/34 hover:bg-white/[0.12]"
               onClick={() => saveConsent(false)}
             >
               Только необходимые
             </button>
             <button
               type="button"
-              className={`rounded-full px-4 py-2 text-sm transition ${ctaClassName("secondary")}`}
+              className="rounded-full border border-white/18 bg-white/[0.07] px-4 py-2 text-sm text-white transition hover:border-white/34 hover:bg-white/[0.12]"
               onClick={() => setSettingsOpen((current) => !current)}
             >
               Настроить
@@ -613,20 +623,20 @@ export function CookieBanner({
         </div>
 
         {settingsOpen ? (
-          <div className="mt-5 grid gap-3 rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-4 sm:grid-cols-3">
-            <label className="rounded-[0.85rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/74">
-              <span className="block font-medium text-black">Необходимые cookie</span>
-              <span className="mt-2 block text-black/54">Нужны для корректной работы сайта.</span>
+          <div className="mt-5 grid gap-3 rounded-[1rem] border border-white/12 bg-white/[0.06] p-4 sm:grid-cols-3">
+            <label className="rounded-[0.85rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white/74">
+              <span className="block font-medium text-white">Необходимые cookie</span>
+              <span className="mt-2 block text-white/54">Нужны для корректной работы сайта.</span>
               <input type="checkbox" checked disabled className="mt-3" />
             </label>
-            <label className="rounded-[0.85rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/74">
-              <span className="block font-medium text-black">Age-gate cookie</span>
-              <span className="mt-2 block text-black/54">Сохраняет подтверждение возраста 18+.</span>
+            <label className="rounded-[0.85rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white/74">
+              <span className="block font-medium text-white">Age-gate cookie</span>
+              <span className="mt-2 block text-white/54">Сохраняет подтверждение возраста 18+.</span>
               <input type="checkbox" checked disabled className="mt-3" />
             </label>
-            <label className="rounded-[0.85rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/74">
-              <span className="block font-medium text-black">Аналитика</span>
-              <span className="mt-2 block text-black/54">Подключается только после вашего согласия.</span>
+            <label className="rounded-[0.85rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white/74">
+              <span className="block font-medium text-white">Аналитика</span>
+              <span className="mt-2 block text-white/54">Подключается только после вашего согласия.</span>
               <input
                 type="checkbox"
                 checked={analyticsEnabled}
@@ -637,7 +647,7 @@ export function CookieBanner({
             <div className="sm:col-span-3">
               <button
                 type="button"
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${ctaClassName("primary")}`}
+                className="rounded-full border border-[#e7c89f] bg-[#e7c89f] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#f0d8b8]"
                 onClick={() => saveConsent(analyticsEnabled)}
               >
                 Сохранить настройки
@@ -858,25 +868,26 @@ export function VariantPicker({ product }: { product: Product }) {
     product.variants[0];
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
+    <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
       <MediaSlot
         slotId={`product-variant-${activeVariant.id}`}
         title={activeVariant.title}
         note="Визуал выбранного вкуса STILNO CLICK ONE."
         aspect="square"
+        className="min-h-[21rem] sm:min-h-[30rem] xl:min-h-[34rem]"
       />
 
-      <div className="rounded-[1rem] border border-black/10 bg-white p-6">
-        <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
-        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">{activeVariant.title}</h3>
-        <p className="mt-3 text-sm leading-6 text-black/60">
+      <div className="rounded-[1.2rem] border border-black/10 bg-[#11100e] p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
+        <p className="text-xs uppercase tracking-[0.18em] text-white/44">Вкусовая серия</p>
+        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-white">{activeVariant.title}</h3>
+        <p className="mt-3 text-sm leading-6 text-white/60">
           Подтверждённые варианты текущей линии STILNO CLICK ONE. Выберите вкус, чтобы посмотреть соответствующий визуал и маркировку.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/54">
+          <span className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/64">
             {activeVariant.nicotineStrength}
           </span>
-          <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/54">
+          <span className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/64">
             {activeVariant.status}
           </span>
         </div>
@@ -887,8 +898,8 @@ export function VariantPicker({ product }: { product: Product }) {
               key={variant.id}
               className={`rounded-[1.15rem] border px-4 py-3 text-left transition ${
                 activeVariant.id === variant.id
-                  ? "border-black bg-black text-white"
-                  : "border-black/10 bg-white text-black/72 hover:border-black/24 hover:bg-[#f6f6f3]"
+                  ? "border-[#e7c89f] bg-[#e7c89f] text-black"
+                  : "border-white/12 bg-white/[0.06] text-white/72 hover:border-white/28 hover:bg-white/[0.1]"
               }`}
               onClick={() => {
                 const nextSearch = new URLSearchParams(searchParams.toString());
@@ -929,14 +940,18 @@ export function FaqAccordion({
         const isOpen = openId === item.id;
         const closedClass =
           tone === "dark"
-            ? "border-black/10 bg-white text-black"
+            ? "border-white/12 bg-white/[0.06] text-white"
             : "border-black/10 bg-white text-black";
 
         return (
           <div
             key={item.id}
             className={`overflow-hidden rounded-[1rem] border transition ${
-              isOpen ? "border-black bg-white text-black" : closedClass
+              isOpen
+                ? tone === "dark"
+                  ? "border-white/22 bg-white/[0.1] text-white"
+                  : "border-black bg-white text-black"
+                : closedClass
             }`}
           >
             <button

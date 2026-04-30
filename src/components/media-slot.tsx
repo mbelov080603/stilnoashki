@@ -15,16 +15,22 @@ function classNames(...values: Array<string | false | undefined>) {
 }
 
 const aspectClass: Record<MediaSlotAspect, string> = {
-  wide: "min-h-[16rem] sm:min-h-[18rem] lg:aspect-[16/10]",
-  square: "min-h-[14rem] sm:min-h-[15rem] lg:aspect-square",
-  portrait: "min-h-[18rem] sm:min-h-[20rem] lg:aspect-[4/5]",
+  wide: "min-h-[17rem] sm:min-h-[20rem] lg:aspect-[16/10]",
+  square: "min-h-[15rem] sm:min-h-[16rem] lg:aspect-square",
+  portrait: "min-h-[20rem] sm:min-h-[24rem] lg:aspect-[4/5]",
 };
 
 const slotVisuals: Array<[RegExp, MediaVisual]> = [
-  [/home-hero|product-hero|gallery-hero/i, { src: mediaAssets.productHero, position: "50% 50%" }],
-  [/home-product|product-card|category-|verify-product/i, { src: mediaAssets.product, position: "50% 50%" }],
+  [/home-hero/i, { src: mediaAssets.productLounge, position: "50% 50%" }],
+  [/product-hero|products-hero/i, { src: mediaAssets.productDesk, position: "50% 50%" }],
+  [/gallery-hero/i, { src: mediaAssets.productPremiumShelf, position: "50% 50%" }],
+  [/age-gate-product/i, { src: mediaAssets.lifestylePocket, position: "50% 50%" }],
+  [/product-packaging-spread/i, { src: mediaAssets.productRetailCounter, position: "50% 50%" }],
+  [/product-detail-lifestyle/i, { src: mediaAssets.lifestyleDesk, position: "50% 50%" }],
+  [/home-product|product-card|category-|verify-product/i, { src: mediaAssets.product, fit: "contain", position: "50% 50%" }],
   [/product-variant-ananas-mango|variant-ananas-mango|partner-variant-ananas-mango/i, {
     src: mediaAssets.product,
+    fit: "contain",
     position: "50% 50%",
   }],
   [/vishnya-limon-persik|gallery-device-front/i, {
@@ -51,7 +57,7 @@ const slotVisuals: Array<[RegExp, MediaVisual]> = [
     position: "50% 50%",
   }],
   [/home-partners|partners-hero|partner-media-kit/i, {
-    src: mediaAssets.productRetailShelf,
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
   [/partner-variant-|product-variant-|variant-|product-variant-fallback/i, {
@@ -124,7 +130,7 @@ function getVisual(slotId: string, role: MediaSlotRole): MediaVisual {
     return { src: mediaAssets.productPremiumShelf };
   }
 
-  return { src: mediaAssets.product };
+  return { src: mediaAssets.product, fit: "contain" };
 }
 
 export function MediaSlot({
@@ -147,7 +153,7 @@ export function MediaSlot({
   return (
     <figure
       className={classNames(
-        "relative w-full min-w-0 max-w-full overflow-hidden rounded-[1rem] border border-black/10 bg-[#f6f6f3]",
+        "relative w-full min-w-0 max-w-full overflow-hidden rounded-[1.35rem] border border-black/10 bg-[#f6f6f3] shadow-[0_18px_60px_rgba(0,0,0,0.08)]",
         aspectClass[aspect],
         className,
       )}
