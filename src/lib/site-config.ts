@@ -120,21 +120,22 @@ export const siteSettings = {
   brandName: companyDetails.brandName,
   title: "STILNO CLICK ONE | официальный сайт бренда 18+",
   description:
-    "STILNO CLICK ONE: официальный сайт бренда 18+ с информацией о продукте, партнёрстве, франчайзинге, розничных запросах и правовых ограничениях категории.",
+    "STILNO CLICK ONE: официальный сайт бренда 18+ с B2B-маршрутами, запуском под брендом, продуктовой информацией, розничными запросами и правовой рамкой.",
   primaryNav: [
-    { label: "Продукт", href: "/products/stilno-click-one" },
-    { label: "Проверка", href: "/verify" },
     { label: "Партнёрам", href: "/partners" },
-    { label: "Где купить", href: "/stores" },
     { label: "Франчайзинг", href: "/franchise" },
+    { label: "Продукт", href: "/products/stilno-click-one" },
+    { label: "Где купить", href: "/stores" },
+    { label: "Проверка", href: "/verify" },
     { label: "Контакты", href: "/contacts" },
   ] satisfies NavItem[],
   primaryCta: {
-    label: "Стать партнёром",
-    href: "/franchise",
+    label: "Партнёрский запрос",
+    href: "/partners#partner-form",
     variant: "primary",
   } satisfies CtaLink,
   footerLinks: [
+    { label: "О бренде", href: "/about" },
     { label: "Галерея", href: "/gallery" },
     { label: "Вакансии", href: "/careers" },
     { label: "Материалы", href: "/articles" },
@@ -155,7 +156,7 @@ export const siteSettings = {
     {
       label: "Обращения",
       value:
-        "Розничные, партнёрские и франчайзинговые запросы принимаются через формы сайта.",
+        "Страница контактов помогает выбрать нужный раздел: розница, B2B, франчайзинг или карьера.",
       href: "/contacts",
     },
     {

@@ -198,7 +198,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
         kind: "media-kit",
         title: "Партнёрский пакет STILNO",
         description:
-          "Презентация, продуктовая база, медиафайлы и правила категории 18+ для партнёрских запросов STILNO.",
+          "B2B-материалы STILNO для опта, регионов и действующей розницы: презентация, продуктовая база и правила 18+.",
         pathname: slug,
       };
     }
@@ -211,7 +211,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "partners",
       title: "Партнёрам STILNO",
       description:
-        "Оптовые, региональные и партнёрские запросы по бренду STILNO принимаются через форму сайта и обсуждаются индивидуально.",
+        "B2B-запросы STILNO по опту, регионам и действующей рознице. Франчайзинг вынесен в отдельный маршрут запуска под брендом.",
       pathname: slug,
     };
   }
@@ -251,7 +251,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "franchise",
       title: "Франчайзинг STILNO",
       description:
-        "Партнёрский запуск бренда STILNO в регионах. Условия обсуждаются индивидуально после заявки и не являются публичной офертой.",
+        "Запуск под брендом STILNO: город, формат, документы, подготовка старта и отдельная франчайзинговая заявка.",
       pathname: slug,
     };
   }
@@ -287,7 +287,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "contacts",
       title: "Контакты STILNO",
       description:
-        "Формы обратной связи, данные об изготовителе и каналы для розничных, оптовых и франчайзинговых запросов.",
+        "Маршрутизация обращений STILNO: розница, партнёры, франчайзинг, карьера, поддержка и юридические данные.",
       pathname: slug,
     };
   }
@@ -320,7 +320,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     return {
       kind: "faq",
       title: "Вопросы и ответы STILNO",
-      description: "Частые вопросы о продукте, франчайзинге, розничном запуске и правовых ограничениях.",
+      description: "Частые вопросы о продукте, B2B-партнёрстве, франчайзинге, рознице, поддержке и правовой информации.",
       pathname: slug,
     };
   }

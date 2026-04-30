@@ -129,6 +129,7 @@ export type FAQItem = {
     | "general"
     | "stores"
     | "products"
+    | "partners"
     | "franchise"
     | "careers"
     | "responsible"
@@ -201,11 +202,6 @@ export type LaunchMetric = {
   value: string;
   label: string;
   note: string;
-};
-
-export type PartnershipScenario = {
-  title: string;
-  body: string;
 };
 
 export type LeadField = {
