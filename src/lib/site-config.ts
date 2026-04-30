@@ -162,9 +162,9 @@ export const siteSettings = {
     {
       label: "Маршруты",
       links: [
-        { label: "Розничный запрос", href: "/stores#stores-request" },
+        { label: "Где купить", href: "/stores#stores-request" },
         { label: "B2B-запрос", href: "/partners#partner-form" },
-        { label: "Запуск под брендом", href: "/franchise#franchise-form" },
+        { label: "Франчайзинг", href: "/franchise#franchise-form" },
         { label: "Карьера", href: "/careers" },
       ],
     },

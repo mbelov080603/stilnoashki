@@ -28,7 +28,6 @@ import {
   franchiseContent,
   franchisePillars,
   homeContent,
-  homeRouteCards,
   launchMetrics,
   partnersPageContent,
   productPageContent,
@@ -997,7 +996,6 @@ function Footer() {
 export function HomeTemplate() {
   const heroActions = homeContent.hero.actions?.slice(0, 2);
   const retailStore = stores[0];
-  const brandLaunchRoute = homeRouteCards.find((route) => route.href === "/franchise#franchise-form");
 
   return (
     <>
@@ -1047,17 +1045,6 @@ export function HomeTemplate() {
                   </div>
                 </article>
               ))}
-              {brandLaunchRoute ? (
-                <article key={brandLaunchRoute.title} className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-                  <h3 className="text-2xl font-semibold tracking-[-0.04em] text-black">{brandLaunchRoute.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-black/62">{brandLaunchRoute.body}</p>
-                  <div className="mt-5">
-                    <ButtonLink href={brandLaunchRoute.href} variant="secondary" tone="light" analytics="home_route_brand_launch">
-                      {brandLaunchRoute.cta}
-                    </ButtonLink>
-                  </div>
-                </article>
-              ) : null}
             </div>
           </div>
         </div>
@@ -1158,37 +1145,6 @@ export function HomeTemplate() {
         </div>
       </section>
 
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 xl:grid-cols-[0.86fr_1.14fr] xl:items-center">
-            <div>
-              <SectionIntro contract={homeContent.routingSection} />
-              <div className="mt-8">
-                <MediaSlot
-                  slotId="home-faq-side"
-                  title="Маршруты заявок STILNO"
-                  note="Поддерживающий визуал рядом с выбором раздела."
-                  aspect="wide"
-                  className="min-h-[20rem]"
-                />
-              </div>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              {homeRouteCards.map(({ title, body, href }) => (
-                <article key={title} className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-                  <h3 className="text-2xl font-semibold tracking-[-0.04em] text-black">{title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-black/62">{body}</p>
-                  <div className="mt-5">
-                    <ButtonLink href={href} variant="secondary" tone="light" analytics={`home_final_${title}`}>
-                      Перейти
-                    </ButtonLink>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
