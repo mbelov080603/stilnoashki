@@ -64,15 +64,15 @@ export function getBreadcrumbs(pathname: string[], title: string) {
     ["about", "О бренде"],
     ["gallery", "Галерея"],
     ["products", "Продукт"],
-    ["partners", "Партнёры"],
-    ["media-kit", "Партнёрский пакет"],
+    ["partners", "Партнёрам"],
+    ["media-kit", "B2B-пакет"],
     ["verify", "Проверка оригинальности"],
     ["support", "Поддержка"],
     ["responsible", "Ответственное потребление"],
     ["franchise", "Франчайзинг"],
     ["careers", "Вакансии"],
     ["contacts", "Контакты"],
-    ["articles", "Новости"],
+    ["articles", "Материалы"],
     ["faq", "Вопросы и ответы"],
     ["thank-you", "Спасибо"],
     ["legal", "Правовая информация"],
@@ -196,9 +196,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     if (second === "media-kit") {
       return {
         kind: "media-kit",
-        title: "Партнёрский пакет STILNO",
+        title: "B2B-пакет STILNO",
         description:
-          "B2B-материалы STILNO для опта, регионов и действующей розницы: презентация, продуктовая база и правила 18+.",
+          "B2B-материалы STILNO для опта и действующих розничных точек: презентация, продуктовая база и правила 18+.",
         pathname: slug,
       };
     }
@@ -211,7 +211,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "partners",
       title: "Партнёрам STILNO",
       description:
-        "B2B-запросы STILNO по опту, регионам и действующей рознице. Франчайзинг вынесен в отдельный маршрут запуска под брендом.",
+        "B2B-запросы STILNO по опту и действующим розничным точкам. Запуск под брендом вынесен в отдельный маршрут.",
       pathname: slug,
     };
   }
@@ -231,7 +231,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "support",
       title: "Поддержка STILNO",
       description:
-        "Поддержка по оригинальности, качеству, гарантийным обращениям, утилизации и правилам категории 18+.",
+        "Отдельный маршрут поддержки STILNO по оригинальности, качеству, гарантийным обращениям, утилизации и правилам категории 18+.",
       pathname: slug,
     };
   }
@@ -241,7 +241,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "responsible",
       title: "Ответственное потребление",
       description:
-        "18+, предупреждения, состав, условия хранения и отдельная продуктовая коммуникация для никотиновой категории.",
+        "Правовая информация STILNO: 18+, предупреждения, состав, условия хранения и отдельная продуктовая коммуникация для никотиновой категории.",
       pathname: slug,
     };
   }
@@ -251,7 +251,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "franchise",
       title: "Франчайзинг STILNO",
       description:
-        "Запуск под брендом STILNO: город, формат, документы, подготовка старта и отдельная франчайзинговая заявка.",
+        "Запуск под брендом STILNO: город, формат запуска, документы, подготовка старта и отдельная заявка.",
       pathname: slug,
     };
   }
@@ -287,7 +287,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "contacts",
       title: "Контакты STILNO",
       description:
-        "Маршрутизация обращений STILNO: розница, партнёры, франчайзинг, карьера, поддержка и юридические данные.",
+        "Маршрутизация обращений STILNO: розничный запрос, B2B-запрос, запуск под брендом, карьера, поддержка и юридические данные.",
       pathname: slug,
     };
   }
@@ -296,8 +296,8 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     if (!second) {
       return {
         kind: "articles-index",
-        title: "Новости STILNO",
-        description: "Новые материалы, обновления по продукту и публикации бренда STILNO.",
+        title: "Материалы STILNO",
+        description: "Материалы STILNO по продукту, B2B-запросам, запуску под брендом, рознице, поддержке и legal.",
         pathname: slug,
       };
     }
@@ -320,7 +320,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     return {
       kind: "faq",
       title: "Вопросы и ответы STILNO",
-      description: "Частые вопросы о продукте, B2B-партнёрстве, франчайзинге, рознице, поддержке и правовой информации.",
+      description: "Частые вопросы о продукте, B2B-запросах, запуске под брендом, рознице, поддержке и правовой информации.",
       pathname: slug,
     };
   }

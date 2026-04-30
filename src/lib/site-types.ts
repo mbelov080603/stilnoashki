@@ -3,6 +3,11 @@ export type NavItem = {
   href: string;
 };
 
+export type FooterGroup = {
+  label: string;
+  links: NavItem[];
+};
+
 export type CtaLink = {
   label: string;
   href: string;
@@ -251,5 +256,16 @@ export type SectionContract = {
 export type PageStat = {
   value: string;
   label: string;
+  note: string;
+};
+
+export type RouteTaxonomyItem = {
+  id: "retail-request" | "b2b-request" | "brand-launch" | "career";
+  label: string;
+  title: string;
+  body: string;
+  href: string;
+  cta: string;
+  cardLabel: string;
   note: string;
 };

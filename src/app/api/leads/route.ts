@@ -11,6 +11,13 @@ type LeadPayload = {
 
 const MIN_SUBMIT_DELAY_MS = 1500;
 const LEAD_TYPES = new Set(["retail", "franchise", "partner", "career"]);
+const RETAIL_REQUEST_TYPES = new Set(["availability", "retail-point", "other-retail"]);
+const PARTNER_REQUEST_TYPES = new Set(["wholesale", "existing-retail-point"]);
+const FRANCHISE_INTEREST_FORMATS = new Set([
+  "brand-launch",
+  "existing-point-brand-launch",
+  "regional-brand-launch",
+]);
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 6;
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
@@ -142,7 +149,10 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
       return "Укажите телефон или email.";
     }
     if (!requestType) {
-      return "Выберите тип запроса.";
+      return "Выберите тип розничного запроса.";
+    }
+    if (!RETAIL_REQUEST_TYPES.has(requestType)) {
+      return "Неизвестный тип розничного запроса.";
     }
   }
 
@@ -151,7 +161,10 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
       return "Укажите телефон и email.";
     }
     if (!requestType) {
-      return "Выберите направление запроса.";
+      return "Выберите направление B2B-запроса.";
+    }
+    if (!PARTNER_REQUEST_TYPES.has(requestType)) {
+      return "Неизвестное направление B2B-запроса.";
     }
   }
 
@@ -160,7 +173,10 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
       return "Укажите телефон и email.";
     }
     if (!interestFormat) {
-      return "Выберите формат запроса.";
+      return "Выберите формат запуска под брендом.";
+    }
+    if (!FRANCHISE_INTEREST_FORMATS.has(interestFormat)) {
+      return "Неизвестный формат запуска под брендом.";
     }
   }
 

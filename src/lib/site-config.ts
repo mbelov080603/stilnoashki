@@ -1,4 +1,4 @@
-import type { ContactLine, CtaLink, NavItem, SocialLink } from "@/lib/site-types";
+import type { ContactLine, CtaLink, FooterGroup, NavItem, SocialLink } from "@/lib/site-types";
 
 function normalizeUrl(value?: string) {
   if (!value) {
@@ -130,7 +130,7 @@ export const siteSettings = {
     { label: "Контакты", href: "/contacts" },
   ] satisfies NavItem[],
   primaryCta: {
-    label: "Партнёрский запрос",
+    label: "B2B-запрос",
     href: "/partners#partner-form",
     variant: "primary",
   } satisfies CtaLink,
@@ -141,7 +141,7 @@ export const siteSettings = {
     { label: "Материалы", href: "/articles" },
     { label: "Проверка оригинальности", href: "/verify" },
     { label: "Поддержка", href: "/support" },
-    { label: "Партнёрский пакет", href: "/partners/media-kit" },
+    { label: "B2B-пакет", href: "/partners/media-kit" },
     { label: "Вопросы и ответы", href: "/faq" },
     { label: "Политика обработки данных", href: "/legal/privacy" },
     { label: "Согласие на обработку данных", href: "/legal/consent" },
@@ -149,6 +149,46 @@ export const siteSettings = {
     { label: "Пользовательское соглашение", href: "/legal/terms" },
     { label: "Не является публичной офертой", href: "/legal/not-public-offer" },
   ] satisfies NavItem[],
+  footerGroups: [
+    {
+      label: "Бренд",
+      links: [
+        { label: "STILNO", href: "/" },
+        { label: "О бренде", href: "/about" },
+        { label: "Продукт", href: "/products/stilno-click-one" },
+        { label: "Галерея", href: "/gallery" },
+      ],
+    },
+    {
+      label: "Маршруты",
+      links: [
+        { label: "Розничный запрос", href: "/stores#stores-request" },
+        { label: "B2B-запрос", href: "/partners#partner-form" },
+        { label: "Запуск под брендом", href: "/franchise#franchise-form" },
+        { label: "Карьера", href: "/careers" },
+      ],
+    },
+    {
+      label: "Материалы",
+      links: [
+        { label: "Материалы", href: "/articles" },
+        { label: "B2B-пакет", href: "/partners/media-kit" },
+        { label: "Вопросы и ответы", href: "/faq" },
+        { label: "Проверка оригинальности", href: "/verify" },
+        { label: "Поддержка", href: "/support" },
+      ],
+    },
+    {
+      label: "Legal",
+      links: [
+        { label: "Политика обработки данных", href: "/legal/privacy" },
+        { label: "Согласие на обработку данных", href: "/legal/consent" },
+        { label: "Политика cookies", href: "/legal/cookies" },
+        { label: "Пользовательское соглашение", href: "/legal/terms" },
+        { label: "Не является публичной офертой", href: "/legal/not-public-offer" },
+      ],
+    },
+  ] satisfies FooterGroup[],
   contactLines: [
     { label: "Компания", value: companyDetails.companyName },
     { label: "Юридический адрес", value: companyDetails.legalAddress },
@@ -156,7 +196,7 @@ export const siteSettings = {
     {
       label: "Обращения",
       value:
-        "Страница контактов помогает выбрать нужный раздел: розница, B2B, франчайзинг или карьера.",
+        "Страница контактов помогает выбрать нужный раздел: розничный запрос, B2B-запрос, запуск под брендом или карьера.",
       href: "/contacts",
     },
     {

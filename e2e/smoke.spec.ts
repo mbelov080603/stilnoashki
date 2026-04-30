@@ -1,9 +1,14 @@
 import http from "node:http";
 
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 
 const publicPaths = [
   "/",
+  "/contacts",
+  "/about",
+  "/responsible",
+  "/products",
+  "/products/nicotine",
   "/products/stilno-click-one",
   "/partners",
   "/partners/media-kit",
@@ -15,13 +20,27 @@ const publicPaths = [
   "/support",
   "/gallery",
   "/careers",
+  "/careers/regional-partner-manager",
+  "/careers/trade-marketing-specialist",
   "/articles",
+  "/articles/how-to-check-original",
+  "/articles/retail-18-rules",
+  "/articles/partner-kit-overview",
   "/faq",
+  "/legal/privacy",
+  "/legal/consent",
+  "/legal/cookies",
+  "/legal/terms",
+  "/legal/not-public-offer",
+  "/legal/age-18",
 ];
 
 type WebhookLead = {
   leadId?: string;
+  type?: string;
+  pageUrl?: string;
   fields?: Record<string, string>;
+  consents?: Record<string, boolean>;
 };
 
 const webhookRequests: WebhookLead[] = [];
@@ -34,6 +53,23 @@ async function seedConsent(page: Page) {
       "stilno:cookie-consent",
       JSON.stringify({ version: "2.0", necessary: true, ageGate: true, analytics: false }),
     );
+  });
+}
+
+async function backdateStartedAt(form: Locator) {
+  await form.locator('input[name="startedAt"]').evaluate((element) => {
+    (element as HTMLInputElement).value = String(Date.now() - 3000);
+  });
+}
+
+async function setLeadClientKey(page: Page, clientKey: string) {
+  await page.route("**/api/leads", async (route) => {
+    await route.continue({
+      headers: {
+        ...route.request().headers(),
+        "x-forwarded-for": clientKey,
+      },
+    });
   });
 }
 
@@ -124,14 +160,13 @@ test("store locator shows the published Moscow point and route controls", async 
   await expect(page.getByRole("link", { name: "Позвонить" })).toHaveAttribute("href", "tel:+79992442836");
 });
 
-test("retail lead is delivered to durable webhook and redirects to thank-you", async ({ page }) => {
+test("retail lead is delivered to durable webhook and redirects to thank-you", async ({ page }, testInfo) => {
   webhookRequests.length = 0;
+  await setLeadClientKey(page, `retail-${testInfo.project.name}`);
   await seedConsent(page);
   await page.goto("/stores#stores-request");
   const form = page.locator("form").filter({ hasText: "Розничный запрос" }).first();
-  await form.locator('input[name="startedAt"]').evaluate((element) => {
-    (element as HTMLInputElement).value = String(Date.now() - 3000);
-  });
+  await backdateStartedAt(form);
   await form.locator('input[name="city"]').fill("Москва");
   await form.locator('input[name="name"]').fill("Тестовый пользователь");
   await form.locator('input[name="phone"]').fill("+7 999 244-28-36");
@@ -143,6 +178,107 @@ test("retail lead is delivered to durable webhook and redirects to thank-you", a
   await expect.poll(() => webhookRequests.length).toBe(1);
   expect(webhookRequests[0].leadId).toBeTruthy();
   expect(webhookRequests[0].fields?.phone).toBe("+7 999 244-28-36");
+});
+
+test("partner lead is delivered to durable webhook and redirects to thank-you", async ({ page }, testInfo) => {
+  webhookRequests.length = 0;
+  await setLeadClientKey(page, `partner-${testInfo.project.name}`);
+  await seedConsent(page);
+  await page.goto("/partners#partner-form");
+  const form = page.locator("#partner-form form").first();
+  await expect(form.locator('select[name="requestType"] option')).toHaveText(["Выберите вариант", "опт", "розница"]);
+  await backdateStartedAt(form);
+  await form.locator('input[name="name"]').fill("B2B тест");
+  await form.locator('input[name="phone"]').fill("+7 999 244-28-36");
+  await form.locator('input[name="email"]').fill("partner@example.com");
+  await form.locator('input[name="city"]').fill("Москва");
+  await form.locator('select[name="requestType"]').selectOption("wholesale");
+  await form.locator('input[name="ageConfirmed"]').check();
+  await form.locator('input[name="personalData"]').check();
+  await form.getByRole("button", { name: "Отправить запрос" }).click();
+  await expect(page).toHaveURL(/\/thank-you\/partner/);
+  await expect.poll(() => webhookRequests.length).toBe(1);
+  expect(webhookRequests[0].leadId).toBeTruthy();
+  expect(webhookRequests[0].type).toBe("partner");
+  expect(webhookRequests[0].pageUrl).toBe("/partners");
+  expect(webhookRequests[0].fields).toMatchObject({
+    name: "B2B тест",
+    phone: "+7 999 244-28-36",
+    email: "partner@example.com",
+    city: "Москва",
+    requestType: "wholesale",
+  });
+  expect(webhookRequests[0].consents).toMatchObject({
+    ageConfirmed: true,
+    personalData: true,
+  });
+});
+
+test("franchise lead is delivered without optional marketing consent and redirects to thank-you", async ({ page }, testInfo) => {
+  webhookRequests.length = 0;
+  await setLeadClientKey(page, `franchise-${testInfo.project.name}`);
+  await seedConsent(page);
+  await page.goto("/franchise#franchise-form");
+  const form = page.locator("#franchise-form form").first();
+  await backdateStartedAt(form);
+  await form.locator('input[name="name"]').fill("Франчайзи тест");
+  await form.locator('input[name="phone"]').fill("+7 999 244-28-36");
+  await form.locator('input[name="email"]').fill("franchise@example.com");
+  await form.locator('input[name="city"]').fill("Санкт-Петербург");
+  await form.locator('select[name="interestFormat"]').selectOption("brand-launch");
+  await form.locator('input[name="ageConfirmed"]').check();
+  await form.locator('input[name="personalData"]').check();
+  await form.getByRole("button", { name: "Отправить заявку" }).click();
+  await expect(page).toHaveURL(/\/thank-you\/franchise/);
+  await expect.poll(() => webhookRequests.length).toBe(1);
+  expect(webhookRequests[0].leadId).toBeTruthy();
+  expect(webhookRequests[0].type).toBe("franchise");
+  expect(webhookRequests[0].pageUrl).toBe("/franchise");
+  expect(webhookRequests[0].fields).toMatchObject({
+    name: "Франчайзи тест",
+    phone: "+7 999 244-28-36",
+    email: "franchise@example.com",
+    city: "Санкт-Петербург",
+    interestFormat: "brand-launch",
+  });
+  expect(webhookRequests[0].consents).toMatchObject({
+    ageConfirmed: true,
+    personalData: true,
+    marketing: false,
+  });
+});
+
+test("lead API rejects invalid select values without webhook delivery", async ({ request }, testInfo) => {
+  webhookRequests.length = 0;
+
+  const response = await request.post("/api/leads", {
+    headers: {
+      "x-forwarded-for": `invalid-select-${testInfo.project.name}`,
+    },
+    data: {
+      type: "partner",
+      pageUrl: "/partners",
+      startedAt: Date.now() - 3000,
+      fields: {
+        name: "B2B тест",
+        phone: "+7 999 244-28-36",
+        email: "partner@example.com",
+        city: "Москва",
+        requestType: "retail",
+      },
+      consents: {
+        ageConfirmed: true,
+        personalData: true,
+      },
+    },
+  });
+
+  expect(response.status()).toBe(400);
+  await expect(await response.json()).toEqual({
+    ok: false,
+    message: "Неизвестное направление B2B-запроса.",
+  });
+  expect(webhookRequests).toHaveLength(0);
 });
 
 test("SEO metadata includes canonical and OG image", async ({ page }) => {
