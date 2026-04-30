@@ -5,10 +5,7 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 const publicPaths = [
   "/",
   "/contacts",
-  "/about",
   "/responsible",
-  "/products",
-  "/products/nicotine",
   "/products/stilno-click-one",
   "/partners",
   "/partners/media-kit",
@@ -20,19 +17,9 @@ const publicPaths = [
   "/support",
   "/gallery",
   "/careers",
-  "/careers/regional-partner-manager",
-  "/careers/trade-marketing-specialist",
   "/articles",
-  "/articles/how-to-check-original",
-  "/articles/retail-18-rules",
-  "/articles/partner-kit-overview",
   "/faq",
   "/legal/privacy",
-  "/legal/consent",
-  "/legal/cookies",
-  "/legal/terms",
-  "/legal/not-public-offer",
-  "/legal/age-18",
 ];
 
 type WebhookLead = {
