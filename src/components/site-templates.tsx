@@ -16,7 +16,7 @@ import {
   VariantPickerFallback,
 } from "@/components/site-client";
 import { featuredProduct, galleryItems, productCategories, qualityStandards } from "@/lib/catalog-data";
-import { assetUrl, companyDetails, documentLinks, mediaAssets, siteOrigin, siteSettings } from "@/lib/site-config";
+import { assetPath, assetUrl, companyDetails, documentLinks, mediaAssets, siteOrigin, siteSettings } from "@/lib/site-config";
 import {
   articles,
   b2bValueItems,
@@ -87,10 +87,27 @@ function ButtonLink({
           color: "#0B1018",
         }
       : undefined;
+  const plainAnchor = Boolean(target) || /^https?:\/\//.test(href) || /\.(pdf|jpe?g|png|webp|svg|ico|txt|xml)$/i.test(href);
+  const resolvedHref = plainAnchor ? assetPath(href) : href;
+
+  if (plainAnchor) {
+    return (
+      <a
+        href={resolvedHref}
+        target={target}
+        rel={target === "_blank" ? "noreferrer" : undefined}
+        style={inlineStyle}
+        data-analytics={analytics}
+        className={`inline-flex min-h-11 max-w-full items-center justify-center rounded-full border px-5 py-3 text-center text-sm font-medium leading-5 transition ${style}`}
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
     <Link
-      href={href}
+      href={resolvedHref}
       target={target}
       rel={target === "_blank" ? "noreferrer" : undefined}
       style={inlineStyle}
