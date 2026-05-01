@@ -12,12 +12,7 @@ type LeadPayload = {
 const MIN_SUBMIT_DELAY_MS = 1500;
 const LEAD_TYPES = new Set(["retail", "franchise", "partner", "career"]);
 const RETAIL_REQUEST_TYPES = new Set(["availability", "retail-point", "other-retail"]);
-const PARTNER_REQUEST_TYPES = new Set(["wholesale", "regional", "existing-retail-point", "other-b2b"]);
-const FRANCHISE_INTEREST_FORMATS = new Set([
-  "brand-launch",
-  "existing-point-brand-launch",
-  "regional-brand-launch",
-]);
+const PARTNER_REQUEST_TYPES = new Set(["wholesale", "existing-retail-point"]);
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 6;
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
@@ -126,7 +121,6 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
   const email = normalizeField(fields.email);
   const city = normalizeField(fields.city);
   const requestType = normalizeField(fields.requestType);
-  const interestFormat = normalizeField(fields.interestFormat);
 
   if (!consents.personalData) {
     return "Нужно согласие на обработку персональных данных.";
@@ -171,12 +165,6 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
   if (type === "franchise") {
     if (!phone || !email) {
       return "Укажите телефон и email.";
-    }
-    if (!interestFormat) {
-      return "Выберите формат запуска под брендом.";
-    }
-    if (!FRANCHISE_INTEREST_FORMATS.has(interestFormat)) {
-      return "Неизвестный формат запуска под брендом.";
     }
   }
 

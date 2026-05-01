@@ -189,9 +189,7 @@ test("partner lead is delivered to durable webhook and redirects to thank-you", 
   await expect(form.locator('select[name="requestType"] option')).toHaveText([
     "Выберите вариант",
     "опт",
-    "региональный B2B-запрос",
-    "действующая розничная точка",
-    "другой B2B-запрос",
+    "розница",
   ]);
   await backdateStartedAt(form);
   await form.locator('input[name="name"]').fill("B2B тест");
@@ -236,7 +234,7 @@ test("premium B2B sales positioning is visible on key pages", async ({ page }) =
   await page.goto("/franchise");
   await expect(page.locator("h1")).toContainText("Запуск STILNO в регионе");
   await expect(page.locator("main")).toContainText("Комплект запуска как брендовый набор");
-  await expect(page.locator('select[name="interestFormat"]')).toBeVisible();
+  await expect(page.locator('select[name="interestFormat"]')).toHaveCount(0);
 
   await page.goto("/products/stilno-click-one");
   await expect(page.locator("main")).toContainText("Полочная узнаваемость");
@@ -262,7 +260,6 @@ test("franchise lead is delivered without optional marketing consent and redirec
   await form.locator('input[name="phone"]').fill("+7 999 244-28-36");
   await form.locator('input[name="email"]').fill("franchise@example.com");
   await form.locator('input[name="city"]').fill("Санкт-Петербург");
-  await form.locator('select[name="interestFormat"]').selectOption("brand-launch");
   await form.locator('input[name="ageConfirmed"]').check();
   await form.locator('input[name="personalData"]').check();
   await form.getByRole("button", { name: "Отправить заявку" }).click();
@@ -276,7 +273,6 @@ test("franchise lead is delivered without optional marketing consent and redirec
     phone: "+7 999 244-28-36",
     email: "franchise@example.com",
     city: "Санкт-Петербург",
-    interestFormat: "brand-launch",
   });
   expect(webhookRequests[0].consents).toMatchObject({
     ageConfirmed: true,
@@ -314,34 +310,6 @@ test("lead API rejects invalid select values without webhook delivery", async ({
   await expect(await response.json()).toEqual({
     ok: false,
     message: "Неизвестное направление B2B-запроса.",
-  });
-
-  const franchiseResponse = await request.post("/api/leads", {
-    headers: {
-      "x-forwarded-for": `invalid-franchise-select-${testInfo.project.name}`,
-    },
-    data: {
-      type: "franchise",
-      pageUrl: "/franchise",
-      startedAt: Date.now() - 3000,
-      fields: {
-        name: "Франчайзи тест",
-        phone: "+7 999 244-28-36",
-        email: "franchise@example.com",
-        city: "Санкт-Петербург",
-        interestFormat: "wholesale",
-      },
-      consents: {
-        ageConfirmed: true,
-        personalData: true,
-      },
-    },
-  });
-
-  expect(franchiseResponse.status()).toBe(400);
-  await expect(await franchiseResponse.json()).toEqual({
-    ok: false,
-    message: "Неизвестный формат запуска под брендом.",
   });
   expect(webhookRequests).toHaveLength(0);
 });
