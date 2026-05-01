@@ -120,7 +120,7 @@ export const siteSettings = {
   brandName: companyDetails.brandName,
   title: "STILNO CLICK ONE | официальный сайт бренда 18+",
   description:
-    "STILNO CLICK ONE: официальный сайт бренда 18+ с B2B-маршрутами, запуском под брендом, продуктовой информацией, розничными запросами и правовой рамкой.",
+    "STILNO CLICK ONE: чёрный силуэт, чистая упаковка, десять вкусов, B2B-маршруты, запуск под брендом и правовая рамка 18+.",
   primaryNav: [
     { label: "Партнёрам", href: "/partners" },
     { label: "Франчайзинг", href: "/franchise" },

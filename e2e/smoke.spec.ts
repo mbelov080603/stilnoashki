@@ -5,7 +5,10 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 const publicPaths = [
   "/",
   "/contacts",
+  "/about",
   "/responsible",
+  "/products",
+  "/products/nicotine",
   "/products/stilno-click-one",
   "/partners",
   "/partners/media-kit",
@@ -17,9 +20,19 @@ const publicPaths = [
   "/support",
   "/gallery",
   "/careers",
+  "/careers/regional-partner-manager",
+  "/careers/trade-marketing-specialist",
   "/articles",
+  "/articles/how-to-check-original",
+  "/articles/retail-18-rules",
+  "/articles/partner-kit-overview",
   "/faq",
   "/legal/privacy",
+  "/legal/consent",
+  "/legal/cookies",
+  "/legal/terms",
+  "/legal/not-public-offer",
+  "/legal/age-18",
 ];
 
 type WebhookLead = {
@@ -173,7 +186,13 @@ test("partner lead is delivered to durable webhook and redirects to thank-you", 
   await seedConsent(page);
   await page.goto("/partners#partner-form");
   const form = page.locator("#partner-form form").first();
-  await expect(form.locator('select[name="requestType"] option')).toHaveText(["Выберите вариант", "опт", "розница"]);
+  await expect(form.locator('select[name="requestType"] option')).toHaveText([
+    "Выберите вариант",
+    "опт",
+    "региональный B2B-запрос",
+    "действующая розничная точка",
+    "другой B2B-запрос",
+  ]);
   await backdateStartedAt(form);
   await form.locator('input[name="name"]').fill("B2B тест");
   await form.locator('input[name="phone"]').fill("+7 999 244-28-36");
@@ -199,6 +218,37 @@ test("partner lead is delivered to durable webhook and redirects to thank-you", 
     ageConfirmed: true,
     personalData: true,
   });
+});
+
+test("premium B2B sales positioning is visible on key pages", async ({ page }) => {
+  await seedConsent(page);
+
+  await page.goto("/");
+  await expect(page.locator("main")).toContainText("Чёрный силуэт, чистая упаковка, десять вкусов");
+  await expect(page.getByRole("link", { name: "Оставить B2B-запрос" }).first()).toBeVisible();
+  await expect(page.locator("form")).toHaveCount(0);
+
+  await page.goto("/partners");
+  await expect(page.locator("h1")).toContainText("STILNO для опта и действующей розницы");
+  await expect(page.locator("main")).toContainText("Что получает B2B-контакт");
+  await expect(page.locator("main")).toContainText("Линия, которую легко представить в витрине");
+
+  await page.goto("/franchise");
+  await expect(page.locator("h1")).toContainText("Запуск STILNO в регионе");
+  await expect(page.locator("main")).toContainText("Комплект запуска как брендовый набор");
+  await expect(page.locator('select[name="interestFormat"]')).toBeVisible();
+
+  await page.goto("/products/stilno-click-one");
+  await expect(page.locator("main")).toContainText("Полочная узнаваемость");
+  await expect(page.locator("main")).toContainText("Продукт продаёт образ");
+
+  await page.goto("/about");
+  await expect(page.locator("main")).toContainText("Brand manifesto");
+  await expect(page.locator("main")).toContainText("взрослая визуальная система");
+
+  await page.goto("/gallery");
+  await expect(page.locator("h1")).toContainText("Визуальный код STILNO");
+  await expect(page.locator("main")).toContainText("корпус, упаковку, вкус, legal 18+");
 });
 
 test("franchise lead is delivered without optional marketing consent and redirects to thank-you", async ({ page }, testInfo) => {
@@ -264,6 +314,34 @@ test("lead API rejects invalid select values without webhook delivery", async ({
   await expect(await response.json()).toEqual({
     ok: false,
     message: "Неизвестное направление B2B-запроса.",
+  });
+
+  const franchiseResponse = await request.post("/api/leads", {
+    headers: {
+      "x-forwarded-for": `invalid-franchise-select-${testInfo.project.name}`,
+    },
+    data: {
+      type: "franchise",
+      pageUrl: "/franchise",
+      startedAt: Date.now() - 3000,
+      fields: {
+        name: "Франчайзи тест",
+        phone: "+7 999 244-28-36",
+        email: "franchise@example.com",
+        city: "Санкт-Петербург",
+        interestFormat: "wholesale",
+      },
+      consents: {
+        ageConfirmed: true,
+        personalData: true,
+      },
+    },
+  });
+
+  expect(franchiseResponse.status()).toBe(400);
+  await expect(await franchiseResponse.json()).toEqual({
+    ok: false,
+    message: "Неизвестный формат запуска под брендом.",
   });
   expect(webhookRequests).toHaveLength(0);
 });

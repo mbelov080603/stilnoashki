@@ -12,7 +12,7 @@ type LeadPayload = {
 const MIN_SUBMIT_DELAY_MS = 1500;
 const LEAD_TYPES = new Set(["retail", "franchise", "partner", "career"]);
 const RETAIL_REQUEST_TYPES = new Set(["availability", "retail-point", "other-retail"]);
-const PARTNER_REQUEST_TYPES = new Set(["wholesale", "existing-retail-point"]);
+const PARTNER_REQUEST_TYPES = new Set(["wholesale", "regional", "existing-retail-point", "other-b2b"]);
 const FRANCHISE_INTEREST_FORMATS = new Set([
   "brand-launch",
   "existing-point-brand-launch",

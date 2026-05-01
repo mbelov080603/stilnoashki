@@ -140,7 +140,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "about",
       title: "О бренде STILNO",
       description:
-        "Бренд STILNO, текущая продуктовая линия STILNO CLICK ONE и принципы аккуратной продуктовой коммуникации.",
+        "STILNO как взрослая визуальная система 18+: чёрный силуэт, чистая упаковка, вкусовая линия и B2B-first подача.",
       pathname: slug,
     };
   }
@@ -148,8 +148,8 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
   if (section === "gallery") {
     return {
       kind: "gallery",
-      title: "Галерея STILNO",
-      description: "Устройство, упаковка, технические плоскости и крупные планы текущей линии STILNO CLICK ONE.",
+      title: "Визуальный код STILNO",
+      description: "Корпус, упаковка, вкусовые метки, предупреждения 18+ и retail-среда текущей линии STILNO CLICK ONE.",
       pathname: slug,
     };
   }
@@ -159,7 +159,8 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       return {
         kind: "products-index",
         title: "Продукция STILNO",
-        description: "Текущая продуктовая линия STILNO и подробные характеристики STILNO CLICK ONE.",
+        description:
+          "Текущая продуктовая линия STILNO CLICK ONE: силуэт, упаковка, вкусы, характеристики и 18+ маркировка.",
         pathname: slug,
         products,
       };
@@ -209,9 +210,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
 
     return {
       kind: "partners",
-      title: "Партнёрам STILNO",
+      title: "STILNO для опта и действующей розницы",
       description:
-        "B2B-запросы STILNO по опту и действующим розничным точкам. Запуск под брендом вынесен в отдельный маршрут.",
+        "B2B-запросы STILNO по опту и действующим розничным точкам: продуктовая база, media kit, визуальная система и правила 18+.",
       pathname: slug,
     };
   }
@@ -249,9 +250,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
   if (section === "franchise") {
     return {
       kind: "franchise",
-      title: "Франчайзинг STILNO",
+      title: "Запуск STILNO в регионе",
       description:
-        "Запуск под брендом STILNO: город, формат запуска, документы, подготовка старта и отдельная заявка.",
+        "Запуск под брендом STILNO в регионе: город, команда, бренд-материалы, продуктовая база, legal 18+ и отдельная заявка.",
       pathname: slug,
     };
   }

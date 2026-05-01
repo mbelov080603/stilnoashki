@@ -242,6 +242,7 @@ export type PageHeroContract = {
   title: string;
   body: string;
   detailLine?: string;
+  detailItems?: Array<{ label: string; value: string }>;
   note?: string;
   actions?: CtaLink[];
 };
