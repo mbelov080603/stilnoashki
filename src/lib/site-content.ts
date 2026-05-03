@@ -498,15 +498,15 @@ export const homeContent = {
     actions: [
       { label: "Оставить B2B-запрос", href: "/partners#partner-form", variant: "primary" },
       { label: "Запуск под брендом", href: "/franchise", variant: "secondary" },
-      { label: "Смотреть продукт", href: "/products/stilno-click-one", variant: "secondary" },
+      { label: "Смотреть ассортимент", href: "/products/stilno-click-one", variant: "secondary" },
     ],
   } satisfies PageHeroContract,
   productSection: {
-    eyebrow: "Продукт на полке",
+    eyebrow: "Ассортимент на полке",
     title: "Линия, которую легко представить в витрине.",
     body:
       "STILNO CLICK ONE держится на читаемом силуэте, единой упаковочной системе и вкусовой линейке, которая не распадается на случайные SKU.",
-    actions: [{ label: "Смотреть продукт", href: "/products/stilno-click-one", variant: "secondary" }],
+    actions: [{ label: "Смотреть ассортимент", href: "/products/stilno-click-one", variant: "secondary" }],
   } satisfies SectionContract,
   partnersSection: {
     eyebrow: "Лицо бренда",
@@ -636,10 +636,10 @@ export const storesContent = {
 
 export const productPageContent = {
   hero: {
-    eyebrow: "Продукт",
-    title: "STILNO CLICK ONE",
+    eyebrow: "Ассортимент",
+    title: "Ассортимент STILNO CLICK ONE",
     body:
-      "Чёрный корпус, Type-C, десять вкусов и упаковка, которая держит продукт как премиальную серию для аудитории 18+.",
+      "Выберите вкус, проверьте параметры и отправьте запрос по нужному маршруту: розница, B2B или проверка оригинальности. 18+.",
     detailItems: [
       { label: "Объём", value: "10 мл" },
       { label: "Аккумулятор", value: "850 мА·ч" },
@@ -660,10 +660,10 @@ export const productPageContent = {
     ],
   } satisfies PageHeroContract,
   detailSection: {
-    eyebrow: "Силуэт и ресурс",
-    title: "Сначала продукт выглядит уверенно, затем подтверждает это цифрами.",
+    eyebrow: "STILNO",
+    title: "Электронная сигарета STILNO призвана дарить эмоции.",
     body:
-      "Характеристики остаются фактическими: 10 мл, 850 мА·ч, Type-C, 10–22 Вт, 20 мг/см³ и ресурс до 15 000 затяжек*.",
+      "Ассортимент собран как понятный лист выбора: вкус, формат, параметры и следующий шаг находятся рядом, без свалки технических блоков.",
   } satisfies SectionContract,
   packagingSection: {
     eyebrow: "Вкусовая серия",
@@ -802,7 +802,7 @@ export const contactsPageContent = {
 };
 
 export const faqPageGroups = [
-  { id: "product", title: "Продукт", scopes: ["products"] as FAQItem["scope"][] },
+  { id: "product", title: "Ассортимент", scopes: ["products"] as FAQItem["scope"][] },
   { id: "stores", title: "Где купить", scopes: ["stores"] as FAQItem["scope"][] },
   { id: "partners", title: "Партнёрам", scopes: ["partners"] as FAQItem["scope"][] },
   { id: "franchise", title: "Франчайзинг", scopes: ["franchise"] as FAQItem["scope"][] },

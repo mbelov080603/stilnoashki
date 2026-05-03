@@ -63,7 +63,7 @@ export function getBreadcrumbs(pathname: string[], title: string) {
     ["stores", "Где купить"],
     ["about", "О бренде"],
     ["gallery", "Галерея"],
-    ["products", "Продукт"],
+    ["products", "Ассортимент"],
     ["partners", "Партнёрам"],
     ["media-kit", "B2B-пакет"],
     ["verify", "Проверка оригинальности"],
@@ -158,9 +158,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     if (!second) {
       return {
         kind: "products-index",
-        title: "Продукция STILNO",
+        title: "Ассортимент STILNO",
         description:
-          "Текущая продуктовая линия STILNO CLICK ONE: силуэт, упаковка, вкусы, характеристики и 18+ маркировка.",
+          "Текущая линия STILNO CLICK ONE: вкусы, характеристики, упаковка и подтверждённая 18+ маркировка.",
         pathname: slug,
         products,
       };

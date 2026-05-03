@@ -237,8 +237,8 @@ test("premium B2B sales positioning is visible on key pages", async ({ page }) =
   await expect(page.locator('select[name="interestFormat"]')).toHaveCount(0);
 
   await page.goto("/products/stilno-click-one");
-  await expect(page.locator("main")).toContainText("Полочная узнаваемость");
-  await expect(page.locator("main")).toContainText("Продукт продаёт образ");
+  await expect(page.locator("main")).toContainText("Ассортимент STILNO CLICK ONE");
+  await expect(page.locator("main")).toContainText("Электронная сигарета STILNO призвана дарить эмоции");
 
   await page.goto("/about");
   await expect(page.locator("main")).toContainText("Brand manifesto");

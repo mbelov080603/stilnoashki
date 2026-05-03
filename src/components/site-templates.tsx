@@ -1437,7 +1437,7 @@ function AboutTemplate(page: ResolvedPage) {
           title: "STILNO",
           body: "Взрослая визуальная система для категории 18+: чёрный силуэт, чистая упаковка, вкусовая линия и B2B-first подача без лишнего шума.",
           actions: [
-            { label: "Смотреть продукт", href: "/products/stilno-click-one", variant: "primary" },
+            { label: "Смотреть ассортимент", href: "/products/stilno-click-one", variant: "primary" },
             { label: "B2B-запрос", href: "/partners#partner-form", variant: "secondary" },
           ],
         }}
@@ -1494,7 +1494,7 @@ function GalleryTemplate(page: ResolvedPage) {
         contract={{
           title: "Визуальный код STILNO",
           body: "Корпус, упаковка, вкусовые метки, предупреждение 18+ и retail-среда показывают лицо бренда до того, как пользователь откроет характеристики.",
-          actions: [{ label: "Смотреть продукт", href: "/products/stilno-click-one", variant: "primary" }],
+          actions: [{ label: "Смотреть ассортимент", href: "/products/stilno-click-one", variant: "primary" }],
         }}
         media={
           <MediaSlot
@@ -1584,7 +1584,7 @@ function ProductCard({ product }: { product: Product }) {
         note="Карточка готова к новому продуктовому фото."
       />
       <div className="mt-5 flex items-center justify-between gap-4">
-        <span className="text-xs uppercase tracking-[0.22em] text-black/36">{category?.title ?? "Продукт"}</span>
+        <span className="text-xs uppercase tracking-[0.22em] text-black/36">{category?.title ?? "Ассортимент"}</span>
         <span className="rounded-full border border-black/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/54">
           {product.highlight}
         </span>
@@ -1593,7 +1593,7 @@ function ProductCard({ product }: { product: Product }) {
       <p className="mt-3 text-sm leading-6 text-black/62">{product.shortDescription}</p>
       <div className="mt-5">
         <ButtonLink href={getProductPath(product)} variant="secondary" tone="light" analytics="product_card_open">
-          Смотреть продукт
+          Открыть ассортимент
         </ButtonLink>
       </div>
     </article>
@@ -1608,7 +1608,7 @@ function ProductsIndexTemplate(page: ResolvedPage) {
         <BreadcrumbTrail pathname={page.pathname} title={page.title} />
         <PageHero
           contract={{
-            eyebrow: "Продукт",
+            eyebrow: "Ассортимент",
             title: "Текущая линейка STILNO",
             body: page.description,
           }}
@@ -1687,6 +1687,83 @@ function ProductCategoryTemplate(page: ResolvedPage) {
   );
 }
 
+function AssortmentRequestPanel({ product }: { product: Product }) {
+  const specsByLabel = new Map(product.specs.map((spec) => [spec.label, spec.value]));
+  const summaryItems = [
+    { label: "Линия", value: product.title },
+    { label: "Вкусов", value: `${product.variants.length} вариантов` },
+    { label: "Формат", value: specsByLabel.get("Формат") ?? "Многоразовое устройство + картридж" },
+    { label: "Никотин", value: specsByLabel.get("Концентрация никотина") ?? "20 мг/см³" },
+    { label: "Порт", value: specsByLabel.get("Порт") ?? "Type-C" },
+    { label: "Ресурс", value: specsByLabel.get("Ресурс") ?? "До 15 000 затяжек*" },
+  ];
+
+  return (
+    <div className="rounded-[1.25rem] border border-black/10 bg-white p-6 shadow-[0_24px_90px_rgba(18,18,18,0.06)] sm:p-7">
+      <p className="text-xs uppercase tracking-[0.22em] text-black/36">Лист ассортимента</p>
+      <h3 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight tracking-[-0.045em] text-black">
+        Выберите вкус и отправьте запрос по нужному маршруту.
+      </h3>
+      <p className="mt-4 max-w-xl text-sm leading-7 text-black/58">
+        Этот блок работает как аккуратная корзина запроса: позиция, параметры и следующий шаг собраны рядом, но без
+        онлайн-оплаты и дистанционной розничной продажи.
+      </p>
+
+      <div className="mt-7 grid gap-px overflow-hidden rounded-[1rem] border border-black/10 bg-black/10 sm:grid-cols-2">
+        {summaryItems.map((item) => (
+          <div key={item.label} className="min-w-0 bg-[#f7f6f2] p-4">
+            <p className="text-[0.66rem] uppercase tracking-[0.16em] text-black/38">{item.label}</p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-black">{item.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <ButtonLink href="/stores" tone="light" analytics="assortment_stores">
+          Где купить
+        </ButtonLink>
+        <ButtonLink href="/partners#partner-form" tone="light" variant="secondary" analytics="assortment_partner">
+          B2B-запрос
+        </ButtonLink>
+        <ButtonLink href="/verify" tone="light" variant="secondary" analytics="assortment_verify">
+          Проверить код
+        </ButtonLink>
+      </div>
+    </div>
+  );
+}
+
+function AssortmentRouteRail() {
+  const steps = [
+    {
+      title: "1. Выберите вкус",
+      body: "Панель ассортимента обновляет визуал выбранной позиции и показывает крепость текущей линии.",
+    },
+    {
+      title: "2. Проверьте параметры",
+      body: "Формат, объём, порт, мощность и ресурс сгруппированы как карточка ассортимента, а не длинная справка.",
+    },
+    {
+      title: "3. Отправьте запрос",
+      body: "Дальше пользователь переходит в розничный, B2B или verification-маршрут без ощущения онлайн-покупки.",
+    },
+  ];
+
+  return (
+    <div className="grid overflow-hidden rounded-[1.2rem] border border-black/10 bg-white lg:grid-cols-3">
+      {steps.map((step, index) => (
+        <article
+          key={step.title}
+          className={classNames("p-5 sm:p-6", index > 0 && "border-t border-black/10 lg:border-l lg:border-t-0")}
+        >
+          <h3 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{step.title}</h3>
+          <p className="mt-3 text-sm leading-7 text-black/58">{step.body}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function ProductTemplate(page: ResolvedPage) {
   const product = page.product;
   if (!product) {
@@ -1725,15 +1802,16 @@ function ProductTemplate(page: ResolvedPage) {
             </div>
             <div className="grid gap-6">
               <SectionIntro contract={productPageContent.detailSection} />
+              <AssortmentRequestPanel product={product} />
               <SpecPanel
                 eyebrow="Характеристики"
-                title="Подтверждённые параметры текущей линии."
+                title="Подтверждённые параметры выбранной линии."
                 specs={product.specs}
               />
               <div className="rounded-[1.2rem] border border-black/10 bg-white p-6">
                 <p className="text-xs uppercase tracking-[0.22em] text-black/36">Факты и маркировка</p>
                 <div className="mt-5 divide-y divide-black/10">
-                  {product.facts.map((fact) => (
+                  {product.facts.slice(0, 3).map((fact) => (
                     <p key={fact} className="py-3 text-sm leading-6 text-black/64">
                       {fact}
                     </p>
@@ -1743,76 +1821,8 @@ function ProductTemplate(page: ResolvedPage) {
             </div>
           </div>
 
-          <div className="mt-14">
-            <MediaSpread
-              primarySlot="product-packaging-spread"
-              secondarySlot="product-detail-lifestyle"
-              title="Полка считывает STILNO по силуэту и упаковке."
-              body="Подача продукта строится на реальной маркировке: фронт упаковки, устройство, вкусовая метка и предупреждение остаются читаемыми."
-              reverse
-            />
-          </div>
-
-          <div className="mt-14 grid gap-10 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
-            <SectionIntro contract={productPageContent.visualSection} />
-            <ValueGrid items={brandFaceItems} />
-          </div>
-
-          <div className="mt-14">
-            <SectionIntro contract={productPageContent.packagingSection} />
-            <div className="mt-8 grid gap-7 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
-              <ProductPhotoCard
-                slotId={`variant-${product.variants[0]?.id ?? "fallback"}`}
-                title={product.variants[0]?.title ?? product.title}
-                note="Крупный визуал вкусовой линейки STILNO CLICK ONE."
-                aspect="wide"
-                className="min-h-[22rem] lg:aspect-[4/5] xl:min-h-[33rem]"
-              />
-              <div className="border-y border-black/10">
-                {product.variants.map((variant, index) => (
-                  <article
-                    key={variant.id}
-                    className="grid gap-3 border-b border-black/10 py-4 last:border-b-0 sm:grid-cols-[3rem_1fr_auto] sm:items-start"
-                  >
-                    <span className="text-sm font-medium text-black/34">{String(index + 1).padStart(2, "0")}</span>
-                    <div>
-                      <h3 className="text-xl font-semibold leading-tight text-black">{variant.title}</h3>
-                      <p className="mt-1 text-sm leading-5 text-black/54">{variant.flavor}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 sm:justify-end">
-                      <span className="rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-black/56">
-                        {variant.nicotineStrength}
-                      </span>
-                      <span className="rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-black/56">
-                        {variant.status}
-                      </span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-14 rounded-[1.2rem] border border-black/10 bg-white p-6 text-black sm:p-8">
-            <p className="text-xs uppercase tracking-[0.22em] text-black/36">Дальнейшие действия</p>
-            <h2 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.05em]">
-              Продукт продаёт образ, заявки уходят в свои маршруты.
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-black/62">
-              Здесь остаётся продуктовая подача STILNO CLICK ONE. Запрос наличия, B2B-заявка и проверка кода
-              обрабатываются в своих разделах.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <ButtonLink href="/stores#stores-request" tone="light" analytics="product_retail_request">
-                Оставить розничный запрос
-              </ButtonLink>
-              <ButtonLink href="/verify" tone="light" variant="secondary" analytics="product_verify">
-                Проверить оригинальность
-              </ButtonLink>
-              <ButtonLink href="/partners" tone="light" variant="secondary" analytics="product_partner_request">
-                Оставить B2B-запрос
-              </ButtonLink>
-            </div>
+          <div className="mt-12">
+            <AssortmentRouteRail />
           </div>
         </div>
       </section>
@@ -2766,7 +2776,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
 
   const titleMap: Partial<Record<ResolvedPage["kind"], string>> = {
     "stores-index": "Где купить STILNO | розничные запросы 18+",
-    product: "STILNO CLICK ONE | силуэт, вкусы и упаковка 18+",
+    product: "Ассортимент STILNO CLICK ONE | вкусы и упаковка 18+",
     franchise: "Запуск STILNO в регионе | бренд 18+",
     partners: "STILNO для опта и действующей розницы | B2B 18+",
     "media-kit": "B2B-пакет STILNO | материалы 18+",
@@ -2781,7 +2791,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
     "stores-index":
       "Опубликованная точка STILNO в Москве, телефон, маршрут и форма для розничного запроса без дистанционной продажи.",
     product:
-      "STILNO CLICK ONE: чёрный силуэт, Type-C, десять вкусов, упаковка, факты и предупреждения 18+.",
+      "Ассортимент STILNO CLICK ONE: десять вкусов, Type-C, упаковка, параметры и предупреждения 18+.",
     franchise:
       "Запуск STILNO в регионе: город, команда, бренд-материалы, продуктовая база, legal 18+ и отдельная заявка.",
     partners:

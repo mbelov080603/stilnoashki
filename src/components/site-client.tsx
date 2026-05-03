@@ -881,7 +881,7 @@ export function VariantPicker({ product }: { product: Product }) {
         <p className="text-xs uppercase tracking-[0.18em] text-white/44">Вкусовая серия</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-white">{activeVariant.title}</h3>
         <p className="mt-3 text-sm leading-6 text-white/60">
-          Подтверждённые варианты текущей линии STILNO CLICK ONE. Выберите вкус, чтобы посмотреть соответствующий визуал и маркировку.
+          Подтверждённые варианты текущей линии STILNO CLICK ONE. Выберите вкус, чтобы обновить визуал и собрать позицию для запроса.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/64">
@@ -919,6 +919,37 @@ export function VariantPicker({ product }: { product: Product }) {
               </div>
             </button>
           ))}
+        </div>
+        <div className="mt-5 rounded-[1rem] border border-[#e7c89f]/28 bg-[#e7c89f]/10 p-4">
+          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#e7c89f]/70">
+            В листе ассортимента
+          </p>
+          <div className="mt-3 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-lg font-semibold leading-tight text-white">{activeVariant.title}</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-white/42">
+                выбранный вкус
+              </p>
+            </div>
+            <span className="rounded-full border border-[#e7c89f]/24 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#e7c89f]/82">
+              {activeVariant.nicotineStrength}
+            </span>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-white/46">
+            Выбор помогает сформировать запрос. Сайт не оформляет дистанционную розничную продажу.
+          </p>
+          <Link
+            href="/partners#partner-form"
+            className="mt-4 inline-flex rounded-full bg-[#e7c89f] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#f0d6b4]"
+            onClick={() =>
+              pushAnalytics("product_assortment_request", {
+                product: product.slug,
+                variant: activeVariant.id,
+              })
+            }
+          >
+            Запросить позицию
+          </Link>
         </div>
       </div>
     </div>
@@ -1185,6 +1216,7 @@ export function VariantPickerFallback({ product }: { product: Product }) {
       <div className="rounded-[1rem] border border-black/10 bg-white p-6">
         <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">{firstVariant?.title}</h3>
+        <p className="mt-3 text-sm leading-6 text-black/56">Выбор вкуса загружается в лист ассортимента.</p>
       </div>
     </div>
   );

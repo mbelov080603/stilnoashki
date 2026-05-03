@@ -124,7 +124,7 @@ export const siteSettings = {
   primaryNav: [
     { label: "Партнёрам", href: "/partners" },
     { label: "Франчайзинг", href: "/franchise" },
-    { label: "Продукт", href: "/products/stilno-click-one" },
+    { label: "Ассортимент", href: "/products/stilno-click-one" },
     { label: "Где купить", href: "/stores" },
     { label: "Проверка", href: "/verify" },
     { label: "Контакты", href: "/contacts" },
@@ -155,7 +155,7 @@ export const siteSettings = {
       links: [
         { label: "STILNO", href: "/" },
         { label: "О бренде", href: "/about" },
-        { label: "Продукт", href: "/products/stilno-click-one" },
+        { label: "Ассортимент", href: "/products/stilno-click-one" },
         { label: "Галерея", href: "/gallery" },
       ],
     },
