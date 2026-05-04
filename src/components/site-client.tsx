@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
+  type KeyboardEvent as ReactKeyboardEvent,
   type FormEvent,
   type RefObject,
+  type ReactNode,
   startTransition,
   useEffect,
   useEffectEvent,
@@ -14,9 +16,12 @@ import {
 } from "react";
 
 import { MediaSlot } from "@/components/media-slot";
+import { russiaMapViewBox, russiaRegionPaths } from "@/lib/russia-map-data";
 import { analyticsIds, companyDetails, isStaticExport } from "@/lib/site-data";
 import type {
+  ContactLine,
   CtaLink,
+  FooterGroup,
   LeadFormSchema,
   NavItem,
   Product,
@@ -38,10 +43,54 @@ type ConsentState = {
   analytics: boolean;
 };
 
+type YandexMapInstance = {
+  geoObjects: {
+    add: (object: unknown) => void;
+  };
+  setCenter: (coordinates: [number, number], zoom?: number, options?: Record<string, unknown>) => void;
+  destroy: () => void;
+};
+
+type YandexPlacemarkInstance = {
+  events?: {
+    add: (eventName: string, handler: () => void) => void;
+  };
+};
+
+type YandexMapsApi = {
+  ready: (handler: () => void) => void;
+  Map: new (
+    container: HTMLElement | string,
+    state: Record<string, unknown>,
+    options?: Record<string, unknown>,
+  ) => YandexMapInstance;
+  Placemark: new (
+    coordinates: [number, number],
+    properties: Record<string, unknown>,
+    options?: Record<string, unknown>,
+  ) => YandexPlacemarkInstance;
+};
+
+type StoreMapPoint = {
+  id: string;
+  title: string;
+  type: "own" | "partner";
+  address: string;
+  city: string;
+  phone: string;
+  hours: string;
+  coordinates: [number, number];
+  directionsHref: string;
+};
+
 type VerificationDetailsRecord = Pick<
   VerificationRecord,
   "product" | "flavor" | "batch" | "expiresAt" | "checks"
 >;
+
+function classNames(...values: Array<string | false | undefined>) {
+  return values.filter(Boolean).join(" ");
+}
 
 function trapFocus(event: KeyboardEvent, containerRef: RefObject<HTMLElement | null>) {
   if (event.key !== "Tab") {
@@ -142,12 +191,14 @@ declare global {
     ym?: (...args: unknown[]) => void;
     stilnoMetrikaId?: number;
     __stilnoAnalyticsLoaded?: boolean;
+    ymaps?: YandexMapsApi;
+    __stilnoYandexMapsPromise?: Promise<YandexMapsApi>;
   }
 }
 
 function ctaClassName(variant: "primary" | "secondary" | "ghost" = "primary") {
   if (variant === "secondary") {
-    return "border border-black/14 bg-white text-black hover:border-black/34 hover:bg-[#f4f4f1]";
+    return "border border-black/14 bg-white text-black hover:border-black/34 hover:bg-black/[0.04]";
   }
 
   if (variant === "ghost") {
@@ -174,6 +225,708 @@ function fieldClass(theme: "light" | "dark") {
     : "border-black/12 bg-white text-black placeholder:text-black/34 focus:border-black/36";
 }
 
+type PartnerGeographyContact = {
+  id: string;
+  regionIds: string[];
+  regionName: string;
+  city: string;
+  name: string;
+  phone: string;
+  address: string;
+  tags: string[];
+  pin: { x: number; y: number };
+};
+
+const partnerGeographyContacts: PartnerGeographyContact[] = [
+  {
+    id: "moscow-vavilova",
+    regionIds: ["RU-MOS"],
+    regionName: "Москва",
+    city: "Москва",
+    name: "Михаил",
+    phone: "+7 999 244-28-36",
+    address: "ул. Вавилова, 69/75, Москва, 117335",
+    tags: ["VAPE", "B2B"],
+    pin: { x: 128.1, y: 487.8 },
+  },
+];
+
+function normalizeSearch(value: string) {
+  return value.trim().toLocaleLowerCase("ru-RU");
+}
+
+function phoneHref(value: string) {
+  return `tel:${value.replace(/[^\d+]/g, "")}`;
+}
+
+const storeMapPoints: StoreMapPoint[] = [
+  {
+    id: "central-office-vavilova",
+    title: "Центральный офис",
+    type: "own",
+    city: "Москва",
+    address: "Ulitsa Vavilova, 69/75, Moscow, 117335",
+    phone: "+7 999 244-28-36",
+    hours: "Визит и наличие уточняйте по телефону",
+    coordinates: [55.6829, 37.5515],
+    directionsHref: "https://yandex.ru/maps/?rtext=~55.6829%2C37.5515&rtt=auto",
+  },
+];
+
+const storeMapMarkerIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="76" viewBox="0 0 64 76">
+  <filter id="shadow" x="-35%" y="-25%" width="170%" height="170%">
+    <feDropShadow dx="0" dy="12" stdDeviation="9" flood-color="#000000" flood-opacity="0.34"/>
+  </filter>
+  <g filter="url(#shadow)">
+    <path d="M32 72C24.2 60.8 13 47.2 13 31.8C13 20.9 21.5 12 32 12C42.5 12 51 20.9 51 31.8C51 47.2 39.8 60.8 32 72Z" fill="#050505" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="32" cy="32" r="15" fill="#ffffff"/>
+    <text x="32" y="36.5" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="800" fill="#050505">ST</text>
+  </g>
+</svg>
+`)}`;
+
+function getYandexMapsScriptSrc() {
+  const params = new URLSearchParams({ lang: "ru_RU" });
+  const apiKey = process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY;
+
+  if (apiKey) {
+    params.set("apikey", apiKey);
+  }
+
+  return `https://api-maps.yandex.ru/2.1/?${params.toString()}`;
+}
+
+function loadYandexMaps() {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Yandex Maps can be loaded only in a browser."));
+  }
+
+  if (window.ymaps) {
+    return Promise.resolve(window.ymaps);
+  }
+
+  if (window.__stilnoYandexMapsPromise) {
+    return window.__stilnoYandexMapsPromise;
+  }
+
+  window.__stilnoYandexMapsPromise = new Promise<YandexMapsApi>((resolve, reject) => {
+    const script = createScript(getYandexMapsScriptSrc(), () => {
+      if (window.ymaps) {
+        resolve(window.ymaps);
+        return;
+      }
+
+      reject(new Error("Yandex Maps script loaded without ymaps."));
+    });
+
+    script.onerror = () => {
+      window.__stilnoYandexMapsPromise = undefined;
+      reject(new Error("Yandex Maps script failed to load."));
+    };
+  });
+
+  return window.__stilnoYandexMapsPromise;
+}
+
+function escapeMapText(value: string) {
+  return value.replace(/[&<>"']/g, (character) => {
+    switch (character) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case "\"":
+        return "&quot;";
+      default:
+        return "&#039;";
+    }
+  });
+}
+
+function buildStoreBalloon(point: StoreMapPoint) {
+  return [
+    '<div style="max-width:240px;font-family:Arial,sans-serif;color:#090909;">',
+    '<div style="font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#7a7a7a;">STILNO</div>',
+    `<div style="margin-top:8px;font-size:18px;font-weight:700;line-height:1.18;">${escapeMapText(point.title)}</div>`,
+    `<div style="margin-top:8px;font-size:13px;line-height:1.5;color:#4a4a4a;">${escapeMapText(point.address)}</div>`,
+    `<div style="margin-top:8px;font-size:13px;font-weight:700;">${escapeMapText(point.phone)}</div>`,
+    "</div>",
+  ].join("");
+}
+
+export function StoresMap() {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<YandexMapInstance | null>(null);
+  const [selectedPointId, setSelectedPointId] = useState(storeMapPoints[0]?.id ?? "");
+  const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [viewMode, setViewMode] = useState<"map" | "list">("map");
+
+  const selectedPoint = storeMapPoints.find((point) => point.id === selectedPointId) ?? storeMapPoints[0];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loadYandexMaps()
+      .then((ymaps) => {
+        ymaps.ready(() => {
+          const container = mapContainerRef.current;
+          const firstPoint = storeMapPoints[0];
+
+          if (cancelled || !container || !firstPoint) {
+            return;
+          }
+
+          const map = new ymaps.Map(
+            container,
+            {
+              center: firstPoint.coordinates,
+              zoom: 16,
+              controls: ["zoomControl", "fullscreenControl"],
+            },
+            {
+              suppressMapOpenBlock: true,
+              yandexMapDisablePoiInteractivity: true,
+            },
+          );
+
+          for (const point of storeMapPoints) {
+            const placemark = new ymaps.Placemark(
+              point.coordinates,
+              {
+                hintContent: `${point.title} STILNO`,
+                balloonContent: buildStoreBalloon(point),
+              },
+              {
+                iconLayout: "default#image",
+                iconImageHref: storeMapMarkerIcon,
+                iconImageSize: [64, 76],
+                iconImageOffset: [-32, -70],
+              },
+            );
+
+            placemark.events?.add("click", () => setSelectedPointId(point.id));
+            map.geoObjects.add(placemark);
+          }
+
+          mapInstanceRef.current = map;
+          setMapStatus("ready");
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setMapStatus("error");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      mapInstanceRef.current?.destroy();
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapStatus !== "ready" || !selectedPoint) {
+      return;
+    }
+
+    mapInstanceRef.current?.setCenter(selectedPoint.coordinates, 16, { duration: 300 });
+  }, [mapStatus, selectedPoint]);
+
+  if (!selectedPoint) {
+    return null;
+  }
+
+  return (
+    <div className="relative bg-[#050505] lg:min-h-screen">
+      <div className="stilno-store-map relative h-[26.375rem] overflow-hidden bg-[#0a0a0a] shadow-[0_38px_120px_rgba(0,0,0,0.42)] lg:absolute lg:inset-0 lg:h-auto">
+        <div ref={mapContainerRef} className="absolute inset-0" aria-label="Интерактивная карта магазинов STILNO" />
+
+        <div className="pointer-events-none absolute left-[5.25rem] top-5 z-10 rounded-[0.65rem] border border-white/12 bg-black/72 px-4 py-3 text-white shadow-[0_18px_50px_rgba(0,0,0,0.38)] backdrop-blur sm:left-[5.75rem] sm:top-6 lg:top-28">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/56">STILNO</p>
+          <p className="mt-1 text-sm font-semibold leading-5">Москва (1)</p>
+        </div>
+
+        <div className="pointer-events-none absolute bottom-4 left-4 z-10 flex flex-wrap gap-2 sm:bottom-5 sm:left-5 lg:bottom-8 lg:left-8">
+          <span className="rounded-full border border-white/16 bg-black/74 px-3 py-1.5 text-xs font-semibold text-white/82 backdrop-blur">
+            Наши точки
+          </span>
+          <span className="rounded-full border border-white/12 bg-white/12 px-3 py-1.5 text-xs font-semibold text-white/58 backdrop-blur">
+            Партнёры
+          </span>
+        </div>
+
+        {mapStatus !== "ready" ? (
+          <div className="absolute inset-0 z-20 grid place-items-center bg-[#090909] px-6 text-center text-white">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-white/42">
+                {mapStatus === "error" ? "Карта временно недоступна" : "Загрузка карты"}
+              </p>
+              <p className="mt-4 max-w-sm text-sm leading-6 text-white/62">
+                {mapStatus === "error"
+                  ? "Проверьте подключение к Yandex Maps. Адрес центрального офиса доступен в карточке справа."
+                  : "Подключаем интерактивную карту и точку центрального офиса."}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        <style>{`
+          .stilno-store-map [class*="ground-pane"] {
+            filter: grayscale(1) invert(1) contrast(0.88) brightness(0.58);
+          }
+
+          .stilno-store-map [class*="places-pane"],
+          .stilno-store-map [class*="labels-pane"] {
+            filter: grayscale(1) contrast(0.82) brightness(0.86);
+            opacity: 0.72;
+          }
+
+          .stilno-store-map [class*="controls-pane"] {
+            filter: grayscale(1);
+          }
+
+          .stilno-store-map [class*="copyright"],
+          .stilno-store-map [class*="map-copyrights"] {
+            filter: grayscale(1);
+            opacity: 0.44;
+          }
+
+          .stilno-store-map [class*="balloon__content"] {
+            background: #ffffff;
+          }
+        `}</style>
+      </div>
+
+      <aside className="relative z-20 mx-[15px] mb-20 mt-5 rounded-[0.65rem] border border-[#292929] bg-[rgba(18,18,18,0.92)] p-5 text-white shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur sm:p-6 lg:absolute lg:right-[30px] lg:top-[124px] lg:mx-0 lg:mb-0 lg:mt-0 lg:w-[300px] xl:w-[320px]">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-[0.22em] text-white/42">STILNO</p>
+            <h1 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.04em] xl:text-3xl">Карта магазинов</h1>
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedPointId(selectedPoint.id);
+              mapInstanceRef.current?.setCenter(selectedPoint.coordinates, 16, { duration: 300 });
+            }}
+            className="min-w-0 rounded-[0.55rem] border border-white/12 bg-black/26 px-4 py-3 text-left text-sm font-semibold text-white transition hover:border-white/26"
+          >
+            Москва (1)
+          </button>
+          <div className="grid grid-cols-2 rounded-[0.55rem] border border-white/12 bg-black/24 p-1">
+            {(["map", "list"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={viewMode === mode}
+                onClick={() => setViewMode(mode)}
+                className={classNames(
+                  "min-h-9 rounded-[0.42rem] px-3 text-xs font-semibold transition",
+                  viewMode === mode ? "bg-white text-black" : "text-white/58 hover:text-white",
+                )}
+              >
+                {mode === "map" ? "Карта" : "Список"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <span className="rounded-[0.55rem] border border-white/16 bg-white px-3 py-2 text-center text-xs font-semibold text-black">
+            Наши
+          </span>
+          <span className="rounded-[0.55rem] border border-white/10 bg-black/20 px-3 py-2 text-center text-xs font-semibold text-white/48">
+            Партнёры
+          </span>
+        </div>
+
+        <article className="mt-5 rounded-[0.6rem] border border-white/10 bg-black/18 p-4 transition hover:border-white/32 hover:bg-white hover:text-black">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[0.68rem] uppercase tracking-[0.18em] opacity-48">{selectedPoint.city}</p>
+              <h2 className="mt-2 text-xl font-semibold leading-tight">{selectedPoint.title}</h2>
+            </div>
+            <span className="shrink-0 rounded-full border border-current/16 px-2.5 py-1 text-[0.66rem] font-semibold opacity-72">
+              {selectedPoint.type === "own" ? "Наша" : "Партнёр"}
+            </span>
+          </div>
+          <p className="mt-4 text-sm leading-6 opacity-72">{selectedPoint.address}</p>
+          <p className="mt-3 text-sm leading-6 opacity-64">{selectedPoint.hours}</p>
+          <a href={phoneHref(selectedPoint.phone)} className="mt-4 inline-flex text-sm font-semibold transition hover:text-[#cf3f7d]">
+            {selectedPoint.phone}
+          </a>
+        </article>
+
+        <div className="mt-6 flex flex-col gap-3">
+          <a
+            href={selectedPoint.directionsHref}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-3 text-center text-sm font-semibold text-black transition hover:border-[#ff8fc5] hover:bg-[#ff8fc5]"
+          >
+            Построить маршрут
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedPointId(selectedPoint.id);
+              mapInstanceRef.current?.setCenter(selectedPoint.coordinates, 16, { duration: 300 });
+            }}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/16 bg-white/[0.06] px-5 py-3 text-center text-sm font-semibold text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+          >
+            Показать на карте
+          </button>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+export function PartnersGeographyMap() {
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const [query, setQuery] = useState("");
+  const [tooltip, setTooltip] = useState<{
+    regionId: string;
+    x: number;
+    y: number;
+    pinned: boolean;
+  } | null>(null);
+
+  const activeRegionIds = useMemo(
+    () => new Set(partnerGeographyContacts.flatMap((contact) => contact.regionIds)),
+    [],
+  );
+
+  const contactByRegionId = useMemo(() => {
+    const contacts = new Map<string, PartnerGeographyContact>();
+    for (const contact of partnerGeographyContacts) {
+      for (const regionId of contact.regionIds) {
+        contacts.set(regionId, contact);
+      }
+    }
+    return contacts;
+  }, []);
+
+  const normalizedQuery = normalizeSearch(query);
+  const tooltipRegion = tooltip
+    ? russiaRegionPaths.find((region) => region.id === tooltip.regionId)
+    : undefined;
+  const tooltipContact = tooltipRegion ? contactByRegionId.get(tooltipRegion.id) : undefined;
+
+  const filteredContacts = partnerGeographyContacts.filter((contact) => {
+    if (!normalizedQuery) {
+      return true;
+    }
+
+    return [contact.regionName, contact.city, contact.name, contact.phone, contact.address]
+      .some((item) => normalizeSearch(item).includes(normalizedQuery));
+  });
+
+  useEffect(() => {
+    if (!tooltip?.pinned) {
+      return;
+    }
+
+    function closePinnedTooltip(event: globalThis.PointerEvent) {
+      const target = event.target;
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      if (mapRef.current?.contains(target)) {
+        return;
+      }
+
+      setTooltip(null);
+    }
+
+    document.addEventListener("pointerdown", closePinnedTooltip);
+    return () => document.removeEventListener("pointerdown", closePinnedTooltip);
+  }, [tooltip?.pinned]);
+
+  function resolvePointerPosition(event: { clientX: number; clientY: number }) {
+    const rect = mapRef.current?.getBoundingClientRect();
+    if (!rect) {
+      return { x: 0, y: 0 };
+    }
+
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  }
+
+  function showTooltip(regionId: string, event: { clientX: number; clientY: number }, pinned: boolean) {
+    const position = resolvePointerPosition(event);
+    setTooltip({
+      regionId,
+      x: position.x,
+      y: position.y,
+      pinned,
+    });
+  }
+
+  function handleRegionKeyDown(regionId: string, event: ReactKeyboardEvent<SVGElement>) {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    const region = russiaRegionPaths.find((item) => item.id === regionId);
+    setTooltip({
+      regionId,
+      x: region?.centroid.x ?? 500,
+      y: region?.centroid.y ?? 300,
+      pinned: true,
+    });
+  }
+
+  return (
+    <div className="grid gap-7">
+      <div
+        ref={mapRef}
+        className="relative overflow-hidden rounded-[1rem] border border-white/10 bg-black px-2 py-6 shadow-[0_34px_110px_rgba(0,0,0,0.34)] sm:px-6 sm:py-8"
+        onPointerLeave={() => {
+          setTooltip((current) => (current?.pinned ? current : null));
+        }}
+      >
+        <svg
+          viewBox={russiaMapViewBox}
+          role="img"
+          aria-label="Интерактивная карта регионов России"
+          className="h-auto w-full"
+        >
+          <defs>
+            <filter id="partner-map-pin-shadow" x="-60%" y="-60%" width="220%" height="220%">
+              <feDropShadow dx="0" dy="12" stdDeviation="10" floodColor="#ff6da8" floodOpacity="0.34" />
+            </filter>
+          </defs>
+          <rect width="1000" height="633" fill="transparent" />
+          {russiaRegionPaths.map((region) => {
+            const active = activeRegionIds.has(region.id);
+            const selected = tooltip?.regionId === region.id;
+            const contact = contactByRegionId.get(region.id);
+            const matchesQuery =
+              !normalizedQuery ||
+              normalizeSearch(region.name).includes(normalizedQuery) ||
+              (contact ? normalizeSearch(contact.address).includes(normalizedQuery) : false);
+
+            return (
+              <path
+                key={region.id}
+                d={region.path}
+                role="button"
+                tabIndex={0}
+                aria-label={contact ? `${region.name}: ${contact.name}, ${contact.phone}` : `${region.name}: партнер пока не опубликован`}
+                className={classNames(
+                  "cursor-pointer stroke-black outline-none transition-[fill,opacity,stroke] duration-200 hover:fill-[#ff8fc5] focus:fill-[#ff8fc5]",
+                  active ? "fill-[#ff6da8]" : "fill-white/10",
+                  selected ? "stroke-[#ffd0e2]" : "stroke-black",
+                  matchesQuery ? "opacity-100" : "opacity-30",
+                )}
+                strokeWidth={selected ? 1.9 : 1.05}
+                vectorEffect="non-scaling-stroke"
+                fillRule="evenodd"
+                onPointerEnter={(event) => {
+                  setTooltip((current) => {
+                    if (current?.pinned) {
+                      return current;
+                    }
+                    const position = resolvePointerPosition(event);
+                    return { regionId: region.id, x: position.x, y: position.y, pinned: false };
+                  });
+                }}
+                onPointerMove={(event) => {
+                  setTooltip((current) => {
+                    if (current?.pinned || current?.regionId !== region.id) {
+                      return current;
+                    }
+                    const position = resolvePointerPosition(event);
+                    return { ...current, x: position.x, y: position.y };
+                  });
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showTooltip(region.id, event, true);
+                }}
+                onKeyDown={(event) => handleRegionKeyDown(region.id, event)}
+              >
+                <title>{region.name}</title>
+              </path>
+            );
+          })}
+          {partnerGeographyContacts.map((contact) => (
+            <g
+              key={contact.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`${contact.regionName}: ${contact.name}, ${contact.phone}`}
+              className="cursor-pointer outline-none"
+              filter="url(#partner-map-pin-shadow)"
+              onPointerEnter={(event) => {
+                setTooltip((current) => {
+                  if (current?.pinned) {
+                    return current;
+                  }
+                  const position = resolvePointerPosition(event);
+                  return { regionId: contact.regionIds[0], x: position.x, y: position.y, pinned: false };
+                });
+              }}
+              onPointerMove={(event) => {
+                setTooltip((current) => {
+                  if (current?.pinned || current?.regionId !== contact.regionIds[0]) {
+                    return current;
+                  }
+                  const position = resolvePointerPosition(event);
+                  return { ...current, x: position.x, y: position.y };
+                });
+              }}
+              onClick={(event) => {
+                event.stopPropagation();
+                showTooltip(contact.regionIds[0], event, true);
+              }}
+              onKeyDown={(event) => handleRegionKeyDown(contact.regionIds[0], event)}
+            >
+              <circle cx={contact.pin.x} cy={contact.pin.y} r="18" fill="transparent" />
+              <circle cx={contact.pin.x} cy={contact.pin.y} r="10" fill="#000000" stroke="#ffd0e2" strokeWidth="2.5" />
+              <circle cx={contact.pin.x} cy={contact.pin.y} r="5" fill="#ff6da8" />
+            </g>
+          ))}
+        </svg>
+
+        {tooltip && tooltipRegion ? (
+          <div
+            className="pointer-events-auto absolute z-20 w-[min(18rem,calc(100%-2rem))] rounded-[0.85rem] border border-white/12 bg-white p-4 text-black shadow-[0_24px_70px_rgba(0,0,0,0.34)]"
+            style={{
+              left: `min(max(${tooltip.x}px, 1rem), calc(100% - 1rem))`,
+              top: `min(max(${tooltip.y}px, 1rem), calc(100% - 1rem))`,
+              transform: "translate(-50%, calc(-100% - 14px))",
+            }}
+          >
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-black/42">
+              {tooltipContact ? "Партнер" : "Регион"}
+            </p>
+            <h3 className="mt-2 text-xl font-semibold leading-tight text-black">{tooltipRegion.name}</h3>
+            {tooltipContact ? (
+              <div className="mt-3 grid gap-2 text-sm leading-6 text-black/66">
+                <p>{tooltipContact.name}</p>
+                <a href={phoneHref(tooltipContact.phone)} className="font-semibold text-black transition hover:text-[#cf3f7d]">
+                  {tooltipContact.phone}
+                </a>
+                <p>{tooltipContact.address}</p>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {tooltipContact.tags.map((tag) => (
+                    <span key={tag} className="rounded-full border border-[#ff6da8]/35 bg-white px-2.5 py-1 text-[0.65rem] font-semibold text-[#a71955]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="mt-3 text-sm leading-6 text-black/60">
+                Партнер пока не опубликован. Регион оставлен в карте для будущего заполнения.
+              </p>
+            )}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[0.72fr_1.28fr] xl:items-start">
+        <label className="block">
+          <span className="sr-only">Поиск региона или партнера</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Введите название региона"
+            className="h-[3.25rem] w-full rounded-[0.85rem] border border-white/12 bg-white/[0.07] px-4 text-sm text-white outline-none transition placeholder:text-white/36 focus:border-[#ff8fc5]/60"
+          />
+        </label>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {filteredContacts.map((contact) => (
+            <article
+              key={contact.id}
+              className="relative min-w-0 rounded-[0.75rem] border border-white/10 bg-white/[0.08] p-5 text-white transition hover:border-white/35 hover:bg-white hover:text-black"
+            >
+              <div className="flex flex-wrap gap-2">
+                {contact.tags.map((tag) => (
+                  <span key={tag} className="rounded-full border border-current/20 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.08em] opacity-70">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-5 text-xs uppercase tracking-[0.2em] opacity-50">{contact.city}</p>
+              <h3 className="mt-3 text-2xl font-semibold leading-tight">{contact.name}</h3>
+              <p className="mt-3 text-sm leading-6 opacity-68">{contact.address}</p>
+              <a href={phoneHref(contact.phone)} className="mt-5 inline-flex text-sm font-semibold transition hover:text-[#cf3f7d]">
+                {contact.phone}
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const landingFooterLinks: NavItem[] = [
+  { label: "Политика обработки данных", href: "/legal/privacy" },
+  { label: "Согласие на обработку данных", href: "/legal/consent" },
+  { label: "Политика cookies", href: "/legal/cookies" },
+  { label: "Пользовательское соглашение", href: "/legal/terms" },
+  { label: "Не является публичной офертой", href: "/legal/not-public-offer" },
+];
+
+function isBrandSitePath(pathname: string) {
+  const normalized = pathname.replace(/\/+$/, "") || "/";
+  return (
+    normalized === "/partners" ||
+    normalized === "/partners/geography" ||
+    normalized === "/about" ||
+    normalized === "/brand" ||
+    normalized === "/quality" ||
+    normalized === "/catalog" ||
+    normalized === "/catalog/stilno-click-one" ||
+    normalized === "/request"
+  );
+}
+
+function ChromeLink({
+  href,
+  children,
+  className,
+  dataAnalytics,
+  onClick,
+}: {
+  href: string;
+  children: ReactNode;
+  className: string;
+  dataAnalytics?: string;
+  onClick?: () => void;
+}) {
+  if (href.startsWith("#")) {
+    return (
+      <a href={href} data-analytics={dataAnalytics} className={className} onClick={onClick}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} data-analytics={dataAnalytics} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
+
 export function SiteHeader({
   navItems,
   primaryCta,
@@ -181,6 +934,9 @@ export function SiteHeader({
   navItems: NavItem[];
   primaryCta: CtaLink;
 }) {
+  const pathname = usePathname();
+  const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
+  const storeMapHeader = normalizedPathname === "/stores/map";
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -231,45 +987,62 @@ export function SiteHeader({
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/10 bg-[#fbfaf7]/92 backdrop-blur-xl">
+    <header
+      className={classNames(
+        "top-0 z-40 border-b backdrop-blur-xl",
+        storeMapHeader
+          ? "fixed inset-x-0 border-white/10 bg-black/58"
+          : "sticky border-black/10 bg-white/92",
+      )}
+    >
       <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-5 px-5 py-4 sm:px-6 lg:px-8">
-        <Link
+        <ChromeLink
           href="/"
-          data-analytics="nav_logo"
-          className="inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.28em] text-black"
+          dataAnalytics="nav_logo"
+          className={classNames(
+            "inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.28em]",
+            storeMapHeader ? "text-white" : "text-black",
+          )}
         >
           STILNO
-        </Link>
+        </ChromeLink>
 
         <nav className="hidden items-center gap-6 xl:flex">
           {navItems.map((item) => (
-            <Link
+            <ChromeLink
               key={item.href}
               href={item.href}
-              data-analytics={`nav_${item.href.replace(/\W+/g, "_")}`}
-            className="text-[0.92rem] text-black/58 transition hover:text-black"
+              dataAnalytics={`nav_${item.href.replace(/\W+/g, "_")}`}
+              className={classNames(
+                "text-[0.92rem] transition",
+                storeMapHeader ? "text-white/66 hover:text-white" : "text-black/58 hover:text-black",
+              )}
             >
               {item.label}
-            </Link>
+            </ChromeLink>
           ))}
         </nav>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <Link
+          <ChromeLink
             href={primaryCta.href}
-            data-analytics="primary_cta"
-            className={`rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)] ${ctaClassName(
-              primaryCta.variant,
-            )}`}
+            dataAnalytics="primary_cta"
+            className={classNames(
+              "rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
+              storeMapHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
+            )}
           >
             {primaryCta.label}
-          </Link>
+          </ChromeLink>
         </div>
 
         <button
           ref={buttonRef}
           type="button"
-          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white text-black shadow-[0_10px_28px_rgba(0,0,0,0.06)] xl:hidden"
+          className={classNames(
+            "inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_10px_28px_rgba(0,0,0,0.06)] xl:hidden",
+            storeMapHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
+          )}
           onClick={() => setMenuOpen((current) => !current)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -289,37 +1062,158 @@ export function SiteHeader({
         <div
           id="mobile-menu"
           ref={menuRef}
-        className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border border-black/10 bg-[#fbfaf7] p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden"
+        className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border border-black/10 bg-white p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Мобильное меню"
         >
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => (
-              <Link
+              <ChromeLink
                 key={item.href}
                 href={item.href}
-                data-analytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
+                dataAnalytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
                 className="rounded-[0.9rem] border border-black/10 bg-white px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
-              </Link>
+              </ChromeLink>
             ))}
           </nav>
-          <Link
+          <ChromeLink
             href={primaryCta.href}
-            data-analytics="mobile_primary_cta"
+            dataAnalytics="mobile_primary_cta"
             className={`mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition ${ctaClassName(
               primaryCta.variant,
             )}`}
             onClick={() => setMenuOpen(false)}
           >
             {primaryCta.label}
-          </Link>
+          </ChromeLink>
         </div>
       ) : null}
     </header>
+  );
+}
+
+export function SiteFooter({
+  footerGroups,
+  contactLines,
+}: {
+  footerGroups: FooterGroup[];
+  contactLines: ContactLine[];
+}) {
+  const pathname = usePathname();
+  const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
+
+  if (normalizedPathname === "/stores/map") {
+    return null;
+  }
+
+  if (isBrandSitePath(pathname)) {
+    return (
+      <footer className="border-t border-white/10 bg-[#000000] text-white">
+        <div className="mx-auto grid max-w-[90rem] gap-8 px-5 py-10 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-[0.24em] text-white/38">STILNO</p>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-white/62">
+              Премиальный бренд электронных сигарет для взрослой аудитории 18+.
+            </p>
+            <div className="mt-6 grid gap-3 text-sm leading-6 text-white/58">
+              <p>
+                <span className="block text-white/36">Компания</span>
+                <span className="mt-1 block">ООО «ВОСТОК ИМПОРТ ПРОМ»</span>
+              </p>
+              <p>
+                <span className="block text-white/36">Юридический адрес</span>
+                <span className="mt-1 block">{companyDetails.legalAddress}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-[0.24em] text-white/38">Legal</p>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-sm">
+              {landingFooterLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="text-white/64 transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-7 grid gap-3 text-sm leading-6 text-white/56">
+              <p>
+                <span className="font-medium text-white/78">18+.</span> Никотин вызывает зависимость. Продажа
+                несовершеннолетним запрещена.
+              </p>
+              <p>
+                Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции. Информация на
+                сайте носит справочный характер. Условия обсуждаются индивидуально.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10">
+          <div className="mx-auto flex max-w-[90rem] flex-col gap-2 px-5 py-4 text-xs leading-5 text-white/38 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+            <p>© 2026 STILNO. Все права защищены.</p>
+            <p>ООО «ВОСТОК ИМПОРТ ПРОМ»</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  return (
+    <footer className="border-t border-black/10 bg-white">
+      <div className="mx-auto grid max-w-[86rem] gap-8 px-5 py-12 sm:px-6 md:grid-cols-3 lg:grid-cols-5 lg:px-8">
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Бренд</p>
+          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">STILNO</h2>
+          <p className="mt-4 text-sm leading-6 text-black/62">
+            Информация о бренде, продукте, розничной точке и B2B-маршрутах STILNO для аудитории 18+.
+          </p>
+          <div className="mt-5 grid gap-3 text-xs leading-5 text-black/58">
+            {contactLines.slice(0, 2).map((line) => (
+              <p key={line.label}>
+                <span className="block text-black/38">{line.label}</span>
+                <span className="mt-1 block">{line.value}</span>
+              </p>
+            ))}
+          </div>
+        </div>
+
+        {footerGroups.map((group) => (
+          <div key={group.label} className="min-w-0">
+            <p className="text-xs uppercase tracking-[0.22em] text-black/42">{group.label}</p>
+            <div className="mt-4 grid gap-2 text-sm">
+              {group.links.map((item) => (
+                <Link key={item.href} href={item.href} className="text-black/68 transition hover:text-black">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="border-t border-black/10">
+        <div className="mx-auto grid max-w-[86rem] gap-4 px-5 py-5 text-[0.72rem] leading-5 text-black/42 sm:px-6 md:grid-cols-3 lg:px-8">
+          <p>
+            <span className="font-medium text-black/58">18+.</span> Никотин вызывает зависимость. Продажа
+            несовершеннолетним запрещена.
+          </p>
+          <p>Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.</p>
+          <p>Информация на сайте носит справочный характер. Условия обсуждаются индивидуально.</p>
+        </div>
+      </div>
+
+      <div className="border-t border-black/10">
+        <div className="mx-auto flex max-w-[86rem] flex-col gap-2 px-5 py-4 text-xs leading-5 text-black/38 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <p>© 2026 STILNO. Все права защищены.</p>
+          <p>ООО &quot;ВОСТОК ИМПОРТ ПРОМ&quot;</p>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -455,13 +1349,13 @@ export function AgeGate({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080807]/86 px-4 backdrop-blur-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#000000]/86 px-4 backdrop-blur-xl">
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="age-gate-title"
-        className="relative w-full max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#11100e] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:p-7 lg:p-8"
+        className="relative w-full max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#000000] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:p-7 lg:p-8"
       >
         <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-stretch">
           <div className="flex min-w-0 flex-col p-2 sm:p-3">
@@ -490,7 +1384,7 @@ export function AgeGate({
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
-                className="rounded-full border border-[#e7c89f] bg-[#e7c89f] px-6 py-3 text-sm font-medium text-black transition hover:bg-[#f0d8b8]"
+                className="rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium text-black transition hover:bg-[#ff8fc5]"
                 onClick={() => {
                   window.localStorage.setItem(AGE_KEY, version);
                   window.dispatchEvent(new Event("stilno:age-accepted"));
@@ -584,7 +1478,7 @@ export function CookieBanner({
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-3 z-[70] px-4">
-      <div className="pointer-events-auto mx-auto max-w-4xl rounded-[1.2rem] border border-white/12 bg-[#11100e] px-5 py-5 text-white shadow-[0_28px_85px_rgba(0,0,0,0.28)] sm:px-6">
+      <div className="pointer-events-auto mx-auto max-w-4xl rounded-[1.2rem] border border-white/12 bg-[#000000] px-5 py-5 text-white shadow-[0_28px_85px_rgba(0,0,0,0.28)] sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-medium text-white">Cookie-файлы</p>
@@ -597,24 +1491,24 @@ export function CookieBanner({
               .
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
             <button
               type="button"
-              className="rounded-full border border-[#e7c89f] bg-[#e7c89f] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#f0d8b8]"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-2.5 text-sm font-medium leading-none text-black transition hover:bg-[#ff8fc5] sm:w-52"
               onClick={() => saveConsent(true)}
             >
               Принять все
             </button>
             <button
               type="button"
-              className="rounded-full border border-white/18 bg-white/[0.07] px-4 py-2 text-sm text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/18 bg-white/[0.07] px-5 py-2.5 text-sm leading-none text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:w-52"
               onClick={() => saveConsent(false)}
             >
               Только необходимые
             </button>
             <button
               type="button"
-              className="rounded-full border border-white/18 bg-white/[0.07] px-4 py-2 text-sm text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/18 bg-white/[0.07] px-5 py-2.5 text-sm leading-none text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:w-52"
               onClick={() => setSettingsOpen((current) => !current)}
             >
               Настроить
@@ -647,7 +1541,7 @@ export function CookieBanner({
             <div className="sm:col-span-3">
               <button
                 type="button"
-                className="rounded-full border border-[#e7c89f] bg-[#e7c89f] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#f0d8b8]"
+                className="inline-flex min-h-11 w-full max-w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-2.5 text-sm font-medium leading-none text-black transition hover:bg-[#ff8fc5] sm:w-52"
                 onClick={() => saveConsent(analyticsEnabled)}
               >
                 Сохранить настройки
@@ -658,6 +1552,45 @@ export function CookieBanner({
       </div>
     </div>
   );
+}
+
+function isEmailLike(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isPhoneLike(value: string) {
+  return value.replace(/[^\d]/g, "").length >= 10;
+}
+
+function requiredFieldMessage(name: string, fallbackLabel: string) {
+  const messages: Record<string, string> = {
+    name: "Укажите имя.",
+    phone: "Укажите телефон.",
+    email: "Укажите email.",
+    city: "Укажите город или регион.",
+    requestType: "Выберите тип запроса.",
+  };
+
+  return messages[name] ?? `Заполните поле «${fallbackLabel}».`;
+}
+
+function requiredConsentMessage(name: string) {
+  if (name === "ageConfirmed") {
+    return "Подтвердите возраст 18+.";
+  }
+
+  if (name === "personalData") {
+    return "Подтвердите согласие на обработку персональных данных.";
+  }
+
+  return "Подтвердите обязательное согласие.";
+}
+
+function focusFormControl(form: HTMLFormElement, name: string) {
+  const control = form.elements.namedItem(name);
+  if (control instanceof HTMLElement) {
+    control.focus();
+  }
 }
 
 export function LeadForm({
@@ -694,6 +1627,40 @@ export function LeadForm({
     const consentsPayload = Object.fromEntries(
       schema.checkboxes.map((checkbox) => [checkbox.name, formData.get(checkbox.name) === "on"]),
     );
+
+    for (const field of schema.fields) {
+      const value = fieldsPayload[field.name] ?? "";
+
+      if (field.required && !value) {
+        setError(requiredFieldMessage(field.name, field.label));
+        focusFormControl(form, field.name);
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (field.type === "email" && value && !isEmailLike(value)) {
+        setError("Проверьте формат email.");
+        focusFormControl(form, field.name);
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (field.type === "tel" && value && !isPhoneLike(value)) {
+        setError("Укажите корректный телефон.");
+        focusFormControl(form, field.name);
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const checkbox of schema.checkboxes) {
+      if (checkbox.required && !consentsPayload[checkbox.name]) {
+        setError(requiredConsentMessage(checkbox.name));
+        focusFormControl(form, checkbox.name);
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     if (isStaticExport) {
       setError(
@@ -735,7 +1702,7 @@ export function LeadForm({
       setError(
         submissionError instanceof Error
           ? submissionError.message
-          : "Не удалось отправить форму. Повторите попытку чуть позже.",
+          : (schema.errorMessage ?? "Не удалось отправить форму. Повторите попытку чуть позже."),
       );
     } finally {
       setIsSubmitting(false);
@@ -745,6 +1712,7 @@ export function LeadForm({
   return (
     <form
       onSubmit={handleSubmit}
+      noValidate
       className={`rounded-[1rem] border p-6 ${
         theme === "dark"
           ? "border-black/10 bg-white text-black"
@@ -752,7 +1720,7 @@ export function LeadForm({
       }`}
     >
       <div className="mb-6">
-        <h3 className="text-2xl font-semibold tracking-[-0.04em]">{schema.title}</h3>
+        <h3 className="text-2xl font-semibold">{schema.title}</h3>
         <p className={`mt-3 text-sm leading-6 ${theme === "dark" ? "text-black/62" : "text-black/62"}`}>
           {schema.description}
         </p>
@@ -825,16 +1793,30 @@ export function LeadForm({
                 theme === "dark" ? "border-black/20 bg-transparent" : "border-black/20 bg-transparent"
               }`}
             />
-            <span className="min-w-0 flex-1">{checkbox.label}</span>
+            <span className="min-w-0 flex-1">
+              {checkbox.label}
+              {checkbox.links?.length ? (
+                <>
+                  {" "}
+                  {checkbox.links.map((link, index) => (
+                    <span key={link.href}>
+                      {index > 0 ? " и " : ""}
+                      <Link
+                        href={link.href}
+                        className="underline decoration-black/20 underline-offset-4 transition hover:text-black"
+                      >
+                        {link.label}
+                      </Link>
+                    </span>
+                  ))}
+                  .
+                </>
+              ) : null}
+            </span>
           </label>
         ))}
       </div>
 
-      {schema.disclaimer ? (
-        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-black/50" : "text-black/50"}`}>
-          {schema.disclaimer}
-        </p>
-      ) : null}
       <div aria-live="polite">
         {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
         {successHint ? (
@@ -853,8 +1835,13 @@ export function LeadForm({
             : "border border-transparent bg-black text-white hover:bg-black/86"
         }`}
       >
-        {isSubmitting ? "Отправляем..." : schema.submitLabel}
+        {isSubmitting ? "Отправляем…" : schema.submitLabel}
       </button>
+      {schema.disclaimer ? (
+        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-black/50" : "text-black/50"}`}>
+          {schema.disclaimer}
+        </p>
+      ) : null}
     </form>
   );
 }
@@ -877,7 +1864,7 @@ export function VariantPicker({ product }: { product: Product }) {
         className="min-h-[21rem] sm:min-h-[30rem] xl:min-h-[34rem]"
       />
 
-      <div className="rounded-[1.2rem] border border-black/10 bg-[#11100e] p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
+      <div className="rounded-[1.2rem] border border-black/10 bg-[#000000] p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
         <p className="text-xs uppercase tracking-[0.18em] text-white/44">Вкусовая серия</p>
         <h3 className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-white">{activeVariant.title}</h3>
         <p className="mt-3 text-sm leading-6 text-white/60">
@@ -898,7 +1885,7 @@ export function VariantPicker({ product }: { product: Product }) {
               key={variant.id}
               className={`rounded-[1.15rem] border px-4 py-3 text-left transition ${
                 activeVariant.id === variant.id
-                  ? "border-[#e7c89f] bg-[#e7c89f] text-black"
+                  ? "border-[#ff6da8] bg-[#ff6da8] text-black"
                   : "border-white/12 bg-white/[0.06] text-white/72 hover:border-white/28 hover:bg-white/[0.1]"
               }`}
               onClick={() => {
@@ -920,8 +1907,8 @@ export function VariantPicker({ product }: { product: Product }) {
             </button>
           ))}
         </div>
-        <div className="mt-5 rounded-[1rem] border border-[#e7c89f]/28 bg-[#e7c89f]/10 p-4">
-          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#e7c89f]/70">
+        <div className="mt-5 rounded-[1rem] border border-[#ff6da8]/28 bg-white/[0.06] p-4">
+          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#ff6da8]/70">
             В листе ассортимента
           </p>
           <div className="mt-3 flex items-start justify-between gap-4">
@@ -931,7 +1918,7 @@ export function VariantPicker({ product }: { product: Product }) {
                 выбранный вкус
               </p>
             </div>
-            <span className="rounded-full border border-[#e7c89f]/24 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#e7c89f]/82">
+            <span className="rounded-full border border-[#ff6da8]/24 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#ff6da8]/82">
               {activeVariant.nicotineStrength}
             </span>
           </div>
@@ -939,8 +1926,8 @@ export function VariantPicker({ product }: { product: Product }) {
             Выбор помогает сформировать запрос. Сайт не оформляет дистанционную розничную продажу.
           </p>
           <Link
-            href="/partners#partner-form"
-            className="mt-4 inline-flex rounded-full bg-[#e7c89f] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#f0d6b4]"
+            href="/request"
+            className="mt-4 inline-flex rounded-full bg-[#ff6da8] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#ff8fc5]"
             onClick={() =>
               pushAnalytics("product_assortment_request", {
                 product: product.slug,
@@ -948,7 +1935,7 @@ export function VariantPicker({ product }: { product: Product }) {
               })
             }
           >
-            Запросить позицию
+            Оставить заявку
           </Link>
         </div>
       </div>
@@ -1159,7 +2146,7 @@ export function VerifyChecker() {
         ? "border-red-700/20 bg-red-50 text-red-950"
       : result.tone === "warning"
         ? "border-amber-700/20 bg-amber-50 text-amber-950"
-        : "border-black/10 bg-[#f6f6f3] text-black";
+        : "border-black/10 bg-white text-black";
 
   return (
     <div className="rounded-[1rem] border border-black/10 bg-white p-6">

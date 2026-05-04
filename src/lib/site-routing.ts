@@ -1,5 +1,5 @@
 import { articles, cities, legalPages, vacancies, stores } from "@/lib/site-content";
-import { productCategories, products } from "@/lib/catalog-data";
+import { featuredProduct, productCategories, products } from "@/lib/catalog-data";
 import { siteOrigin } from "@/lib/site-config";
 import type { LegalPage, ResolvedPage, Store, Vacancy } from "@/lib/site-types";
 
@@ -42,7 +42,7 @@ export function getProductCategoryPath(category: { slug: string }) {
 }
 
 export function getProductPath(product: { slug: string }) {
-  return `/products/${product.slug}`;
+  return `/catalog/${product.slug}`;
 }
 
 export function getArticlePath(article: { slug: string }) {
@@ -61,10 +61,16 @@ export function getBreadcrumbs(pathname: string[], title: string) {
 
   const labelMap = new Map<string, string>([
     ["stores", "Где купить"],
+    ["map", "Карта магазинов"],
+    ["brand", "Бренд"],
     ["about", "О бренде"],
     ["gallery", "Галерея"],
     ["products", "Ассортимент"],
+    ["quality", "Качество"],
+    ["catalog", "Каталог"],
     ["partners", "Партнёрам"],
+    ["geography", "География партнёров"],
+    ["request", "Заявка"],
     ["media-kit", "B2B-пакет"],
     ["verify", "Проверка оригинальности"],
     ["support", "Поддержка"],
@@ -103,6 +109,21 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       };
     }
 
+    if (second === "map") {
+      if (third) {
+        return null;
+      }
+
+      return {
+        kind: "stores-map",
+        title: "Карта магазинов STILNO",
+        description:
+          "Интерактивная карта магазинов и партнёрских точек STILNO с центральным офисом в Москве.",
+        pathname: slug,
+        stores,
+      };
+    }
+
     const city = cities.find((item) => item.slug === second);
     if (!city) {
       return null;
@@ -135,13 +156,32 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     };
   }
 
-  if (section === "about") {
+  if (section === "brand") {
+    if (second) {
+      return null;
+    }
+
     return {
-      kind: "about",
-      title: "О бренде STILNO",
+      kind: "brand",
+      title: "Бренд STILNO",
       description:
-        "STILNO как взрослая визуальная система 18+: чёрный силуэт, чистая упаковка, вкусовая линия и B2B-first подача.",
+        "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство и контроль качества.",
       pathname: slug,
+    };
+  }
+
+  if (section === "about") {
+    if (second) {
+      return null;
+    }
+
+    return {
+      kind: "brand",
+      title: "Бренд STILNO",
+      description:
+        "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство и контроль качества.",
+      pathname: slug,
+      canonicalPath: ["brand"],
     };
   }
 
@@ -151,6 +191,48 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       title: "Визуальный код STILNO",
       description: "Корпус, упаковка, вкусовые метки, предупреждения 18+ и retail-среда текущей линии STILNO CLICK ONE.",
       pathname: slug,
+    };
+  }
+
+  if (section === "quality") {
+    if (second) {
+      return null;
+    }
+
+    return {
+      kind: "quality",
+      title: "Качество STILNO",
+      description:
+        "Фабричное производство STILNO, контроль комплектующих, сборки, упаковки, маркировки и готовой партии для взрослой аудитории 18+.",
+      pathname: slug,
+    };
+  }
+
+  if (section === "catalog") {
+    if (!second) {
+      return {
+        kind: "catalog-index",
+        title: "Каталог STILNO",
+        description:
+          "Каталог STILNO с одной опубликованной моделью STILNO CLICK ONE: характеристики, вкусовая линия и переход к заявке без дистанционной продажи.",
+        pathname: slug,
+        products: [featuredProduct],
+      };
+    }
+
+    const product = products.find((item) => item.slug === second);
+    if (!product || third) {
+      return null;
+    }
+
+    return {
+      kind: "catalog-product",
+      title: product.title,
+      description:
+        "STILNO CLICK ONE: опубликованная модель электронных сигарет 18+ с Type-C, 10 мл, 20 мг/см³, 850 мА·ч и сдержанной упаковкой.",
+      pathname: slug,
+      product,
+      category: categoryMap.get(product.categoryId),
     };
   }
 
@@ -183,6 +265,19 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       return null;
     }
 
+    if (product.slug === featuredProduct.slug) {
+      return {
+        kind: "catalog-product",
+        title: product.title,
+        description:
+          "STILNO CLICK ONE: опубликованная модель электронных сигарет 18+ с Type-C, 10 мл, 20 мг/см³, 850 мА·ч и сдержанной упаковкой.",
+        pathname: slug,
+        canonicalPath: ["catalog", product.slug],
+        product,
+        category: categoryMap.get(product.categoryId),
+      };
+    }
+
     return {
       kind: "product",
       title: product.title,
@@ -204,15 +299,40 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       };
     }
 
+    if (second === "geography") {
+      return {
+        kind: "partners-geography",
+        title: "География партнёров",
+        description:
+          "Интерактивная карта географии партнёров STILNO: регионы России, розовая подсветка и опубликованный контакт в Москве.",
+        pathname: slug,
+      };
+    }
+
     if (second) {
       return null;
     }
 
     return {
-      kind: "partners",
-      title: "STILNO для опта и действующей розницы",
+      kind: "brand",
+      title: "Бренд STILNO",
       description:
-        "B2B-запросы STILNO по опту и действующим розничным точкам: продуктовая база, media kit, визуальная система и правила 18+.",
+        "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство и контроль качества.",
+      pathname: slug,
+      canonicalPath: ["brand"],
+    };
+  }
+
+  if (section === "request") {
+    if (second) {
+      return null;
+    }
+
+    return {
+      kind: "request",
+      title: "Оставить заявку STILNO",
+      description:
+        "Отдельная форма заявки STILNO для партнёрства, дистрибуции, розничной точки или другого обращения без дистанционной продажи продукции.",
       pathname: slug,
     };
   }
@@ -357,17 +477,24 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
 export function getAllStaticPaths() {
   return [
     ["stores"],
+    ["stores", "map"],
     ...cities.flatMap((city) => {
       const cityStores = storesByCityId.get(city.id) ?? [];
       return [["stores", city.slug], ...cityStores.map((store) => ["stores", city.slug, store.slug])];
     }),
     ["about"],
+    ["brand"],
     ["gallery"],
+    ["quality"],
+    ["catalog"],
+    ["catalog", featuredProduct.slug],
     ["products"],
     ...productCategories.map((category) => ["products", category.slug]),
     ...products.map((product) => ["products", product.slug]),
     ["partners"],
     ["partners", "media-kit"],
+    ["partners", "geography"],
+    ["request"],
     ["verify"],
     ["support"],
     ["responsible"],

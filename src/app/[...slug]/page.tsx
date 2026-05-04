@@ -29,7 +29,7 @@ export async function generateMetadata({
   const metadata = getMetadataPayload(page);
 
   return {
-    title: metadata.title,
+    title: page.kind === "brand" ? { absolute: metadata.title } : metadata.title,
     description: metadata.description,
     robots: {
       index: isIndexableDeployment && page.kind !== "thank-you",
@@ -39,8 +39,8 @@ export async function generateMetadata({
       canonical: metadata.canonical,
     },
     openGraph: {
-      title: metadata.title,
-      description: metadata.description,
+      title: metadata.openGraphTitle ?? metadata.title,
+      description: metadata.openGraphDescription ?? metadata.description,
       url: metadata.canonical,
       images: metadata.image
         ? [

@@ -167,15 +167,21 @@ export type LegalPage = {
 export type ResolvedPage = {
   kind:
     | "stores-index"
+    | "stores-map"
     | "city"
     | "store"
+    | "brand"
     | "about"
     | "gallery"
     | "products-index"
     | "product-category"
     | "product"
-    | "partners"
+    | "quality"
+    | "catalog-index"
+    | "catalog-product"
+    | "request"
     | "media-kit"
+    | "partners-geography"
     | "verify"
     | "support"
     | "responsible"
@@ -191,6 +197,7 @@ export type ResolvedPage = {
   title: string;
   description: string;
   pathname: string[];
+  canonicalPath?: string[];
   city?: City;
   stores?: Store[];
   store?: Store;
@@ -224,6 +231,7 @@ export type LeadCheckbox = {
   name: string;
   label: string;
   required?: boolean;
+  links?: NavItem[];
 };
 
 export type LeadFormSchema = {
@@ -231,6 +239,7 @@ export type LeadFormSchema = {
   description: string;
   submitLabel: string;
   successMessage: string;
+  errorMessage?: string;
   disclaimer?: string;
   theme?: "light" | "dark";
   fields: LeadField[];

@@ -12,7 +12,14 @@ type LeadPayload = {
 const MIN_SUBMIT_DELAY_MS = 1500;
 const LEAD_TYPES = new Set(["retail", "franchise", "partner", "career"]);
 const RETAIL_REQUEST_TYPES = new Set(["availability", "retail-point", "other-retail"]);
-const PARTNER_REQUEST_TYPES = new Set(["wholesale", "existing-retail-point"]);
+const PARTNER_REQUEST_TYPES = new Set([
+  "wholesale",
+  "retail",
+  "distribution",
+  "partnership",
+  "other",
+  "existing-retail-point",
+]);
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 6;
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
@@ -119,7 +126,7 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
   const name = normalizeField(fields.name);
   const phone = normalizeField(fields.phone);
   const email = normalizeField(fields.email);
-  const city = normalizeField(fields.city);
+  const city = normalizeField(fields.city || fields.region);
   const requestType = normalizeField(fields.requestType);
 
   if (!consents.personalData) {
@@ -134,7 +141,7 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
     return "Укажите имя.";
   }
 
-  if (!city) {
+  if (type !== "partner" && !city) {
     return "Укажите город или регион.";
   }
 
@@ -151,14 +158,14 @@ function validateLead(type: string, fields: Record<string, string>, consents: Re
   }
 
   if (type === "partner") {
-    if (!phone || !email) {
-      return "Укажите телефон и email.";
+    if (!phone) {
+      return "Укажите телефон.";
     }
     if (!requestType) {
-      return "Выберите направление B2B-запроса.";
+      return "Выберите тип запроса.";
     }
     if (!PARTNER_REQUEST_TYPES.has(requestType)) {
-      return "Неизвестное направление B2B-запроса.";
+      return "Неизвестный тип запроса.";
     }
   }
 

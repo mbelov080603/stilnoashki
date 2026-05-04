@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -10,16 +11,18 @@ import {
   CookieBanner,
   FaqAccordion,
   LeadForm,
+  PartnersGeographyMap,
+  SiteFooter,
   SiteHeader,
+  StoresMap,
   VerifyChecker,
   VariantPicker,
   VariantPickerFallback,
 } from "@/components/site-client";
-import { featuredProduct, galleryItems, productCategories, qualityStandards } from "@/lib/catalog-data";
+import { featuredProduct, galleryItems, productCategories } from "@/lib/catalog-data";
 import { assetPath, assetUrl, companyDetails, documentLinks, mediaAssets, siteOrigin, siteSettings } from "@/lib/site-config";
 import {
   articles,
-  b2bValueItems,
   brandFaceItems,
   brandNarrative,
   contactRouteCards,
@@ -31,8 +34,7 @@ import {
   franchisePillars,
   homeContent,
   launchMetrics,
-  partnersPageContent,
-  partnerValueItems,
+  partnersLandingContent,
   productPageContent,
   responsibilityNotes,
   stores,
@@ -72,7 +74,7 @@ function ButtonLink({
   const style =
     variant === "primary"
       ? tone === "dark"
-        ? "border-[#e7c89f] bg-[#e7c89f] text-black hover:border-[#f0d8b8] hover:bg-[#f0d8b8]"
+        ? "border-[#ff6da8] bg-[#ff6da8] text-black hover:border-[#ff8fc5] hover:bg-[#ff8fc5]"
         : "border-black bg-black text-white hover:bg-black/82"
       : variant === "ghost"
         ? tone === "dark"
@@ -80,14 +82,18 @@ function ButtonLink({
           : "border-transparent bg-transparent text-black/66 hover:text-black"
         : tone === "dark"
           ? "border-white/18 bg-white/[0.07] text-white hover:border-white/34 hover:bg-white/[0.12]"
-          : "border-black/14 bg-white text-black hover:border-black/34 hover:bg-[#f4f4f1]";
+          : "border-black/14 bg-white text-black hover:border-black/34 hover:bg-black/[0.04]";
   const inlineStyle =
     variant !== "primary" && tone === "light"
       ? {
-          color: "#0B1018",
+          color: "#000000",
         }
       : undefined;
-  const plainAnchor = Boolean(target) || /^https?:\/\//.test(href) || /\.(pdf|jpe?g|png|webp|svg|ico|txt|xml)$/i.test(href);
+  const plainAnchor =
+    href.startsWith("#") ||
+    Boolean(target) ||
+    /^https?:\/\//.test(href) ||
+    /\.(pdf|jpe?g|png|webp|svg|ico|txt|xml)$/i.test(href);
   const resolvedHref = plainAnchor ? assetPath(href) : href;
 
   if (plainAnchor) {
@@ -300,8 +306,8 @@ function EditorialHero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden border-b border-white/10 bg-[#080807] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(231,200,159,0.18),transparent_34%),linear-gradient(140deg,rgba(255,255,255,0.05),transparent_32%)]" />
+    <section className="relative overflow-hidden border-b border-white/10 bg-[#000000] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(255,255,255,0.05),transparent_34%),linear-gradient(140deg,rgba(255,255,255,0.05),transparent_32%)]" />
       <div className="relative mx-auto max-w-[90rem] px-5 py-8 sm:px-6 lg:px-8 lg:py-12">
         <PageHero contract={contract} tone="dark" media={media} />
         {children}
@@ -391,7 +397,7 @@ function SalesCtaBand({
   actions: CtaLink[];
 }) {
   return (
-    <section className="bg-[#080807] text-white">
+    <section className="bg-[#000000] text-white">
       <div className="mx-auto max-w-[90rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <SectionIntro tone="dark" contract={{ eyebrow, title, body }} />
@@ -439,49 +445,6 @@ function SpecPanel({
   );
 }
 
-function MediaSpread({
-  primarySlot,
-  secondarySlot,
-  title,
-  body,
-  reverse = false,
-}: {
-  primarySlot: string;
-  secondarySlot?: string;
-  title: string;
-  body: string;
-  reverse?: boolean;
-}) {
-  return (
-    <div className={classNames("grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-stretch", reverse && "xl:grid-cols-[0.85fr_1.15fr]")}>
-      <div className={classNames("min-w-0", reverse && "xl:order-2")}>
-        <MediaSlot
-          slotId={primarySlot}
-          title={title}
-          note={body}
-          aspect="wide"
-          className="min-h-[20rem] sm:min-h-[26rem] lg:aspect-[16/9]"
-        />
-      </div>
-      <div className={classNames("grid gap-5", reverse && "xl:order-1")}>
-        <div className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-          <h3 className="text-3xl font-semibold leading-tight tracking-[-0.045em] text-black">{title}</h3>
-          <p className="mt-4 text-sm leading-7 text-black/62">{body}</p>
-        </div>
-        {secondarySlot ? (
-          <MediaSlot
-            slotId={secondarySlot}
-            title={title}
-            note={body}
-            aspect="square"
-            className="min-h-[14rem] sm:min-h-[18rem]"
-          />
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
 function StructuredData({ data }: { data: unknown }) {
   return (
     <script
@@ -517,7 +480,8 @@ function buildJsonLd(page?: ResolvedPage) {
     ];
   }
 
-  const canonicalUrl = `${siteOrigin}/${page.pathname.join("/")}`;
+  const canonicalPath = page.canonicalPath ?? page.pathname;
+  const canonicalUrl = `${siteOrigin}/${canonicalPath.join("/")}`;
 
   switch (page.kind) {
     case "product":
@@ -882,86 +846,70 @@ function FranchiseFormAside({ items }: { items: typeof faqItems }) {
   );
 }
 
-const partnerMarketplaceSpecs = [
-  { label: "формат", value: "устройство + картридж" },
-  { label: "объём", value: "10 мл" },
-  { label: "никотин", value: "20 мг/см³" },
-  { label: "аккумулятор", value: "850 мА·ч" },
-  { label: "порт", value: "Type-C" },
-  { label: "мощность", value: "10–22 Вт" },
-];
-
-function PartnerProductShowcase() {
-  const heroVariant = featuredProduct.variants[0];
-  const showcaseVariants = featuredProduct.variants;
-
+function LandingSectionIntro({
+  eyebrow,
+  title,
+  body,
+  tone = "light",
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  tone?: "light" | "dark";
+}) {
   return (
-    <div className="mt-8 grid gap-8 xl:grid-cols-[0.72fr_1.28fr] xl:items-stretch">
-      <aside className="border-y border-black/10 py-6 text-black">
-        <div className="flex h-full flex-col">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/44">Витрина</p>
-          <h3 className="mt-4 text-3xl font-semibold leading-tight">STILNO CLICK ONE</h3>
-          <p className="mt-4 text-sm leading-6 text-black/62">
-            Вкусы и параметры вынесены в компактный B2B-лист: без имитации интернет-каталога и без
-            дистанционной продажи.
-          </p>
-          <div className="mt-6">
-            <FranchiseProductLineup compact />
-          </div>
-          <div className="mt-auto divide-y divide-black/10 pt-6">
-            {partnerMarketplaceSpecs.map((spec) => (
-              <div key={spec.label} className="grid grid-cols-[0.8fr_1.2fr] gap-4 py-3">
-                <p className="text-xs uppercase tracking-[0.12em] text-black/42">{spec.label}</p>
-                <p className="text-sm font-medium text-black">{spec.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </aside>
-
-      <div className="grid gap-6 lg:grid-cols-[1.06fr_0.94fr]">
-        <ProductPhotoCard
-          slotId={`partner-variant-${heroVariant?.id ?? "fallback"}`}
-          title={heroVariant?.title ?? featuredProduct.title}
-          note="Крупный B2B-визуал STILNO CLICK ONE."
-          aspect="wide"
-          className="min-h-[22rem] lg:aspect-[4/5] xl:min-h-[34rem]"
-        />
-        <div className="flex min-w-0 flex-col border-y border-black/10 py-1">
-          <div className="py-5">
-            <p className="text-xs uppercase tracking-[0.18em] text-black/38">Ассортимент</p>
-            <h4 className="mt-3 text-2xl font-semibold leading-tight text-black">Вкусы текущей линии</h4>
-          </div>
-          <div className="divide-y divide-black/10">
-            {showcaseVariants.map((variant, index) => (
-              <div key={variant.id} className="grid gap-3 py-4 sm:grid-cols-[2.5rem_1fr_auto] sm:items-start">
-                <span className="text-sm font-medium text-black/34">{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <p className="text-base font-semibold leading-snug text-black">{variant.title}</p>
-                  <p className="mt-1 text-sm leading-5 text-black/54">{variant.flavor}</p>
-                </div>
-                <div className="flex flex-wrap gap-2 sm:justify-end">
-                  <span className="rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-black/56">
-                    {variant.nicotineStrength}
-                  </span>
-                  <span className="rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-black/56">
-                    {variant.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-auto pt-6">
-            <Link
-              href="#partner-form"
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-black bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-black/82"
-            >
-              Запросить ассортимент
-            </Link>
-          </div>
-        </div>
-      </div>
+    <div className="max-w-3xl">
+      <p className={classNames("text-xs uppercase tracking-[0.24em]", tone === "dark" ? "text-white/42" : "text-black/42")}>
+        {eyebrow}
+      </p>
+      <h2
+        className={classNames(
+          "mt-4 text-3xl font-semibold leading-[1.03] sm:text-4xl lg:text-5xl",
+          tone === "dark" ? "text-white" : "text-black",
+        )}
+      >
+        {title}
+      </h2>
+      <p className={classNames("mt-5 text-base leading-7 sm:text-lg", tone === "dark" ? "text-white/62" : "text-black/62")}>
+        {body}
+      </p>
     </div>
+  );
+}
+
+function ProductVisual({
+  src,
+  alt,
+  caption,
+  className,
+}: {
+  src: string;
+  alt: string;
+  caption?: string;
+  className?: string;
+}) {
+  return (
+    <figure
+      className={classNames(
+        "relative min-h-[18rem] overflow-hidden rounded-[0.75rem] border border-white/10 bg-[#000000] shadow-[0_28px_90px_rgba(0,0,0,0.28)] sm:min-h-[26rem]",
+        className,
+      )}
+    >
+      <Image
+        src={assetPath(src)}
+        alt={alt}
+        fill
+        sizes="(min-width: 1280px) 42rem, 100vw"
+        className="object-contain p-4 sm:p-7"
+        loading="eager"
+        unoptimized
+      />
+      {caption ? (
+        <figcaption className="absolute inset-x-4 bottom-4 rounded-[0.6rem] border border-white/10 bg-black/56 px-4 py-3 text-xs leading-5 text-white/68 backdrop-blur">
+          {caption}
+        </figcaption>
+      ) : null}
+    </figure>
   );
 }
 
@@ -997,7 +945,7 @@ function LegalWarningStrip() {
   return (
     <div className="relative overflow-hidden rounded-[1rem] border border-black/10 bg-white p-5 sm:p-6">
       <div className="relative grid gap-5 sm:grid-cols-[7.5rem_1fr] lg:items-center">
-        <div className="inline-flex h-16 w-28 items-center justify-center rounded-full border border-black/12 bg-[#f6f6f3] text-3xl font-semibold tracking-[0.08em] text-black">
+        <div className="inline-flex h-16 w-28 items-center justify-center rounded-full border border-black/12 bg-white text-3xl font-semibold tracking-[0.08em] text-black">
           18+
         </div>
         <div className="min-w-0">
@@ -1014,64 +962,54 @@ function LegalWarningStrip() {
   );
 }
 
-function Footer() {
-  return (
-    <footer className="border-t border-black/10 bg-white">
-      <div className="mx-auto grid max-w-[86rem] gap-8 px-5 py-12 sm:px-6 md:grid-cols-3 lg:grid-cols-5 lg:px-8">
-        <div className="min-w-0">
-          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Бренд</p>
-          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">STILNO</h2>
-          <p className="mt-4 text-sm leading-6 text-black/62">
-            Информация о бренде, продукте, розничной точке и B2B-маршрутах STILNO для аудитории 18+.
-          </p>
-          <div className="mt-5 grid gap-3 text-xs leading-5 text-black/58">
-            {siteSettings.contactLines.slice(0, 2).map((line) => (
-              <p key={line.label}>
-                <span className="block text-black/38">{line.label}</span>
-                <span className="mt-1 block">{line.value}</span>
-              </p>
-            ))}
-          </div>
-        </div>
-
-        {siteSettings.footerGroups.map((group) => (
-          <div key={group.label} className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.22em] text-black/42">{group.label}</p>
-            <div className="mt-4 grid gap-2 text-sm">
-              {group.links.map((item) => (
-                <Link key={item.href} href={item.href} className="text-black/68 transition hover:text-black">
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="border-t border-black/10">
-        <div className="mx-auto grid max-w-[86rem] gap-4 px-5 py-5 text-[0.72rem] leading-5 text-black/42 sm:px-6 md:grid-cols-3 lg:px-8">
-          <p>
-            <span className="font-medium text-black/58">18+.</span> Никотин вызывает зависимость. Продажа
-            несовершеннолетним запрещена.
-          </p>
-          <p>Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.</p>
-          <p>Информация на сайте носит справочный характер. Условия обсуждаются индивидуально.</p>
-        </div>
-      </div>
-
-      <div className="border-t border-black/10">
-        <div className="mx-auto flex max-w-[86rem] flex-col gap-2 px-5 py-4 text-xs leading-5 text-black/38 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>© 2026 STILNO. Все права защищены.</p>
-          <p>ООО &quot;ВОСТОК ИМПОРТ ПРОМ&quot;</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 export function HomeTemplate() {
   const heroActions = homeContent.hero.actions;
-  const retailStore = stores[0];
+  const overviewCards = [
+    {
+      title: "Бренд",
+      body: "Подробный рассказ о взрослом характере, сдержанной визуальной системе и премиальной подаче STILNO.",
+      href: "/brand",
+      cta: "Открыть бренд",
+    },
+    {
+      title: "Каталог",
+      body: "Одна опубликованная модель STILNO CLICK ONE с краткой спецификацией и переходом к деталям.",
+      href: "/catalog",
+      cta: "Открыть каталог",
+    },
+    {
+      title: "Качество",
+      body: "Отдельная страница о фабричной сборке, контроле комплектующих, упаковки, маркировки и партии.",
+      href: "/quality",
+      cta: "Открыть качество",
+    },
+    {
+      title: "Заявка",
+      body: "Отдельная форма для партнёрства, дистрибуции, розничной точки или другого обращения.",
+      href: "/request",
+      cta: "Оставить заявку",
+    },
+  ];
+  const routeCards = [
+    {
+      title: "Где купить",
+      body: "Опубликованная розничная точка, телефон, маршрут и розничный запрос находятся в отдельном разделе.",
+      href: "/stores",
+      cta: "Открыть розницу",
+    },
+    {
+      title: "Проверка",
+      body: "Проверка оригинальности работает через код с упаковки и не смешивается с каталогом или заявкой.",
+      href: "/verify",
+      cta: "Проверить код",
+    },
+    {
+      title: "Поддержка",
+      body: "Вопросы по качеству, оригинальности, хранению и обращению с устройством вынесены в поддержку.",
+      href: "/support",
+      cta: "Открыть поддержку",
+    },
+  ];
 
   return (
     <>
@@ -1088,154 +1026,59 @@ export function HomeTemplate() {
             className="min-h-[19rem] border-white/10 sm:min-h-[28rem] lg:aspect-[16/11] xl:min-h-[34rem]"
           />
         }
-      >
-        <div className="mt-8 lg:mt-10">
-          <FeatureRail items={launchMetrics.slice(0, 3)} tone="dark" />
-        </div>
-      </EditorialHero>
+      />
 
-      <section className="border-y border-black/10 bg-[#fbfaf7]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 xl:grid-cols-[0.82fr_1.18fr] xl:items-start">
-            <div>
-              <SectionIntro contract={homeContent.partnersSection} />
-              <div className="mt-8">
-                <MediaSlot
-                  slotId="home-partners"
-                  title="B2B-визуал STILNO"
-                  note="B2B-визуал маршрута STILNO."
-                  aspect="wide"
-                  className="min-h-[20rem] lg:aspect-[16/10]"
-                />
-              </div>
+      <section className="border-y border-black/10 bg-white">
+        <div className="mx-auto max-w-[90rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-18">
+          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
+            <SectionIntro contract={homeContent.routingSection} />
+            <div className="grid gap-4 md:grid-cols-2">
+              {overviewCards.map((card) => (
+                <article key={card.title} className="flex min-h-[15rem] flex-col rounded-[1rem] border border-black/10 bg-white p-5 sm:p-6">
+                  <h2 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{card.title}</h2>
+                  <p className="mt-4 flex-1 text-sm leading-7 text-black/60">{card.body}</p>
+                  <div className="mt-5">
+                    <ButtonLink href={card.href} variant="secondary" tone="light" analytics={`home_overview_${card.title}`}>
+                      {card.cta}
+                    </ButtonLink>
+                  </div>
+                </article>
+              ))}
             </div>
-            <ValueGrid items={brandFaceItems} />
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:items-start">
-            <div>
-              <SectionIntro contract={homeContent.partnerValueSection} />
-              <div className="mt-9">
-                <ValueGrid items={partnerValueItems} />
-              </div>
-            </div>
-            <MediaSlot
-              slotId="home-partners"
-              title="STILNO в B2B-среде"
-              note="Премиальная B2B-подача продукта STILNO."
-              aspect="wide"
-              className="min-h-[24rem] lg:aspect-[4/5] xl:min-h-[34rem]"
-            />
           </div>
         </div>
       </section>
 
       <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-22">
-          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-end">
-            <SectionIntro contract={homeContent.productSection} />
-            <div className="hidden h-px bg-black/10 xl:block" />
+        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
+            <SectionIntro contract={homeContent.storesSection} />
+            <div className="grid gap-4 lg:grid-cols-3">
+              {routeCards.map((card) => (
+                <article key={card.title} className="flex min-h-[15rem] flex-col rounded-[1rem] border border-black/10 bg-white p-5 sm:p-6">
+                  <h2 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{card.title}</h2>
+                  <p className="mt-4 flex-1 text-sm leading-7 text-black/60">{card.body}</p>
+                  <div className="mt-5">
+                    <ButtonLink href={card.href} variant="secondary" tone="light" analytics={`home_route_${card.title}`}>
+                      {card.cta}
+                    </ButtonLink>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
           <div className="mt-10">
-            <MediaSpread
-              primarySlot="home-product"
-              secondarySlot="product-close-vishnya"
-              title="Устройство, упаковка и маркировка в одном продукте."
-              body="Визуальная подача строится вокруг реального устройства STILNO CLICK ONE, упаковки, вкусовой метки и читаемого предупреждения 18+."
-            />
-          </div>
-          <div className="mt-8 grid gap-5 lg:grid-cols-3 lg:items-stretch">
-            <SpecPanel
-              eyebrow="Ключевые параметры"
-              title="Без лишнего рекламного шума."
-              specs={featuredProduct.specs.slice(0, 6)}
-              className="h-full"
-            />
-            {qualityStandards.slice(0, 2).map((item) => (
-              <article key={item.title} className="flex h-full flex-col rounded-[1.2rem] border border-black/10 bg-white p-5 sm:p-6">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">STILNO</p>
-                <h3 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{item.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-black/60">{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#080807] text-white">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 xl:grid-cols-[0.88fr_1.12fr] xl:items-center">
-            <div>
-              <SectionIntro tone="dark" contract={homeContent.responsibleSection} />
-              <div className="mt-9">
-                <FeatureRail
-                  tone="dark"
-                  items={[
-                    { value: "Код", label: "проверка", note: "Проверка оригинальности через код с упаковки." },
-                    { value: "18+", label: "режим", note: "Возрастная рамка не маскируется под мелкий legal." },
-                    { value: "Support", label: "качество", note: "Спорный код, качество и утилизация вынесены в поддержку." },
-                  ]}
-                />
-              </div>
-            </div>
-            <div className="grid gap-5">
-              <MediaSlot
-                slotId="verify-product"
-                title="Проверка оригинальности STILNO"
-                note="Продуктовый визуал рядом с trust-блоком."
-                aspect="wide"
-                className="border-white/10"
-              />
-              <LegalWarningStrip />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-8 xl:grid-cols-[0.86fr_1.14fr] xl:items-start">
-            <div>
-              <SectionIntro contract={homeContent.storesSection} />
-              <div className="mt-8 rounded-[1.2rem] border border-black/10 bg-white p-6">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Текущая точка</p>
-                <h3 className="mt-4 text-3xl font-semibold tracking-[-0.045em] text-black">
-                  {retailStore.title} · Москва
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-black/62">{retailStore.address}</p>
-                <p className="mt-1 text-sm leading-7 text-black/62">Телефон: {retailStore.phone}</p>
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <ButtonLink href={retailStore.directionsHref ?? "/stores"} target="_blank" variant="secondary" tone="light" analytics="home_store_route">
-                    Построить маршрут
-                  </ButtonLink>
-                  <ButtonLink href="/stores#stores-request" variant="secondary" tone="light" analytics="home_store_request">
-                    Уточнить наличие
-                  </ButtonLink>
-                </div>
-              </div>
-            </div>
-            <MediaSlot
-              slotId="home-stores"
-              title="Розничный визуал STILNO"
-              note="Визуал опубликованной точки и розничных запросов."
-              aspect="wide"
-              className="min-h-[24rem] lg:aspect-[16/9]"
-            />
+            <LegalWarningStrip />
           </div>
         </div>
       </section>
 
       <SalesCtaBand
-        eyebrow="STILNO для бизнеса"
-        title="Хотите поставить STILNO на полку или обсудить запуск в регионе?"
-        body="Выберите B2B-запрос для опта и действующей розницы или отдельный маршрут запуска под брендом. Мы сохраним коммерческий фокус и legal-рамку 18+."
+        eyebrow="STILNO"
+        title="Оставьте заявку на отдельной странице"
+        body="Форма не находится на главной странице. Для партнёрства, дистрибуции, розничной точки или другого обращения используйте единый маршрут заявки."
         actions={[
-          { label: "Оставить B2B-запрос", href: "/partners#partner-form", variant: "primary" },
-          { label: "Запуск под брендом", href: "/franchise#franchise-form", variant: "secondary" },
+          { label: "Оставить заявку", href: "/request", variant: "primary" },
         ]}
       />
 
@@ -1315,12 +1158,12 @@ function StoresIndexTemplate(page: ResolvedPage) {
               <p className="text-xs uppercase tracking-[0.22em] text-black/36">{storesContent.supportTitle}</p>
               <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.supportBody}</p>
             </div>
-            <div className="rounded-[1.2rem] border border-black/10 bg-[#fbfaf7] p-6 text-black">
+            <div className="rounded-[1.2rem] border border-black/10 bg-white p-6 text-black">
               <p className="text-xs uppercase tracking-[0.22em] text-black/42">Дисклеймер</p>
               <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.disclaimer}</p>
               <div className="mt-6">
-                <ButtonLink href="/partners" variant="secondary" tone="light" analytics="stores_partner_redirect">
-                  Для бизнеса
+                <ButtonLink href="/request" variant="secondary" tone="light" analytics="stores_request_redirect">
+                  Оставить заявку
                 </ButtonLink>
               </div>
             </div>
@@ -1329,6 +1172,15 @@ function StoresIndexTemplate(page: ResolvedPage) {
       </div>
       </section>
     </>
+  );
+}
+
+function StoresMapTemplate(page: ResolvedPage) {
+  return (
+    <section className="bg-[#050505] text-white">
+      <StructuredData data={buildJsonLd(page)} />
+      <StoresMap />
+    </section>
   );
 }
 
@@ -1435,10 +1287,10 @@ function AboutTemplate(page: ResolvedPage) {
       <EditorialHero
         contract={{
           title: "STILNO",
-          body: "Взрослая визуальная система для категории 18+: чёрный силуэт, чистая упаковка, вкусовая линия и B2B-first подача без лишнего шума.",
+          body: "Взрослая визуальная система для категории 18+: чёрный силуэт, чистая упаковка, вкусовая линия и спокойная подача без лишнего шума.",
           actions: [
-            { label: "Смотреть ассортимент", href: "/products/stilno-click-one", variant: "primary" },
-            { label: "B2B-запрос", href: "/partners#partner-form", variant: "secondary" },
+            { label: "Смотреть каталог", href: "/catalog", variant: "primary" },
+            { label: "Оставить заявку", href: "/request", variant: "secondary" },
           ],
         }}
         media={
@@ -1494,7 +1346,7 @@ function GalleryTemplate(page: ResolvedPage) {
         contract={{
           title: "Визуальный код STILNO",
           body: "Корпус, упаковка, вкусовые метки, предупреждение 18+ и retail-среда показывают лицо бренда до того, как пользователь откроет характеристики.",
-          actions: [{ label: "Смотреть ассортимент", href: "/products/stilno-click-one", variant: "primary" }],
+          actions: [{ label: "Смотреть каталог", href: "/catalog", variant: "primary" }],
         }}
         media={
           <MediaSlot
@@ -1627,7 +1479,7 @@ function ProductsIndexTemplate(page: ResolvedPage) {
             <p className="text-xs uppercase tracking-[0.22em] text-black/36">Категория</p>
             <div className="mt-5 grid gap-4">
               {productCategories.map((category) => (
-                <article key={category.id} className="rounded-[1rem] border border-black/10 bg-[#f5f5f4] p-5">
+                <article key={category.id} className="rounded-[1rem] border border-black/10 bg-white p-5">
                   <h3 className="text-2xl font-semibold tracking-[-0.03em] text-black">{category.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-black/60">{category.shortDescription}</p>
                   <div className="mt-4">
@@ -1699,7 +1551,7 @@ function AssortmentRequestPanel({ product }: { product: Product }) {
   ];
 
   return (
-    <div className="rounded-[1.25rem] border border-black/10 bg-white p-6 shadow-[0_24px_90px_rgba(18,18,18,0.06)] sm:p-7">
+    <div className="rounded-[1.25rem] border border-black/10 bg-white p-6 shadow-[0_24px_90px_rgba(0,0,0,0.06)] sm:p-7">
       <p className="text-xs uppercase tracking-[0.22em] text-black/36">Лист ассортимента</p>
       <h3 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight tracking-[-0.045em] text-black">
         Выберите вкус и отправьте запрос по нужному маршруту.
@@ -1711,7 +1563,7 @@ function AssortmentRequestPanel({ product }: { product: Product }) {
 
       <div className="mt-7 grid gap-px overflow-hidden rounded-[1rem] border border-black/10 bg-black/10 sm:grid-cols-2">
         {summaryItems.map((item) => (
-          <div key={item.label} className="min-w-0 bg-[#f7f6f2] p-4">
+          <div key={item.label} className="min-w-0 bg-white p-4">
             <p className="text-[0.66rem] uppercase tracking-[0.16em] text-black/38">{item.label}</p>
             <p className="mt-2 text-sm font-semibold leading-6 text-black">{item.value}</p>
           </div>
@@ -1722,8 +1574,8 @@ function AssortmentRequestPanel({ product }: { product: Product }) {
         <ButtonLink href="/stores" tone="light" analytics="assortment_stores">
           Где купить
         </ButtonLink>
-        <ButtonLink href="/partners#partner-form" tone="light" variant="secondary" analytics="assortment_partner">
-          B2B-запрос
+        <ButtonLink href="/request" tone="light" variant="secondary" analytics="assortment_partner">
+          Оставить заявку
         </ButtonLink>
         <ButtonLink href="/verify" tone="light" variant="secondary" analytics="assortment_verify">
           Проверить код
@@ -1827,7 +1679,7 @@ function ProductTemplate(page: ResolvedPage) {
         </div>
       </section>
 
-      <section className="bg-[#080807] text-white">
+      <section className="bg-[#000000] text-white">
         <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div className="grid gap-10 xl:grid-cols-[0.88fr_1.12fr]">
             <SectionIntro
@@ -1853,125 +1705,498 @@ function ProductTemplate(page: ResolvedPage) {
   );
 }
 
-function PartnersTemplate(page: ResolvedPage) {
-  const partnerResources = [
-    ["B2B-пакет", "Презентация, продуктовая база и визуальная система для первичного B2B-знакомства.", "/partners/media-kit"],
-    ["Retail 18+", "Возрастная проверка, выкладка и корректная консультация для действующих точек.", "/responsible"],
-    ["Проверка", "Оригинальность и спорный код остаются в отдельном trust-разделе.", "/verify"],
-    ["Support", "Качество, хранение и утилизация вынесены в поддержку.", "/support"],
+function BrandTemplate(page: ResolvedPage) {
+  const { hero, heroFacts, brand, quality, product } = partnersLandingContent;
+  const nextSections = [
+    {
+      title: "Качество",
+      body: "Фабричное производство, комплектующие, сборка, упаковка, маркировка и контроль партии вынесены в отдельный раздел.",
+      href: "/quality",
+      cta: "Открыть качество",
+    },
+    {
+      title: "Каталог",
+      body: "Одна опубликованная модель STILNO CLICK ONE, характеристики, галерея и вкусовая линия собраны в каталоге.",
+      href: "/catalog",
+      cta: "Открыть каталог",
+    },
+    {
+      title: "Заявка",
+      body: "Партнёрство, дистрибуция, розничная точка или другой запрос оформляются через отдельную страницу заявки.",
+      href: "/request",
+      cta: "Оставить заявку",
+    },
   ];
 
   return (
     <>
       <StructuredData data={buildJsonLd(page)} />
-      <EditorialHero
-        contract={{
-          ...partnersPageContent.hero,
-          actions: [
-            { label: "Оставить B2B-запрос", href: "#partner-form", variant: "primary" },
-            { label: "B2B-пакет", href: "/partners/media-kit", variant: "secondary" },
-            { label: "Запуск под брендом", href: "/franchise", variant: "secondary" },
-          ],
-        }}
-        media={
-          <MediaSlot
-            slotId="partners-hero"
-            title="Фото для партнёров"
-            note="B2B-визуал запроса."
-            aspect="wide"
-            className="min-h-[20rem] border-white/10 sm:min-h-[28rem] lg:aspect-[16/11] xl:min-h-[34rem]"
-          />
-        }
-      />
-
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 xl:grid-cols-[0.82fr_1.18fr] xl:items-start">
-            <div>
-              <SectionIntro contract={partnersPageContent.contactFlowSection} />
-              <div className="mt-8">
-                <ButtonLink href="#partner-form" variant="primary" tone="light" analytics="partners_value_b2b_request">
-                  Оставить B2B-запрос
+      <div className="bg-[#000000] text-white">
+        <section className="relative overflow-hidden border-b border-white/10">
+          <div className="absolute inset-x-0 top-0 h-px bg-white/20" />
+          <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-12 sm:px-6 lg:px-8 lg:py-20 xl:grid-cols-[0.98fr_1.02fr] xl:items-center">
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-[0.24em] text-white/44">{hero.eyebrow}</p>
+              <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[0.98] text-white sm:text-5xl lg:text-6xl">
+                {hero.title}
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-white/66 sm:text-lg">{hero.body}</p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <ButtonLink href="/catalog" tone="dark" analytics="brand_catalog">
+                  Смотреть каталог
+                </ButtonLink>
+                <ButtonLink href="/request" tone="dark" variant="secondary" analytics="brand_request">
+                  Оставить заявку
                 </ButtonLink>
               </div>
-            </div>
-            <ValueGrid items={b2bValueItems} />
-          </div>
-
-          <div className="mt-14">
-            <SectionIntro contract={partnersPageContent.directionsSection} />
-            <PartnerProductShowcase />
-          </div>
-
-          <div className="mt-14 grid gap-6 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
-            <div className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Как проходит B2B-контакт</p>
-              <div className="mt-5 divide-y divide-black/10">
-                {partnersPageContent.contactFlow.map((step) => (
-                  <p key={step} className="py-3 text-sm leading-6 text-black/64">
-                    {step}
-                  </p>
+              <div className="mt-10 grid gap-px overflow-hidden rounded-[0.75rem] border border-white/10 bg-white/10 sm:grid-cols-3">
+                {heroFacts.map((fact) => (
+                  <div key={fact} className="bg-white/[0.045] px-4 py-4 text-sm font-medium leading-5 text-white/78">
+                    {fact}
+                  </div>
                 ))}
               </div>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              {partnersPageContent.directions.map((direction) => (
-                <article key={direction.title} className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-                  <h3 className="text-2xl font-semibold tracking-[-0.04em] text-black">{direction.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-black/62">{direction.body}</p>
-                  <div className="mt-5">
-                    <ButtonLink href="#partner-form" variant="secondary" tone="light" analytics={`partners_direction_${direction.title}`}>
-                      Оставить B2B-запрос
+
+            <ProductVisual
+              src={mediaAssets.product}
+              alt="STILNO CLICK ONE в сдержанной премиальной подаче"
+              caption={hero.note}
+              className="min-h-[20rem] sm:min-h-[30rem] xl:min-h-[35rem]"
+            />
+          </div>
+        </section>
+
+        <section className="bg-white text-black">
+          <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+            <LandingSectionIntro eyebrow={brand.eyebrow} title={brand.title} body={brand.body} />
+            <div className="mt-10 grid gap-px overflow-hidden rounded-[0.85rem] border border-black/10 bg-black/10 md:grid-cols-2 xl:grid-cols-4">
+              {brand.cards.map((card, index) => (
+                <article key={card.title} className="min-w-0 bg-white p-6 sm:p-7">
+                  <p className="text-xs uppercase tracking-[0.22em] text-black/34">{String(index + 1).padStart(2, "0")}</p>
+                  <h3 className="mt-8 text-2xl font-semibold leading-tight text-black">
+                    {card.title}
+                  </h3>
+                  <p className="mt-4 text-sm leading-7 text-black/60">{card.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-y border-white/10 bg-[#000000] text-white">
+          <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+            <div className="grid gap-10 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
+              <div className="min-w-0">
+                <LandingSectionIntro tone="dark" eyebrow={product.eyebrow} title={product.title} body={product.body} />
+                <div className="mt-9 grid gap-4 md:grid-cols-3">
+                  {product.designCards.map((card) => (
+                    <article key={card.title} className="border-t border-white/12 pt-5">
+                      <h3 className="text-xl font-semibold text-white">{card.title}</h3>
+                      <p className="mt-3 text-sm leading-7 text-white/60">{card.text}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <ProductVisual
+                src={mediaAssets.lobbyProduct}
+                alt="Групповая подача продукта и упаковки STILNO CLICK ONE"
+                className="xl:min-h-[32rem]"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white text-black">
+          <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+            <LandingSectionIntro
+              eyebrow="Структура сайта"
+              title="Подробности разнесены по отдельным страницам"
+              body={`${quality.title} находится в разделе «Качество». Каталог и заявка не смешиваются с брендовым рассказом.`}
+            />
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
+              {nextSections.map((section) => (
+                <article key={section.title} className="flex min-h-[15rem] flex-col rounded-[0.85rem] border border-black/10 bg-white p-6">
+                  <h3 className="text-2xl font-semibold leading-tight text-black">{section.title}</h3>
+                  <p className="mt-4 flex-1 text-sm leading-7 text-black/60">{section.body}</p>
+                  <div className="mt-6">
+                    <ButtonLink href={section.href} tone="light" variant="secondary" analytics={`brand_next_${section.title}`}>
+                      {section.cta}
                     </ButtonLink>
                   </div>
                 </article>
               ))}
             </div>
           </div>
+        </section>
+      </div>
+    </>
+  );
+}
 
-          <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {partnerResources.map(([title, body, href]) => (
-              <article key={title} className="border-t border-black/10 pt-5">
-                <h3 className="text-2xl font-semibold tracking-[-0.045em] text-black">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-black/62">{body}</p>
-                <div className="mt-5">
-                  <ButtonLink href={href} variant="secondary" tone="light" analytics={`partners_resource_${title}`}>
-                    Открыть
-                  </ButtonLink>
-                </div>
+function QualityTemplate(page: ResolvedPage) {
+  const { quality } = partnersLandingContent;
+
+  return (
+    <>
+      <StructuredData data={buildJsonLd(page)} />
+      <section className="bg-[#000000] text-white">
+        <div className="mx-auto max-w-[90rem] px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+          <PageHero
+            tone="dark"
+            compact
+            contract={{
+              eyebrow: quality.eyebrow,
+              title: quality.title,
+              body: quality.body,
+              actions: [{ label: "Оставить заявку", href: "/request", variant: "primary" }],
+            }}
+            media={
+              <ProductVisual
+                src={mediaAssets.production}
+                alt="Фабричная среда производства STILNO"
+                className="min-h-[20rem] sm:min-h-[28rem] xl:min-h-[32rem]"
+              />
+            }
+          />
+        </div>
+      </section>
+
+      <section className="bg-[#000000] text-white">
+        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            {quality.steps.map((step, index) => (
+              <article
+                key={step.title}
+                className="flex min-h-[17rem] flex-col rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6"
+              >
+                <p className="text-xs uppercase tracking-[0.22em] text-white/34">{String(index + 1).padStart(2, "0")}</p>
+                <h2 className="mt-6 text-2xl font-semibold leading-tight text-white">{step.title}</h2>
+                <p className="mt-4 text-sm leading-7 text-white/60">{step.text}</p>
               </article>
             ))}
           </div>
 
-          <div id="partner-form" className="mt-14 grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
-            <LeadForm type="partner" schema={formSchemas.partnerBase} />
-            <div className="grid gap-4">
-              <MediaSlot
-                slotId="partner-media-kit"
-                title="B2B-пакет STILNO"
-                note="Материалы для B2B-запросов STILNO."
-                aspect="wide"
-                className="min-h-[18rem]"
-              />
-              <div className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Что важно</p>
-                <p className="mt-4 text-sm leading-7 text-black/62">
-                  Эта форма закреплена за B2B-запросами: опт, региональный B2B-контакт и действующая розничная
-                  точка. Запуск под брендом оформляется на отдельной странице.
+          <div className="mt-6 rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] p-6 sm:p-8">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-[#ff6da8]/70">Proof</p>
+                <h2 className="mt-4 text-3xl font-semibold leading-tight text-white">{quality.proofTitle}</h2>
+              </div>
+              <p className="text-sm leading-7 text-white/68">{quality.proofText}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function CatalogProductImage({ src, alt, priority = false }: { src: string; alt: string; priority?: boolean }) {
+  return (
+    <div className="relative min-h-[16rem] overflow-hidden rounded-[0.95rem] border border-black/10 bg-[#000000] sm:min-h-[24rem]">
+      <Image
+        src={assetPath(src)}
+        alt={alt}
+        fill
+        sizes="(min-width: 1024px) 36rem, 100vw"
+        className="object-contain p-4 sm:p-7"
+        loading={priority ? "eager" : "lazy"}
+        unoptimized
+      />
+    </div>
+  );
+}
+
+function CatalogModelCard({ product }: { product: Product }) {
+  const compactSpecs = partnersLandingContent.product.specs.slice(0, 4);
+
+  return (
+    <article className="overflow-hidden rounded-[1rem] border border-black/10 bg-white shadow-[0_24px_70px_rgba(0,0,0,0.06)]">
+      <div className="border-b border-black/10 px-5 py-4">
+        <span className="rounded-full border border-black/10 bg-white px-3 py-1.5 text-[0.68rem] uppercase tracking-[0.18em] text-black/52">
+          18+ · опубликованная модель
+        </span>
+      </div>
+      <div className="grid gap-0 lg:grid-cols-[18rem_1fr]">
+        <Link href="/catalog/stilno-click-one" className="block border-b border-black/10 bg-[#000000] p-4 lg:border-b-0 lg:border-r">
+          <div className="relative min-h-[18rem] overflow-hidden rounded-[0.85rem] bg-[#000000]">
+            <Image
+              src={assetPath(mediaAssets.product)}
+              alt="Упаковка STILNO CLICK ONE"
+              fill
+              sizes="18rem"
+              className="object-contain p-5"
+              loading="lazy"
+              unoptimized
+            />
+          </div>
+        </Link>
+        <div className="p-5 sm:p-7">
+          <p className="text-xs uppercase tracking-[0.22em] text-black/36">Электронные сигареты 18+</p>
+          <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] text-black">
+            <Link href="/catalog/stilno-click-one" className="transition hover:text-black/70">
+              {product.title}
+            </Link>
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-black/60">
+            Сдержанная продуктовая линия с тёмным силуэтом, аккуратной упаковкой и компактной спецификацией.
+          </p>
+          <dl className="mt-6 grid gap-px overflow-hidden rounded-[0.85rem] border border-black/10 bg-black/10 sm:grid-cols-2">
+            {compactSpecs.map(([label, value]) => (
+              <div key={`${label}-${value}`} className="bg-white p-4">
+                <dt className="text-[0.65rem] uppercase tracking-[0.16em] text-black/38">{label}</dt>
+                <dd className="mt-2 text-sm font-semibold leading-5 text-black">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <ButtonLink href="/catalog/stilno-click-one" tone="light" analytics="catalog_model_details">
+              Подробнее
+            </ButtonLink>
+            <ButtonLink href="/request" tone="light" variant="secondary" analytics="catalog_model_request">
+              Оставить заявку
+            </ButtonLink>
+          </div>
+          <p className="mt-4 text-xs leading-5 text-black/44">
+            Каталог не является интернет-магазином и не оформляет дистанционную розничную продажу продукции.
+          </p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function CatalogIndexTemplate(page: ResolvedPage) {
+  const products = page.products?.length ? page.products : [featuredProduct];
+
+  return (
+    <section className="bg-[var(--color-page)]">
+      <StructuredData data={buildJsonLd(page)} />
+      <div className="mx-auto max-w-[90rem] px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <BreadcrumbTrail pathname={page.pathname} title={page.title} />
+        <PageHero
+          compact
+          contract={{
+            eyebrow: "Каталог",
+            title: "Каталог STILNO",
+            body:
+              "Одна опубликованная модель, аккуратная карточка и переход к детальной информации без сценария онлайн-покупки.",
+            detailItems: [
+              { label: "Моделей", value: "1" },
+              { label: "Категория", value: "18+" },
+              { label: "Продажа онлайн", value: "не осуществляется" },
+            ],
+          }}
+          media={<CatalogProductImage src={mediaAssets.lobbyProduct} alt="Групповая подача продукта STILNO CLICK ONE" priority />}
+        />
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-[17rem_1fr] lg:items-start">
+          <aside className="grid gap-4 lg:sticky lg:top-28">
+            <article className="rounded-[1rem] border border-black/10 bg-white p-5">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Категории</p>
+              <div className="mt-5 grid gap-2">
+                <Link href="/catalog" className="rounded-[0.8rem] border border-black bg-black px-4 py-3 text-sm font-medium text-white">
+                  Электронные сигареты 18+
+                </Link>
+                <Link href="/quality" className="rounded-[0.8rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/68 transition hover:text-black">
+                  Качество и контроль
+                </Link>
+                <Link href="/request" className="rounded-[0.8rem] border border-black/10 bg-white px-4 py-3 text-sm text-black/68 transition hover:text-black">
+                  Заявка
+                </Link>
+              </div>
+            </article>
+            <article className="rounded-[1rem] border border-black/10 bg-white p-5">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Legal</p>
+              <p className="mt-4 text-sm leading-6 text-black/58">
+                18+. Никотин вызывает зависимость. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.
+              </p>
+            </article>
+          </aside>
+
+          <div className="min-w-0">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-5 sm:flex sm:items-center sm:justify-between sm:gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Текущий каталог</p>
+                <p className="mt-2 text-sm leading-6 text-black/60">
+                  Показана одна опубликованная модель. Фильтры, цены, корзина и онлайн-покупка не используются.
                 </p>
               </div>
-              <div className="rounded-[1.2rem] border border-black/10 bg-[#fbfaf7] p-6 text-black">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/42">Нужен запуск под брендом?</p>
-                <p className="mt-4 text-sm leading-7 text-black/64">
-                  Маршрут запуска под брендом вынесен отдельно: там описаны этапы, документы и своя заявка.
+              <span className="mt-4 inline-flex rounded-full border border-black bg-black px-4 py-2 text-sm font-medium text-white sm:mt-0">
+                {products.length} модель
+              </span>
+            </div>
+            <div className="mt-5 grid gap-5">
+              {products.map((item) => (
+                <CatalogModelCard key={item.id} product={item} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CatalogProductTemplate(page: ResolvedPage) {
+  const product = page.product ?? featuredProduct;
+  const compactSpecs = partnersLandingContent.product.specs.map(([label, value]) => ({ label, value }));
+  const heroPills = ["10 мл", "20 мг/см³", "850 мА·ч", "Type-C", "18+"];
+
+  return (
+    <>
+      <StructuredData data={buildJsonLd(page)} />
+      <section className="bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[90rem] px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} />
+          <div className="grid gap-8 xl:grid-cols-[0.98fr_1.02fr] xl:items-start">
+            <div className="grid gap-4 xl:sticky xl:top-28">
+              <CatalogProductImage src={mediaAssets.product} alt="Упаковка STILNO CLICK ONE" priority />
+              <div className="grid gap-3 sm:grid-cols-3">
+                {[mediaAssets.product, mediaAssets.lobbyProduct, mediaAssets.productCloseVishnya].map((src, index) => (
+                  <div key={src} className="relative min-h-[8rem] overflow-hidden rounded-[0.85rem] border border-black/10 bg-[#000000]">
+                    <Image
+                      src={assetPath(src)}
+                      alt={index === 0 ? "Упаковка STILNO CLICK ONE" : "Продуктовая подача STILNO CLICK ONE"}
+                      fill
+                      sizes="12rem"
+                      className="object-contain p-3"
+                      loading={index === 0 ? "eager" : "lazy"}
+                      unoptimized
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6 shadow-[0_24px_80px_rgba(0,0,0,0.06)] sm:p-8">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Электронные сигареты 18+</p>
+              <h1 className="mt-4 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-black sm:text-5xl">
+                {product.title}
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-black/62">
+                STILNO CLICK ONE — опубликованная модель бренда с тёмным силуэтом, Type-C, единым характером упаковки и вкусовой линией для взрослой аудитории 18+.
+              </p>
+              <ul className="mt-6 flex flex-wrap gap-2">
+                {heroPills.map((pill) => (
+                  <li key={pill} className="rounded-full border border-black/10 bg-white px-3 py-2 text-sm text-black/68">
+                    {pill}
+                  </li>
+                ))}
+              </ul>
+
+              <dl className="mt-7 grid gap-px overflow-hidden rounded-[0.95rem] border border-black/10 bg-black/10 sm:grid-cols-2">
+                {compactSpecs.map((spec) => (
+                  <div key={`${spec.label}-${spec.value}`} className="bg-white p-4">
+                    <dt className="text-[0.65rem] uppercase tracking-[0.16em] text-black/38">{spec.label}</dt>
+                    <dd className="mt-2 text-sm font-semibold leading-5 text-black">{spec.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="mt-7 rounded-[0.95rem] border border-black/10 bg-white p-5">
+                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Заявка</p>
+                <h2 className="mt-3 text-2xl font-semibold leading-tight text-black">
+                  Обсудить сотрудничество или обращение
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-black/58">
+                  Заявка не является заказом и не означает дистанционную продажу продукции. Команда STILNO свяжется по указанному контакту.
                 </p>
-                <div className="mt-6">
-                  <ButtonLink href="/franchise" tone="light" variant="secondary" analytics="partners_to_franchise">
-                    Открыть запуск под брендом
+                <div className="mt-5">
+                  <ButtonLink href="/request" tone="light" analytics="catalog_product_request">
+                    Оставить заявку
                   </ButtonLink>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mt-12 grid gap-5 xl:grid-cols-[0.88fr_1.12fr]">
+            <article className="rounded-[1rem] border border-black/10 bg-white p-6 sm:p-7">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Вкусовая линия</p>
+              <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] text-black">
+                Текущая линия вкусов
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-black/58">
+                Вкусы показаны как часть единой продуктовой системы, без имитации карточек интернет-магазина.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {product.variants.map((variant) => (
+                  <span key={variant.id} className="rounded-full border border-black/10 bg-white px-3 py-2 text-sm leading-5 text-black/68">
+                    {variant.title}
+                  </span>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-[1rem] border border-black/10 bg-white p-6 sm:p-7">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Маркировка</p>
+              <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] text-black">
+                Факты и предупреждения
+              </h2>
+              <div className="mt-5 divide-y divide-black/10">
+                {product.warnings.slice(0, 4).map((warning) => (
+                  <p key={warning} className="py-3 text-sm leading-6 text-black/62">
+                    {warning}
+                  </p>
+                ))}
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function RequestTemplate(page: ResolvedPage) {
+  return (
+    <>
+      <StructuredData data={buildJsonLd(page)} />
+      <section className="bg-[#000000] text-white">
+        <div className="mx-auto max-w-[90rem] px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+          <PageHero
+            tone="dark"
+            compact
+            contract={{
+              eyebrow: "Заявка",
+              title: "Оставить заявку STILNO",
+              body:
+                "Оставьте контакты, чтобы команда STILNO связалась с вами и уточнила формат сотрудничества или другого обращения.",
+              detailItems: [
+                { label: "Форма", value: "одна страница" },
+                { label: "Категория", value: "18+" },
+                { label: "Продажа онлайн", value: "не осуществляется" },
+              ],
+            }}
+          />
+        </div>
+      </section>
+
+      <section id="request-form" className="bg-white text-black">
+        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-start">
+            <div id="partner-form" className="scroll-mt-24">
+              <LeadForm type="partner" schema={formSchemas.partnerBase} />
+            </div>
+            <aside className="rounded-[0.85rem] border border-black/10 bg-white p-6 sm:p-7">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/38">После заявки</p>
+              <h2 className="mt-4 text-3xl font-semibold leading-tight text-black">
+                Что происходит после отправки
+              </h2>
+              <div className="mt-6 divide-y divide-black/10 text-sm leading-7 text-black/62">
+                <p className="py-3">Мы получаем ваше обращение.</p>
+                <p className="py-3">Связываемся по указанному контакту.</p>
+                <p className="py-3">Уточняем формат запроса и следующие шаги.</p>
+              </div>
+              <p className="mt-6 text-sm leading-7 text-black/50">
+                Заявка не является заказом. Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.
+              </p>
+            </aside>
           </div>
         </div>
       </section>
@@ -1994,7 +2219,7 @@ function ResponsibleTemplate(page: ResolvedPage) {
             body: page.description,
           }}
           media={
-            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-4">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-4">
               <LegalWarningStrip />
             </div>
           }
@@ -2029,9 +2254,9 @@ function FranchiseTemplate(page: ResolvedPage) {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-white/10 bg-[#080807] text-white">
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#000000] text-white">
         <StructuredData data={buildJsonLd(page)} />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_18%,rgba(231,200,159,0.16),transparent_32%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_18%,rgba(255,255,255,0.05),transparent_32%)]" />
         <div className="relative mx-auto max-w-[90rem] px-5 py-12 sm:px-6 lg:px-8 lg:pb-14 lg:pt-16">
           <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
           <div className="grid gap-10 py-8 xl:grid-cols-[0.82fr_1.18fr] xl:items-center">
@@ -2069,7 +2294,7 @@ function FranchiseTemplate(page: ResolvedPage) {
                 contract={{
                   eyebrow: "Маршрут запуска",
                   title: "Запуск под брендом начинается с города и команды.",
-                  body: "Опт и действующая розничная точка остаются в разделе «Партнёрам». Здесь фокус на городе, команде, бренд-материалах, документах и подготовке старта.",
+                  body: "Опт и обращения действующих розничных точек идут через страницу «Заявка». Здесь фокус на городе, команде, бренд-материалах, документах и подготовке старта.",
                 }}
               />
               <div className="mt-9 border-y border-black/10 py-6">
@@ -2127,7 +2352,7 @@ function VerifyTemplate(page: ResolvedPage) {
         <div id="verify-checker" className="mt-12 grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
           <div className="grid gap-5">
             <VerifyChecker />
-            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6 text-black">
               <p className="text-xs uppercase tracking-[0.22em] text-black/42">Где искать код</p>
               <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
                 <p>Код расположен на защитной зоне упаковки или рядом с QR-маркировкой.</p>
@@ -2193,7 +2418,7 @@ function SupportTemplate(page: ResolvedPage) {
         </div>
 
         <div className="mt-12 grid gap-6 xl:grid-cols-[0.96fr_1.04fr]">
-          <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+          <div className="rounded-[1rem] border border-black/10 bg-white p-6 text-black">
             <p className="text-xs uppercase tracking-[0.22em] text-black/42">Что приложить к обращению</p>
             <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
               <p>Фото лицевой стороны упаковки и защитной зоны с кодом.</p>
@@ -2217,7 +2442,7 @@ function MediaKitTemplate(page: ResolvedPage) {
   ];
   const mediaKitCards = [
     ["Для опта", "SKU, характеристики, предупреждения и контактный маршрут B2B-заявки."],
-    ["Для розницы", "Краткая продуктовая база и правила первичного B2B-запроса от действующей точки."],
+    ["Для розницы", "Краткая информация о продукте и правила первичной заявки от действующей точки."],
     ["Для действующей розничной точки", "Материалы точки, выкладка, возрастная проверка и корректная консультация 18+."],
     ["Retail 18+", "Юридически аккуратная коммуникация без медицинских заявлений и обещаний доходности."],
   ];
@@ -2236,11 +2461,11 @@ function MediaKitTemplate(page: ResolvedPage) {
             eyebrow: "Media kit",
             title: "B2B-пакет STILNO",
             body:
-              "Материалы для оптовых B2B-запросов и действующих розничных точек: презентация, продуктовая база, правила 18+ и B2B-маршрут.",
+              "Материалы для оптовых обращений и действующих розничных точек: презентация, информация о продукте, правила 18+ и следующий шаг.",
             actions: [
               {
-                label: "Оставить B2B-запрос",
-                href: "/partners#partner-form",
+                label: "Оставить заявку",
+                href: "/request",
                 variant: "primary",
               },
               {
@@ -2262,7 +2487,7 @@ function MediaKitTemplate(page: ResolvedPage) {
         />
 
         <div className="mt-12 grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
-          <div className="rounded-[1rem] border border-black/10 bg-[#0b1018] p-6 text-white">
+          <div className="rounded-[1rem] border border-black/10 bg-[#000000] p-6 text-white">
             <p className="text-xs uppercase tracking-[0.22em] text-white/42">Состав пакета</p>
             <div className="mt-6 grid gap-4">
               {kitItems.map((item, index) => (
@@ -2284,7 +2509,7 @@ function MediaKitTemplate(page: ResolvedPage) {
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {relatedRoutes.map(([title, body, href]) => (
-            <article key={title} className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+            <article key={title} className="rounded-[1rem] border border-black/10 bg-white p-6 text-black">
               <p className="text-xs uppercase tracking-[0.22em] text-black/42">Отдельный раздел</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">{title}</h2>
               <p className="mt-3 text-sm leading-6 text-black/62">{body}</p>
@@ -2298,6 +2523,64 @@ function MediaKitTemplate(page: ResolvedPage) {
         </div>
       </div>
     </section>
+  );
+}
+
+function PartnersGeographyTemplate(page: ResolvedPage) {
+  return (
+    <>
+      <section className="relative overflow-hidden bg-[#000000] text-white">
+        <StructuredData data={buildJsonLd(page)} />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_8%,rgba(255,255,255,0.05),transparent_30%)]" />
+        <div className="relative mx-auto max-w-[90rem] px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <BreadcrumbTrail pathname={page.pathname} title={page.title} tone="dark" />
+          <PageHero
+            contract={{
+              eyebrow: "Партнёрам",
+              title: "География партнёров",
+              body:
+                "Интерактивная карта регионов России для партнёрской сети STILNO. Сейчас опубликован один контакт в Москве, остальные регионы оставлены без адресов для дальнейшего заполнения.",
+              detailItems: [
+                { label: "регион", value: "Москва" },
+                { label: "контакт", value: "Михаил" },
+                { label: "телефон", value: "+7 999 244-28-36" },
+              ],
+              actions: [
+                { label: "Оставить заявку", href: "/request", variant: "primary" },
+                { label: "B2B-пакет", href: "/partners/media-kit", variant: "secondary" },
+              ],
+            }}
+            tone="dark"
+            compact
+          />
+
+          <div className="mt-12">
+            <PartnersGeographyMap />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-black/10 bg-[var(--color-page)]">
+        <div className="mx-auto max-w-[86rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-6 md:grid-cols-2">
+            <article className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/38">Москва</p>
+              <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">ул. Вавилова, 69/75</h2>
+              <p className="mt-3 text-sm leading-6 text-black/62">
+                Опубликованная карточка партнёрского контакта: Михаил, Москва, 117335.
+              </p>
+            </article>
+            <article className="rounded-[1rem] border border-black/10 bg-white p-6">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/38">Регионы</p>
+              <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">Карта готова к заполнению</h2>
+              <p className="mt-3 text-sm leading-6 text-black/62">
+                Все регионы реагируют на наведение розовой подсветкой, но карточки с адресами пока не добавлены.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -2402,7 +2685,7 @@ function VacancyTemplate(page: ResolvedPage) {
                   ))}
                 </div>
               </div>
-              <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+              <div className="rounded-[1rem] border border-black/10 bg-white p-6 text-black">
                 <p className="text-xs uppercase tracking-[0.22em] text-black/42">Условия</p>
                 <div className="mt-4 grid gap-3 text-sm leading-6 text-black/64">
                   {vacancy.conditions.map((item) => (
@@ -2454,12 +2737,12 @@ function ContactsTemplate(page: ResolvedPage) {
               <p className="text-xs uppercase tracking-[0.22em] text-black/36">Маршрутизация обращений</p>
               <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
                 <p>Розничные запросы идут через страницу «Где купить».</p>
-                <p>Оптовые B2B-обращения и запросы действующих розничных точек идут через страницу «Партнёрам».</p>
+                <p>Оптовые обращения и запросы действующих розничных точек идут через страницу «Заявка».</p>
                 <p>Запуск под брендом STILNO обрабатывается через отдельный раздел.</p>
                 <p>Карьерные отклики остаются в разделе вакансий.</p>
               </div>
             </div>
-            <div className="rounded-[1rem] border border-black/10 bg-[#f6f6f3] p-6 text-black">
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6 text-black">
               <p className="text-xs uppercase tracking-[0.22em] text-black/42">Юридические данные</p>
               <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
                 <p>{companyDetails.companyName}</p>
@@ -2701,7 +2984,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-[var(--color-page)] text-black">
         <SiteHeader navItems={siteSettings.primaryNav} primaryCta={siteSettings.primaryCta} />
         <main>{children}</main>
-        <Footer />
+        <SiteFooter footerGroups={siteSettings.footerGroups} contactLines={siteSettings.contactLines} />
       </div>
     </>
   );
@@ -2711,10 +2994,14 @@ export function PageRenderer({ page }: { page: ResolvedPage }) {
   switch (page.kind) {
     case "stores-index":
       return StoresIndexTemplate(page);
+    case "stores-map":
+      return StoresMapTemplate(page);
     case "city":
       return CityTemplate(page);
     case "store":
       return StoreTemplate(page);
+    case "brand":
+      return BrandTemplate(page);
     case "about":
       return AboutTemplate(page);
     case "gallery":
@@ -2725,10 +3012,18 @@ export function PageRenderer({ page }: { page: ResolvedPage }) {
       return ProductCategoryTemplate(page);
     case "product":
       return ProductTemplate(page);
-    case "partners":
-      return PartnersTemplate(page);
+    case "quality":
+      return QualityTemplate(page);
+    case "catalog-index":
+      return CatalogIndexTemplate(page);
+    case "catalog-product":
+      return CatalogProductTemplate(page);
+    case "request":
+      return RequestTemplate(page);
     case "media-kit":
       return MediaKitTemplate(page);
+    case "partners-geography":
+      return PartnersGeographyTemplate(page);
     case "verify":
       return VerifyTemplate(page);
     case "support":
@@ -2771,15 +3066,23 @@ export function getMetadataPayload(page?: ResolvedPage) {
       description: siteSettings.description,
       canonical: siteOrigin,
       image: defaultImage,
+      openGraphTitle: undefined,
+      openGraphDescription: undefined,
     };
   }
 
   const titleMap: Partial<Record<ResolvedPage["kind"], string>> = {
     "stores-index": "Где купить STILNO | розничные запросы 18+",
+    "stores-map": "Карта магазинов STILNO | интерактивная карта точек",
+    brand: "Бренд STILNO | премиальный бренд электронных сигарет 18+",
     product: "Ассортимент STILNO CLICK ONE | вкусы и упаковка 18+",
     franchise: "Запуск STILNO в регионе | бренд 18+",
-    partners: "STILNO для опта и действующей розницы | B2B 18+",
+    quality: "Качество STILNO | фабричное производство и контроль",
+    "catalog-index": "Каталог STILNO | одна опубликованная модель 18+",
+    "catalog-product": "STILNO CLICK ONE | модель электронных сигарет 18+",
+    request: "Оставить заявку STILNO | официальный сайт бренда 18+",
     "media-kit": "B2B-пакет STILNO | материалы 18+",
+    "partners-geography": "География партнёров STILNO | карта регионов",
     verify: "Проверка оригинальности STILNO | код упаковки 18+",
     support: "Поддержка STILNO | качество, оригинальность и утилизация",
     responsible: "Ответственное потребление STILNO | информация 18+",
@@ -2790,14 +3093,26 @@ export function getMetadataPayload(page?: ResolvedPage) {
   const descriptionMap: Partial<Record<ResolvedPage["kind"], string>> = {
     "stores-index":
       "Опубликованная точка STILNO в Москве, телефон, маршрут и форма для розничного запроса без дистанционной продажи.",
+    "stores-map":
+      "Интерактивная карта магазинов и партнёрских точек STILNO с центральным офисом по адресу Ulitsa Vavilova, 69/75, Moscow, 117335.",
+    brand:
+      "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство, контроль качества и ответственная коммуникация.",
     product:
       "Ассортимент STILNO CLICK ONE: десять вкусов, Type-C, упаковка, параметры и предупреждения 18+.",
     franchise:
       "Запуск STILNO в регионе: город, команда, бренд-материалы, продуктовая база, legal 18+ и отдельная заявка.",
-    partners:
-      "STILNO для опта и действующей розницы: продуктовая база, media kit, визуальная система, правила 18+ и B2B-заявка.",
+    quality:
+      "Качество STILNO: фабричное производство, контроль комплектующих, сборки, упаковки, маркировки и готовой партии для аудитории 18+.",
+    "catalog-index":
+      "Каталог STILNO: одна опубликованная модель STILNO CLICK ONE, характеристики, вкусовая линия и переход к заявке без дистанционной продажи.",
+    "catalog-product":
+      "STILNO CLICK ONE: модель электронных сигарет 18+ с Type-C, 10 мл, 20 мг/см³, 850 мА·ч и сдержанной упаковкой.",
+    request:
+      "Оставьте заявку STILNO для партнёрства, дистрибуции, розничной точки или другого обращения без дистанционной продажи продукции.",
     "media-kit":
       "B2B-пакет STILNO: презентация, продуктовая база, правила 18+ и материалы для опта и действующих розничных точек.",
+    "partners-geography":
+      "Интерактивная карта географии партнёров STILNO: регионы России, розовая подсветка и опубликованный контакт в Москве.",
     verify:
       "Проверка оригинальности STILNO: ввод кода с упаковки, подсказки по спорному результату и переход в поддержку.",
     support:
@@ -2808,10 +3123,18 @@ export function getMetadataPayload(page?: ResolvedPage) {
       "FAQ STILNO: ответы о продукте, B2B-запросах, запуске под брендом, рознице, поддержке и правовой информации 18+.",
   };
 
+  const canonicalPath = page.canonicalPath ?? page.pathname;
+
   return {
     title: titleMap[page.kind] ?? page.title,
     description: descriptionMap[page.kind] ?? page.description,
-    canonical: `${siteOrigin}/${page.pathname.join("/")}`,
+    canonical: `${siteOrigin}/${canonicalPath.join("/")}`,
     image: defaultImage,
+    openGraphTitle:
+      page.kind === "brand" ? "STILNO — премиальный бренд электронных сигарет" : undefined,
+    openGraphDescription:
+      page.kind === "brand"
+        ? "Фабричное производство, контроль качества, взрослый сдержанный дизайн и каталог с одной опубликованной моделью."
+        : undefined,
   };
 }

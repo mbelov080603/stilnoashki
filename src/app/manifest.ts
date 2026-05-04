@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: siteSettings.description,
     start_url: `${appBasePath}/`,
     display: "standalone",
-    background_color: "#050505",
-    theme_color: "#050505",
+    background_color: "#000000",
+    theme_color: "#000000",
     icons: [
       {
         src: `${appBasePath}/favicon.ico`,

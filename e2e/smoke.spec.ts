@@ -6,14 +6,20 @@ const publicPaths = [
   "/",
   "/contacts",
   "/about",
+  "/brand",
   "/responsible",
   "/products",
   "/products/nicotine",
   "/products/stilno-click-one",
   "/partners",
   "/partners/media-kit",
+  "/quality",
+  "/catalog",
+  "/catalog/stilno-click-one",
+  "/request",
   "/franchise",
   "/stores",
+  "/stores/map",
   "/stores/moscow",
   "/stores/moscow/stilno-vavilon",
   "/verify",
@@ -160,6 +166,18 @@ test("store locator shows the published Moscow point and route controls", async 
   await expect(page.getByRole("link", { name: "Позвонить" })).toHaveAttribute("href", "tel:+79992442836");
 });
 
+test("stores map shows the central office point and route controls", async ({ page }) => {
+  await seedConsent(page);
+  await page.goto("/stores/map");
+  await expect(page.locator("h1", { hasText: "Карта магазинов" })).toBeVisible();
+  await expect(page.getByText("Ulitsa Vavilova, 69/75, Moscow, 117335")).toBeVisible();
+  await expect(page.getByText("+7 999 244-28-36")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Построить маршрут" })).toHaveAttribute(
+    "href",
+    /yandex\.ru\/maps/,
+  );
+});
+
 test("retail lead is delivered to durable webhook and redirects to thank-you", async ({ page }, testInfo) => {
   webhookRequests.length = 0;
   await setLeadClientKey(page, `retail-${testInfo.project.name}`);
@@ -184,29 +202,34 @@ test("partner lead is delivered to durable webhook and redirects to thank-you", 
   webhookRequests.length = 0;
   await setLeadClientKey(page, `partner-${testInfo.project.name}`);
   await seedConsent(page);
-  await page.goto("/partners#partner-form");
+  await page.goto("/request#request-form");
   const form = page.locator("#partner-form form").first();
   await expect(form.locator('select[name="requestType"] option')).toHaveText([
     "Выберите вариант",
-    "опт",
-    "розница",
+    "Оптовое сотрудничество",
+    "Розничная точка",
+    "Дистрибуция",
+    "Партнёрство",
+    "Другое",
   ]);
   await backdateStartedAt(form);
   await form.locator('input[name="name"]').fill("B2B тест");
+  await form.locator('input[name="company"]').fill("STILNO smoke");
   await form.locator('input[name="phone"]').fill("+7 999 244-28-36");
   await form.locator('input[name="email"]').fill("partner@example.com");
   await form.locator('input[name="city"]').fill("Москва");
   await form.locator('select[name="requestType"]').selectOption("wholesale");
   await form.locator('input[name="ageConfirmed"]').check();
   await form.locator('input[name="personalData"]').check();
-  await form.getByRole("button", { name: "Отправить запрос" }).click();
+  await form.getByRole("button", { name: "Отправить заявку" }).click();
   await expect(page).toHaveURL(/\/thank-you\/partner/);
   await expect.poll(() => webhookRequests.length).toBe(1);
   expect(webhookRequests[0].leadId).toBeTruthy();
   expect(webhookRequests[0].type).toBe("partner");
-  expect(webhookRequests[0].pageUrl).toBe("/partners");
+  expect(webhookRequests[0].pageUrl).toBe("/request");
   expect(webhookRequests[0].fields).toMatchObject({
     name: "B2B тест",
+    company: "STILNO smoke",
     phone: "+7 999 244-28-36",
     email: "partner@example.com",
     city: "Москва",
@@ -218,18 +241,43 @@ test("partner lead is delivered to durable webhook and redirects to thank-you", 
   });
 });
 
-test("premium B2B sales positioning is visible on key pages", async ({ page }) => {
+test("multipage site positioning is visible on key pages", async ({ page }) => {
   await seedConsent(page);
 
   await page.goto("/");
-  await expect(page.locator("main")).toContainText("Чёрный силуэт, чистая упаковка, десять вкусов");
-  await expect(page.getByRole("link", { name: "Оставить B2B-запрос" }).first()).toBeVisible();
+  await expect(page.locator("h1")).toContainText("Официальный сайт STILNO");
+  await expect(page.locator("main")).toContainText("Выберите нужный раздел");
+  await expect(page.locator("main")).toContainText("Одна опубликованная модель STILNO CLICK ONE");
+  await expect(page.getByRole("link", { name: "Смотреть каталог" }).first()).toBeVisible();
+  await expect(page.locator("form")).toHaveCount(0);
+
+  await page.goto("/brand");
+  await expect(page.locator("h1")).toContainText("STILNO — премиальный бренд электронных сигарет");
+  await expect(page.locator("main")).toContainText("Бренд без визуального шума");
+  await expect(page.locator("main")).toContainText("Дизайн, который не кричит");
+  await expect(page.locator("main")).toContainText("Подробности разнесены по отдельным страницам");
   await expect(page.locator("form")).toHaveCount(0);
 
   await page.goto("/partners");
-  await expect(page.locator("h1")).toContainText("STILNO для опта и действующей розницы");
-  await expect(page.locator("main")).toContainText("Что получает B2B-контакт");
-  await expect(page.locator("main")).toContainText("Линия, которую легко представить в витрине");
+  await expect(page.locator("main")).toContainText("Бренд без визуального шума");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/brand");
+
+  await page.goto("/about");
+  await expect(page.locator("main")).toContainText("Бренд без визуального шума");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/brand");
+
+  await page.goto("/catalog");
+  await expect(page.locator("h1")).toContainText("Каталог STILNO");
+  await expect(page.locator("main")).toContainText("STILNO CLICK ONE");
+  await expect(page.getByRole("link", { name: "Подробнее" })).toHaveAttribute("href", "/catalog/stilno-click-one");
+
+  await page.goto("/catalog/stilno-click-one");
+  await expect(page.locator("h1")).toContainText("STILNO CLICK ONE");
+  await expect(page.locator("main")).toContainText("Обсудить сотрудничество или обращение");
+
+  await page.goto("/request");
+  await expect(page.locator("h1")).toContainText("Оставить заявку STILNO");
+  await expect(page.locator("#partner-form form")).toBeVisible();
 
   await page.goto("/franchise");
   await expect(page.locator("h1")).toContainText("Запуск STILNO в регионе");
@@ -237,12 +285,12 @@ test("premium B2B sales positioning is visible on key pages", async ({ page }) =
   await expect(page.locator('select[name="interestFormat"]')).toHaveCount(0);
 
   await page.goto("/products/stilno-click-one");
-  await expect(page.locator("main")).toContainText("Ассортимент STILNO CLICK ONE");
-  await expect(page.locator("main")).toContainText("Электронная сигарета STILNO призвана дарить эмоции");
-
-  await page.goto("/about");
-  await expect(page.locator("main")).toContainText("Brand manifesto");
-  await expect(page.locator("main")).toContainText("взрослая визуальная система");
+  await expect(page.locator("h1")).toContainText("STILNO CLICK ONE");
+  await expect(page.locator("main")).toContainText("Обсудить сотрудничество или обращение");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "http://localhost:3010/catalog/stilno-click-one",
+  );
 
   await page.goto("/gallery");
   await expect(page.locator("h1")).toContainText("Визуальный код STILNO");
@@ -290,14 +338,14 @@ test("lead API rejects invalid select values without webhook delivery", async ({
     },
     data: {
       type: "partner",
-      pageUrl: "/partners",
+      pageUrl: "/request",
       startedAt: Date.now() - 3000,
       fields: {
         name: "B2B тест",
         phone: "+7 999 244-28-36",
         email: "partner@example.com",
         city: "Москва",
-        requestType: "retail",
+        requestType: "invalid-kind",
       },
       consents: {
         ageConfirmed: true,
@@ -309,7 +357,7 @@ test("lead API rejects invalid select values without webhook delivery", async ({
   expect(response.status()).toBe(400);
   await expect(await response.json()).toEqual({
     ok: false,
-    message: "Неизвестное направление B2B-запроса.",
+    message: "Неизвестный тип запроса.",
   });
   expect(webhookRequests).toHaveLength(0);
 });
@@ -332,6 +380,7 @@ test("mobile menu opens key navigation", async ({ page, isMobile }) => {
   await page.getByRole("button", { name: "Открыть меню" }).click();
   const menu = page.getByRole("dialog", { name: "Мобильное меню" });
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole("link", { name: "Проверка" })).toBeVisible();
-  await expect(menu.getByRole("link", { name: "Где купить" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Бренд" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Каталог" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Оставить заявку" })).toBeVisible();
 });

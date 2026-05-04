@@ -118,30 +118,30 @@ export const companyDetails = {
 
 export const siteSettings = {
   brandName: companyDetails.brandName,
-  title: "STILNO CLICK ONE | официальный сайт бренда 18+",
+  title: "STILNO | официальный сайт бренда 18+",
   description:
-    "STILNO CLICK ONE: чёрный силуэт, чистая упаковка, десять вкусов, B2B-маршруты, запуск под брендом и правовая рамка 18+.",
+    "Официальный сайт STILNO: бренд 18+, качество, каталог с одной опубликованной моделью, проверка оригинальности и отдельная страница заявки.",
   primaryNav: [
-    { label: "Партнёрам", href: "/partners" },
-    { label: "Франчайзинг", href: "/franchise" },
-    { label: "Ассортимент", href: "/products/stilno-click-one" },
+    { label: "Бренд", href: "/brand" },
+    { label: "Качество", href: "/quality" },
+    { label: "Каталог", href: "/catalog" },
     { label: "Где купить", href: "/stores" },
+    { label: "Карта магазинов", href: "/stores/map" },
+    { label: "География партнёров", href: "/partners/geography" },
     { label: "Проверка", href: "/verify" },
-    { label: "Контакты", href: "/contacts" },
   ] satisfies NavItem[],
   primaryCta: {
-    label: "B2B-запрос",
-    href: "/partners#partner-form",
+    label: "Оставить заявку",
+    href: "/request",
     variant: "primary",
   } satisfies CtaLink,
   footerLinks: [
-    { label: "О бренде", href: "/about" },
+    { label: "Бренд", href: "/brand" },
     { label: "Галерея", href: "/gallery" },
     { label: "Вакансии", href: "/careers" },
     { label: "Материалы", href: "/articles" },
     { label: "Проверка оригинальности", href: "/verify" },
     { label: "Поддержка", href: "/support" },
-    { label: "B2B-пакет", href: "/partners/media-kit" },
     { label: "Вопросы и ответы", href: "/faq" },
     { label: "Политика обработки данных", href: "/legal/privacy" },
     { label: "Согласие на обработку данных", href: "/legal/consent" },
@@ -154,28 +154,27 @@ export const siteSettings = {
       label: "Бренд",
       links: [
         { label: "STILNO", href: "/" },
-        { label: "О бренде", href: "/about" },
-        { label: "Ассортимент", href: "/products/stilno-click-one" },
-        { label: "Галерея", href: "/gallery" },
+        { label: "Бренд", href: "/brand" },
+        { label: "Качество", href: "/quality" },
+        { label: "Каталог", href: "/catalog" },
       ],
     },
     {
-      label: "Маршруты",
+      label: "Обращения",
       links: [
-        { label: "Где купить", href: "/stores#stores-request" },
-        { label: "B2B-запрос", href: "/partners#partner-form" },
+        { label: "Оставить заявку", href: "/request" },
+        { label: "Карта магазинов", href: "/stores/map" },
+        { label: "География партнёров", href: "/partners/geography" },
+        { label: "Контакты", href: "/contacts" },
         { label: "Франчайзинг", href: "/franchise#franchise-form" },
-        { label: "Карьера", href: "/careers" },
       ],
     },
     {
-      label: "Материалы",
+      label: "Информация",
       links: [
-        { label: "Материалы", href: "/articles" },
-        { label: "B2B-пакет", href: "/partners/media-kit" },
-        { label: "Вопросы и ответы", href: "/faq" },
         { label: "Проверка оригинальности", href: "/verify" },
         { label: "Поддержка", href: "/support" },
+        { label: "Ответственное потребление", href: "/responsible" },
       ],
     },
     {
@@ -196,8 +195,8 @@ export const siteSettings = {
     {
       label: "Обращения",
       value:
-        "Страница контактов помогает выбрать нужный раздел: розничный запрос, B2B-запрос, запуск под брендом или карьера.",
-      href: "/contacts",
+        "Страница заявки помогает оставить обращение по партнёрству, дистрибуции, розничной точке или другому запросу.",
+      href: "/request",
     },
     {
       label: "B2B email",

@@ -153,7 +153,7 @@ export function MediaSlot({
   return (
     <figure
       className={classNames(
-        "relative w-full min-w-0 max-w-full overflow-hidden rounded-[1.35rem] border border-black/10 bg-[#f6f6f3] shadow-[0_18px_60px_rgba(0,0,0,0.08)]",
+        "relative w-full min-w-0 max-w-full overflow-hidden rounded-[1.35rem] border border-black/10 bg-white shadow-[0_18px_60px_rgba(0,0,0,0.08)]",
         aspectClass[aspect],
         className,
       )}

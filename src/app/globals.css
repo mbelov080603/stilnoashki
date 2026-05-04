@@ -2,16 +2,16 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --page: #f7f7f4;
-  --graphite: #080807;
-  --panel: #efeee8;
+  --foreground: #000000;
+  --page: #ffffff;
+  --graphite: #000000;
+  --panel: #ffffff;
   --line: rgba(0, 0, 0, 0.1);
-  --silver: #f1f0eb;
-  --silver-deep: #c8c4ba;
-  --champagne: #e7c89f;
-  --warm-paper: #fbfaf7;
-  --ink: #0a0a0a;
+  --silver: #ffffff;
+  --silver-deep: #000000;
+  --champagne: #ff6da8;
+  --warm-paper: #ffffff;
+  --ink: #000000;
 }
 
 @theme inline {
@@ -47,6 +47,7 @@ canvas {
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
@@ -68,7 +69,7 @@ textarea {
 
 ::selection {
   background: rgba(0, 0, 0, 0.12);
-  color: #050505;
+  color: #000000;
 }
 
 ::-webkit-scrollbar {
