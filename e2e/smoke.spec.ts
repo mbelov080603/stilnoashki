@@ -115,7 +115,14 @@ for (const path of publicPaths) {
     await seedConsent(page);
     await page.goto(path);
     await page.waitForTimeout(250);
-    await expect(page.locator("h1").first()).toBeVisible();
+    if (path === "/") {
+      await expect(page.locator('[data-testid="empty-home-page"]')).toBeVisible();
+      await expect(page.locator("main h1")).toHaveCount(0);
+    } else if (path === "/stores") {
+      await expect(page.locator("h1").first()).toContainText("Каталог STILNO");
+    } else {
+      await expect(page.locator("h1").first()).toBeVisible();
+    }
     await expect(page.locator("[data-media-slot]")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText(/Место для|Слот|будет добавлен|будет замен/);
     const metrics = await page.evaluate(() => ({
@@ -242,11 +249,11 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await seedConsent(page);
 
   await page.goto("/");
-  await expect(page.locator("h1")).toContainText("Официальный сайт STILNO");
-  await expect(page.locator("main")).toContainText("Выберите нужный раздел");
-  await expect(page.locator("main")).toContainText("Единственный раздел с подробным каталогом STILNO");
-  await expect(page.getByRole("link", { name: "Смотреть каталог" }).first()).toBeVisible();
-  await expect(page.locator("form")).toHaveCount(0);
+  await expect(page.locator('[data-testid="empty-home-page"]')).toBeVisible();
+  await expect(page.locator("main")).not.toContainText("Официальный сайт STILNO");
+  await expect(page.locator("main")).not.toContainText("Выберите нужный раздел");
+  await expect(page.locator("main")).not.toContainText("Единственный раздел с подробным каталогом STILNO");
+  await expect(page.locator("main form")).toHaveCount(0);
 
   await page.goto("/brand");
   await expect(page.locator("h1")).toContainText("STILNO — премиальный бренд электронных сигарет");
@@ -265,25 +272,34 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
 
   await page.goto("/stores");
   await expect(page.locator("h1")).toContainText("Каталог STILNO");
-  await expect(page.locator("main")).toContainText("Картриджи STILNO CLICK ONE");
-  await expect(page.locator("main")).toContainText("Устройство в сборе STILNO CLICK ONE");
+  await expect(page.locator("main")).toContainText("Картриджи");
+  await expect(page.locator("main")).toContainText("Устройство в сборе");
   await expect(page.locator("main")).toContainText("30 вкусов");
   await expect(page.locator("main")).not.toContainText("Текущая точка");
   await expect(page.locator("main form")).toHaveCount(0);
   await expect(page.locator('[data-testid="catalog-card-cartridges"]')).toBeVisible();
   await expect(page.locator('[data-testid="catalog-card-device-kit"]')).toBeVisible();
-  await expect(page.getByLabel("Выбрать вкус для картриджей")).toBeVisible();
-  await expect(page.getByLabel("Выбрать вкус для картриджей").locator("option")).toHaveCount(30);
-  await page.getByLabel("Выбрать вкус для картриджей").selectOption("kaktus-laym");
-  await page.getByRole("button", { name: "Увеличить количество" }).click();
-  await page.getByRole("button", { name: "Добавить в корзину" }).click();
+  await expect(page.locator('[data-testid^="catalog-flavor-card-"]')).toHaveCount(0);
+  await expect(page.locator('[data-testid="catalog-cart"]')).toHaveCount(0);
+  await page.locator('[data-testid="catalog-card-cartridges"]').click();
+  await expect(page.locator("main")).toContainText("Картриджи STILNO CLICK ONE");
+  await expect(page.locator('[data-testid^="catalog-flavor-card-"]')).toHaveCount(30);
+  await expect(page.locator('[data-testid="catalog-cart"]')).toBeVisible();
+  await expect(page.locator('[data-testid="catalog-model-specs"]')).toBeVisible();
+  await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("STILNO CLICK ONE")).toBeVisible();
+  await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("10–22 Вт")).toBeVisible();
+  await expect(page.locator('[data-testid="catalog-flavor-card-kaktus-laym"]')).toContainText("Кактус и лайм");
+  await page.getByLabel("Увеличить количество для Кактус Лайм").click();
+  await page.locator('[data-testid="catalog-add-cartridges-kaktus-laym"]').click();
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Картриджи");
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Кактус Лайм");
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("2 шт.");
   await page.locator('[data-testid="catalog-card-device-kit"]').click();
-  await expect(page.getByLabel("Выбрать вкус для устройства в сборе")).toBeVisible();
-  await page.getByLabel("Выбрать вкус для устройства в сборе").selectOption("vinograd-chernika-ice");
-  await page.getByRole("button", { name: "Добавить в корзину" }).click();
+  await expect(page.locator("main")).toContainText("Устройство в сборе STILNO CLICK ONE");
+  await expect(page.locator('[data-testid="catalog-flavor-card-vinograd-chernika-ice"]')).toContainText(
+    "Виноград, черника и холод",
+  );
+  await page.locator('[data-testid="catalog-add-device-kit-vinograd-chernika-ice"]').click();
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Устройство в сборе");
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Виноград Черника Айс");
 

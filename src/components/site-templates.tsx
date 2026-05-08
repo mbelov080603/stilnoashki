@@ -30,7 +30,6 @@ import {
   formSchemas,
   franchiseContent,
   franchisePillars,
-  homeContent,
   partnersLandingContent,
   responsibilityNotes,
   vacancies,
@@ -337,29 +336,6 @@ function ValueGrid({
         </article>
       ))}
     </div>
-  );
-}
-
-function SalesCtaBand({
-  eyebrow,
-  title,
-  body,
-  actions,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  actions: CtaLink[];
-}) {
-  return (
-    <section className="bg-[#000000] text-white">
-      <div className="mx-auto max-w-[90rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-          <SectionIntro tone="dark" contract={{ eyebrow, title, body }} />
-          <ActionGroup actions={actions} tone="dark" analyticsPrefix={`cta_${eyebrow}`} />
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -859,126 +835,10 @@ function LegalWarningStrip() {
 }
 
 export function HomeTemplate() {
-  const heroActions = homeContent.hero.actions;
-  const overviewCards = [
-    {
-      title: "Бренд",
-      body: "Подробный рассказ о взрослом характере, сдержанной визуальной системе и премиальной подаче STILNO.",
-      href: "/brand",
-      cta: "Открыть бренд",
-    },
-    {
-      title: "Каталог",
-      body: "Единственный раздел с подробным каталогом STILNO.",
-      href: "/stores",
-      cta: "Открыть каталог",
-    },
-    {
-      title: "Качество",
-      body: "Отдельная страница о фабричной сборке, контроле комплектующих, упаковки, маркировки и партии.",
-      href: "/quality",
-      cta: "Открыть качество",
-    },
-    {
-      title: "Заявка",
-      body: "Отдельная форма для партнёрства, дистрибуции, розничной точки или другого обращения.",
-      href: "/request",
-      cta: "Оставить заявку",
-    },
-  ];
-  const routeCards = [
-    {
-      title: "Где купить",
-      body: "Опубликованная розничная точка, телефон, маршрут и розничный запрос находятся внутри каталога.",
-      href: "/stores",
-      cta: "Открыть каталог",
-    },
-    {
-      title: "Проверка",
-      body: "Проверка оригинальности работает через код с упаковки и не смешивается с каталогом или заявкой.",
-      href: "/verify",
-      cta: "Проверить код",
-    },
-    {
-      title: "Поддержка",
-      body: "Вопросы по качеству, оригинальности, хранению и обращению вынесены в поддержку.",
-      href: "/support",
-      cta: "Открыть поддержку",
-    },
-  ];
-
   return (
-    <>
+    <section className="min-h-[calc(100vh-8rem)] bg-white" data-testid="empty-home-page">
       <StructuredData data={buildJsonLd()} />
-
-      <EditorialHero
-        contract={{ ...homeContent.hero, actions: heroActions }}
-        media={
-          <MediaSlot
-            slotId="home-hero"
-            title="STILNO"
-            note="Брендовая подача и маркировка в первом экране."
-            aspect="wide"
-            className="min-h-[19rem] border-white/10 sm:min-h-[28rem] lg:aspect-[16/11] xl:min-h-[34rem]"
-          />
-        }
-      />
-
-      <section className="border-y border-black/10 bg-white">
-        <div className="mx-auto max-w-[90rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-18">
-          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
-            <SectionIntro contract={homeContent.routingSection} />
-            <div className="grid gap-4 md:grid-cols-2">
-              {overviewCards.map((card) => (
-                <article key={card.title} className="flex min-h-[15rem] flex-col rounded-[1rem] border border-black/10 bg-white p-5 sm:p-6">
-                  <h2 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{card.title}</h2>
-                  <p className="mt-4 flex-1 text-sm leading-7 text-black/60">{card.body}</p>
-                  <div className="mt-5">
-                    <ButtonLink href={card.href} variant="secondary" tone="light" analytics={`home_overview_${card.title}`}>
-                      {card.cta}
-                    </ButtonLink>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-start">
-            <SectionIntro contract={homeContent.storesSection} />
-            <div className="grid gap-4 lg:grid-cols-3">
-              {routeCards.map((card) => (
-                <article key={card.title} className="flex min-h-[15rem] flex-col rounded-[1rem] border border-black/10 bg-white p-5 sm:p-6">
-                  <h2 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-black">{card.title}</h2>
-                  <p className="mt-4 flex-1 text-sm leading-7 text-black/60">{card.body}</p>
-                  <div className="mt-5">
-                    <ButtonLink href={card.href} variant="secondary" tone="light" analytics={`home_route_${card.title}`}>
-                      {card.cta}
-                    </ButtonLink>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div className="mt-10">
-            <LegalWarningStrip />
-          </div>
-        </div>
-      </section>
-
-      <SalesCtaBand
-        eyebrow="STILNO"
-        title="Оставьте заявку на отдельной странице"
-        body="Форма не находится на главной странице. Для партнёрства, дистрибуции, розничной точки или другого обращения используйте единый маршрут заявки."
-        actions={[
-          { label: "Оставить заявку", href: "/request", variant: "primary" },
-        ]}
-      />
-
-    </>
+    </section>
   );
 }
 
@@ -988,14 +848,10 @@ function StoresIndexTemplate(page: ResolvedPage) {
       <StructuredData data={buildJsonLd(page)} />
       <section className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-5 py-14 sm:px-6 lg:px-8">
         <div className="w-full">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-semibold leading-none tracking-normal text-black sm:text-6xl">
-              Каталог STILNO
-            </h1>
-          </div>
+          <h1 className="sr-only">Каталог STILNO</h1>
 
-          <div className="mt-10">
-            <CatalogAssortmentCards variants={featuredProduct.variants} />
+          <div>
+            <CatalogAssortmentCards product={featuredProduct} />
           </div>
         </div>
       </section>
