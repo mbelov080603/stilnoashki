@@ -437,7 +437,7 @@ export const routeTaxonomy = [
     label: "Розничный запрос",
     title: "Розничный запрос",
     body: "Наличие в городе, опубликованная точка, маршрут и другие розничные вопросы.",
-    href: "/stores#stores-request",
+    href: "/stores/moscow/stilno-vavilon",
     cta: "Оставить розничный запрос",
     cardLabel: "адрес · наличие · город",
     note: "Запросы покупателей и уточнение опубликованной точки.",
@@ -611,7 +611,7 @@ export const storesContent = {
     body:
       "На этой странице собраны модельная информация, характеристики, вкусы, предупреждения и розничный маршрут STILNO. Сайт не оформляет дистанционную продажу.",
     actions: [
-      { label: "Перейти к запросу", href: "#stores-request", variant: "primary" },
+      { label: "Перейти к точке", href: "/stores/moscow/stilno-vavilon", variant: "primary" },
       { label: "Оставить заявку", href: "/request", variant: "secondary" },
     ],
   } satisfies PageHeroContract,
@@ -806,7 +806,7 @@ export const contactsPageContent = {
     body:
       "Контакты работают как маршрутизатор: выберите розничный запрос, заявку STILNO, запуск под брендом или карьерный раздел и отправьте форму там, где находится смысл обращения.",
     actions: [
-      { label: "Розничный запрос", href: "/stores#stores-request", variant: "primary" },
+      { label: "Розничный запрос", href: "/stores/moscow/stilno-vavilon", variant: "primary" },
       { label: "Заявка STILNO", href: "/request", variant: "secondary" },
       { label: "Запуск под брендом", href: "/franchise#franchise-form", variant: "secondary" },
       { label: "Карьера", href: "/careers", variant: "secondary" },

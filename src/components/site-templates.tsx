@@ -33,8 +33,6 @@ import {
   homeContent,
   partnersLandingContent,
   responsibilityNotes,
-  stores,
-  storesContent,
   vacancies,
 } from "@/lib/site-content";
 import {
@@ -44,7 +42,7 @@ import {
   getStorePath,
   getVacancyPath,
 } from "@/lib/site-routing";
-import type { CtaLink, PageHeroContract, PageStat, Product, ResolvedPage, SectionContract } from "@/lib/site-types";
+import type { CtaLink, PageHeroContract, PageStat, ResolvedPage, SectionContract } from "@/lib/site-types";
 
 function classNames(...values: Array<string | false | undefined>) {
   return values.filter(Boolean).join(" ");
@@ -307,43 +305,6 @@ function EditorialHero({
         {children}
       </div>
     </section>
-  );
-}
-
-function FeatureRail({
-  items,
-  tone = "light",
-}: {
-  items: Array<{ value: string; label: string; note: string }>;
-  tone?: "light" | "dark";
-}) {
-  return (
-    <div
-      className={classNames(
-        "grid overflow-hidden rounded-[1.2rem] border md:grid-cols-3",
-        tone === "dark" ? "border-white/12 bg-white/[0.06]" : "border-black/10 bg-white",
-      )}
-    >
-      {items.map((item, index) => (
-        <div
-          key={`${item.value}-${item.label}`}
-          className={classNames(
-            "p-5",
-            index > 0 && (tone === "dark" ? "border-t border-white/10 md:border-l md:border-t-0" : "border-t border-black/10 md:border-l md:border-t-0"),
-          )}
-        >
-          <p className={classNames("text-xl font-semibold tracking-[-0.04em]", tone === "dark" ? "text-white" : "text-black")}>
-            {item.value}
-          </p>
-          <p className={classNames("mt-2 text-xs uppercase tracking-[0.16em]", tone === "dark" ? "text-white/42" : "text-black/42")}>
-            {item.label}
-          </p>
-          <p className={classNames("mt-3 text-sm leading-6", tone === "dark" ? "text-white/58" : "text-black/56")}>
-            {item.note}
-          </p>
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -1021,162 +982,24 @@ export function HomeTemplate() {
   );
 }
 
-function StoresCatalogSection({ product }: { product: Product }) {
-  const primaryWarnings = product.warnings.slice(0, 4);
-
-  return (
-    <section id="catalog-details" className="bg-[var(--color-page)]">
-      <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-8 xl:grid-cols-[0.92fr_1.08fr] xl:items-start">
-          <div className="grid gap-4 xl:sticky xl:top-28">
-            <CatalogProductImage src={mediaAssets.product} alt="Упаковка STILNO CLICK ONE" priority />
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[mediaAssets.product, mediaAssets.lobbyProduct, mediaAssets.productCloseVishnya].map((src, index) => (
-                <div key={src} className="relative min-h-[8rem] overflow-hidden rounded-[0.85rem] border border-black/10 bg-[#000000]">
-                  <Image
-                    src={assetPath(src)}
-                    alt={index === 0 ? "Упаковка STILNO CLICK ONE" : "Продуктовая подача STILNO CLICK ONE"}
-                    fill
-                    sizes="12rem"
-                    className="object-contain p-3"
-                    loading={index === 0 ? "eager" : "lazy"}
-                    unoptimized
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-5">
-            <div className="rounded-[1rem] border border-black/10 bg-white p-6 shadow-[0_24px_80px_rgba(0,0,0,0.06)] sm:p-8">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Ассортимент</p>
-              <h2 className="mt-4 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-black sm:text-5xl">
-                Картриджи и устройство в сборе
-              </h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-black/62">
-                {product.longDescription} В каталоге показаны две карточки ассортимента STILNO CLICK ONE с выбором вкуса внутри каждой карточки.
-              </p>
-            </div>
-
-            <CatalogAssortmentCards variants={product.variants} />
-
-            <div className="grid gap-5 lg:grid-cols-2">
-              <article className="rounded-[1rem] border border-black/10 bg-white p-6 sm:p-7">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Факты</p>
-                <div className="mt-5 divide-y divide-black/10">
-                  {product.facts.map((fact) => (
-                    <p key={fact} className="py-3 text-sm leading-6 text-black/62">
-                      {fact}
-                    </p>
-                  ))}
-                </div>
-              </article>
-              <article className="rounded-[1rem] border border-black/10 bg-white p-6 sm:p-7">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">Предупреждения</p>
-                <div className="mt-5 divide-y divide-black/10">
-                  {primaryWarnings.map((warning) => (
-                    <p key={warning} className="py-3 text-sm leading-6 text-black/62">
-                      {warning}
-                    </p>
-                  ))}
-                </div>
-              </article>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function StoresIndexTemplate(page: ResolvedPage) {
-  const store = stores[0];
-  if (!store) {
-    notFound();
-  }
-
   return (
-    <>
+    <section className="min-h-[calc(100vh-8rem)] bg-white text-black">
       <StructuredData data={buildJsonLd(page)} />
-      <EditorialHero
-        contract={storesContent.hero}
-        media={
-          <MediaSlot
-            slotId="stores-hero"
-            title="Каталог STILNO"
-            note="Визуал каталога и розничного маршрута STILNO."
-            aspect="wide"
-            className="min-h-[20rem] border-white/10 sm:min-h-[28rem] lg:aspect-[16/11] xl:min-h-[34rem]"
-          />
-        }
-      />
-
-      <StoresCatalogSection product={featuredProduct} />
-
-      <section className="bg-[var(--color-page)]">
-        <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 xl:grid-cols-[0.8fr_1.2fr] xl:items-start">
-          <div>
-            <SectionIntro contract={storesContent.statusSection} />
-            <div className="mt-8">
-              <FeatureRail items={storesContent.statusCards} />
-            </div>
-          </div>
-          <div className="rounded-[1.2rem] border border-black/10 bg-white p-6 sm:p-8">
-            <p className="text-xs uppercase tracking-[0.22em] text-black/36">Текущая точка</p>
-            <h2 className="mt-4 text-4xl font-semibold leading-tight tracking-[-0.05em] text-black">
-              {store.title}
-            </h2>
-            <div className="mt-6 divide-y divide-black/10">
-              <p className="py-4 text-sm leading-6 text-black/64">Город: Москва</p>
-              <p className="py-4 text-sm leading-6 text-black/64">Адрес: {store.address}</p>
-              <p className="py-4 text-sm leading-6 text-black/64">Телефон: {store.phone}</p>
-              <p className="py-4 text-sm leading-6 text-black/64">{store.inventoryStatus}</p>
-            </div>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              {store.directionsHref ? (
-                <ButtonLink href={store.directionsHref} target="_blank" variant="secondary" tone="light" analytics="stores_route">
-                  Построить маршрут
-                </ButtonLink>
-              ) : null}
-              <ButtonLink href={`tel:${store.phone.replace(/[^\d+]/g, "")}`} variant="secondary" tone="light" analytics="stores_call">
-                Позвонить
-              </ButtonLink>
-              <ButtonLink href="#stores-request" tone="light" analytics="stores_request">
-                Оставить запрос
-              </ButtonLink>
-            </div>
-          </div>
+      <section className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-5 py-14 sm:px-6 lg:px-8">
+        <div className="w-full">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-4xl font-semibold leading-none tracking-normal text-black sm:text-6xl">
+              Каталог STILNO
+            </h1>
           </div>
 
-        <div id="stores-request" className="mt-14 grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
-          <LeadForm type="retail" schema={formSchemas.retailBase} />
-          <div className="grid gap-4">
-            <MediaSlot
-              slotId="stores-request"
-              title="Фото для формы запроса"
-              note="Визуал формы розничного запроса."
-              aspect="wide"
-              className="min-h-[18rem]"
-            />
-            <div className="rounded-[1.2rem] border border-black/10 bg-white p-6">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/36">{storesContent.supportTitle}</p>
-              <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.supportBody}</p>
-            </div>
-            <div className="rounded-[1.2rem] border border-black/10 bg-white p-6 text-black">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/42">Дисклеймер</p>
-              <p className="mt-4 text-sm leading-7 text-black/64">{storesContent.disclaimer}</p>
-              <div className="mt-6">
-                <ButtonLink href="/request" variant="secondary" tone="light" analytics="stores_request_redirect">
-                  Оставить заявку
-                </ButtonLink>
-              </div>
-            </div>
+          <div className="mt-10">
+            <CatalogAssortmentCards variants={featuredProduct.variants} />
           </div>
         </div>
-      </div>
       </section>
-    </>
+    </section>
   );
 }
 
@@ -1194,6 +1017,8 @@ function CityTemplate(page: ResolvedPage) {
   if (!city) {
     notFound();
   }
+  const firstStore = page.stores?.[0];
+  const retailRequestHref = firstStore ? getStorePath(firstStore) : "/request";
 
   return (
     <section className="bg-[var(--color-page)]">
@@ -1205,7 +1030,7 @@ function CityTemplate(page: ResolvedPage) {
             eyebrow: "Город",
             title: city.name,
             body: city.spotlight,
-            actions: [{ label: "Оставить запрос", href: "/stores#stores-request", variant: "primary" }],
+            actions: [{ label: "Оставить запрос", href: retailRequestHref, variant: "primary" }],
           }}
           compact
         />
@@ -1219,7 +1044,7 @@ function CityTemplate(page: ResolvedPage) {
                 <ButtonLink href={getStorePath(store)} variant="secondary" tone="light" analytics="city_store_open">
                   Подробнее
                 </ButtonLink>
-                <ButtonLink href="/stores#stores-request" tone="light" analytics="city_store_request">
+                <ButtonLink href={getStorePath(store)} tone="light" analytics="city_store_request">
                   Уточнить наличие
                 </ButtonLink>
               </div>
@@ -1581,22 +1406,6 @@ function QualityTemplate(page: ResolvedPage) {
         </div>
       </section>
     </>
-  );
-}
-
-function CatalogProductImage({ src, alt, priority = false }: { src: string; alt: string; priority?: boolean }) {
-  return (
-    <div className="relative min-h-[16rem] overflow-hidden rounded-[0.95rem] border border-black/10 bg-[#000000] sm:min-h-[24rem]">
-      <Image
-        src={assetPath(src)}
-        alt={alt}
-        fill
-        sizes="(min-width: 1024px) 36rem, 100vw"
-        className="object-contain p-4 sm:p-7"
-        loading={priority ? "eager" : "lazy"}
-        unoptimized
-      />
-    </div>
   );
 }
 

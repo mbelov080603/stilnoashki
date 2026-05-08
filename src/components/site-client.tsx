@@ -1846,44 +1846,32 @@ export function LeadForm({
 
 type AssortmentCard = {
   id: "cartridges" | "device-kit";
-  eyebrow: string;
   title: string;
-  description: string;
   selectLabel: string;
-  specs: Array<{ label: string; value: string }>;
+  cartLabel: string;
 };
 
 const assortmentCards: AssortmentCard[] = [
   {
     id: "cartridges",
-    eyebrow: "Картриджи",
     title: "Картриджи STILNO CLICK ONE",
-    description:
-      "Сменные картриджи для линейки STILNO CLICK ONE. Вкус выбирается прямо в карточке из актуальной таблицы ассортимента.",
     selectLabel: "Выбрать вкус для картриджей",
-    specs: [
-      { label: "Формат", value: "сменный картридж" },
-      { label: "Объём", value: "10 мл / 10 см³" },
-      { label: "Крепость", value: "20 мг/см³" },
-      { label: "Вкусы", value: "30 вариантов" },
-    ],
+    cartLabel: "Картриджи",
   },
   {
     id: "device-kit",
-    eyebrow: "Устройство в сборе",
     title: "Устройство в сборе STILNO CLICK ONE",
-    description:
-      "Готовый комплект STILNO CLICK ONE: устройство и выбранный картридж. Вкус комплекта выбирается в этой карточке.",
     selectLabel: "Выбрать вкус для устройства в сборе",
-    specs: [
-      { label: "Комплект", value: "устройство + картридж" },
-      { label: "Аккумулятор", value: "850 мА·ч" },
-      { label: "Порт", value: "Type-C" },
-      { label: "Мощность", value: "10–22 Вт" },
-      { label: "Ресурс", value: "до 15 000 затяжек*" },
-    ],
+    cartLabel: "Устройство в сборе",
   },
 ];
+
+type CartItem = {
+  id: string;
+  product: string;
+  flavor: string;
+  quantity: number;
+};
 
 function getVariantGroups(variants: ProductVariant[]) {
   const groupMap = new Map<string, ProductVariant[]>();
@@ -1899,95 +1887,165 @@ function getVariantGroups(variants: ProductVariant[]) {
 
 export function CatalogAssortmentCards({ variants }: { variants: ProductVariant[] }) {
   const defaultVariantId = variants[0]?.id ?? "";
-  const [selected, setSelected] = useState<Record<AssortmentCard["id"], string>>({
-    cartridges: defaultVariantId,
-    "device-kit": defaultVariantId,
-  });
+  const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"]>("cartridges");
+  const [selectedVariantId, setSelectedVariantId] = useState(defaultVariantId);
+  const [quantity, setQuantity] = useState(1);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
+  const activeCard = assortmentCards.find((card) => card.id === activeCardId) ?? assortmentCards[0];
+  const selectedVariant = variants.find((variant) => variant.id === selectedVariantId) ?? variants[0];
+  const cartTotal = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  function addToCart() {
+    if (!selectedVariant) {
+      return;
+    }
+
+    const itemId = `${activeCard.id}-${selectedVariant.id}`;
+    setCart((current) => {
+      const existing = current.find((item) => item.id === itemId);
+      if (existing) {
+        return current.map((item) =>
+          item.id === itemId ? { ...item, quantity: item.quantity + quantity } : item,
+        );
+      }
+
+      return [
+        ...current,
+        {
+          id: itemId,
+          product: activeCard.cartLabel,
+          flavor: selectedVariant.title,
+          quantity,
+        },
+      ];
+    });
+  }
+
+  function updateQuantity(nextQuantity: number) {
+    setQuantity(Math.min(99, Math.max(1, nextQuantity)));
+  }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-2">
-      {assortmentCards.map((card) => {
-        const selectedId = selected[card.id] || defaultVariantId;
-        const selectedVariant = variants.find((variant) => variant.id === selectedId) ?? variants[0];
+    <div className="mx-auto grid w-full max-w-4xl gap-8">
+      <div className="mx-auto grid w-full max-w-3xl gap-3 sm:grid-cols-2">
+        {assortmentCards.map((card) => {
+          const isActive = activeCard.id === card.id;
 
-        return (
-          <article
-            key={card.id}
-            data-testid={`catalog-card-${card.id}`}
-            className="flex min-h-[36rem] flex-col rounded-[1rem] border border-black/10 bg-white p-6 text-black sm:p-7"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">{card.eyebrow}</p>
-                <h3 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] text-black">
-                  {card.title}
-                </h3>
-              </div>
-              <span className="rounded-full border border-black/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-black/48">
+          return (
+            <button
+              key={card.id}
+              type="button"
+              data-testid={`catalog-card-${card.id}`}
+              aria-pressed={isActive}
+              onClick={() => setActiveCardId(card.id)}
+              style={{
+                backgroundColor: isActive ? "#000000" : "#ffffff",
+                borderColor: isActive ? "#000000" : "rgba(0, 0, 0, 0.12)",
+                color: isActive ? "#ffffff" : "#000000",
+              }}
+              className="min-h-36 cursor-pointer rounded-[0.85rem] border px-5 py-6 text-center transition hover:border-black/40"
+            >
+              <span
+                className="text-xs uppercase tracking-[0.16em]"
+                style={{ color: isActive ? "rgba(255, 255, 255, 0.48)" : "rgba(0, 0, 0, 0.36)" }}
+              >
                 {variants.length} вкусов
               </span>
-            </div>
+              <span className="mt-4 block text-2xl font-semibold leading-tight tracking-normal">{card.title}</span>
+            </button>
+          );
+        })}
+      </div>
 
-            <p className="mt-4 text-sm leading-7 text-black/62">{card.description}</p>
-
-            <dl className="mt-6 grid gap-px overflow-hidden rounded-[0.9rem] border border-black/10 bg-black/10 sm:grid-cols-2">
-              {card.specs.map((spec) => (
-                <div key={`${card.id}-${spec.label}`} className="bg-white p-4">
-                  <dt className="text-[0.64rem] uppercase tracking-[0.14em] text-black/38">{spec.label}</dt>
-                  <dd className="mt-2 text-sm font-semibold leading-5 text-black">
-                    {spec.label === "Вкусы" ? `${variants.length} вариантов` : spec.value}
-                  </dd>
-                </div>
+      <div className="mx-auto grid w-full max-w-3xl gap-4 rounded-[0.85rem] border border-black/10 bg-white p-5 sm:p-6">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+          <label className="grid gap-2 text-sm font-medium text-black/70">
+            {activeCard.selectLabel}
+            <select
+              aria-label={activeCard.selectLabel}
+              value={selectedVariantId}
+              onChange={(event) => setSelectedVariantId(event.target.value)}
+              className="min-h-12 rounded-[0.65rem] border border-black/12 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+            >
+              {groupedVariants.map(({ group, items }) => (
+                <optgroup key={group} label={`${group} (${items.length})`}>
+                  {items.map((variant) => (
+                    <option key={variant.id} value={variant.id}>
+                      {variant.title}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
-            </dl>
+            </select>
+          </label>
 
-            <label className="mt-6 grid gap-2 text-sm font-medium text-black/70">
-              {card.selectLabel}
-              <select
-                aria-label={card.selectLabel}
-                value={selectedId}
-                onChange={(event) => setSelected((current) => ({ ...current, [card.id]: event.target.value }))}
-                className="min-h-12 rounded-[0.85rem] border border-black/12 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+          <div className="grid gap-2">
+            <p className="text-sm font-medium text-black/70">Количество</p>
+            <div className="grid h-12 grid-cols-[3rem_4rem_3rem] overflow-hidden rounded-[0.65rem] border border-black/12 bg-white">
+              <button
+                type="button"
+                aria-label="Уменьшить количество"
+                onClick={() => updateQuantity(quantity - 1)}
+                className="text-xl leading-none text-black transition hover:bg-black hover:text-white"
               >
-                {groupedVariants.map(({ group, items }) => (
-                  <optgroup key={`${card.id}-${group}`} label={`${group} (${items.length})`}>
-                    {items.map((variant) => (
-                      <option key={`${card.id}-${variant.id}`} value={variant.id}>
-                        {variant.title}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </label>
+                -
+              </button>
+              <input
+                aria-label="Количество"
+                type="number"
+                min={1}
+                max={99}
+                value={quantity}
+                onChange={(event) => updateQuantity(Number(event.target.value) || 1)}
+                className="border-x border-black/12 text-center text-sm font-semibold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <button
+                type="button"
+                aria-label="Увеличить количество"
+                onClick={() => updateQuantity(quantity + 1)}
+                className="text-xl leading-none text-black transition hover:bg-black hover:text-white"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
 
-            {selectedVariant ? (
-              <div className="mt-auto pt-6">
-                <div className="rounded-[0.95rem] border border-black/10 bg-[#f4f3ef] p-5">
-                  <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-black/42">
-                    Выбранный вкус
-                  </p>
-                  <p className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.035em] text-black">
-                    {selectedVariant.title}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/58">
-                      {selectedVariant.group}
-                    </span>
-                    <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/58">
-                      {selectedVariant.nicotineStrength}
-                    </span>
-                    <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/58">
-                      {selectedVariant.status}
-                    </span>
-                  </div>
+        <button
+          type="button"
+          onClick={addToCart}
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-black px-6 text-sm font-semibold text-white transition hover:bg-black/84"
+        >
+          Добавить в корзину
+        </button>
+      </div>
+
+      <div
+        aria-live="polite"
+        data-testid="catalog-cart"
+        className="mx-auto w-full max-w-3xl rounded-[0.85rem] border border-black/10 bg-white p-5 sm:p-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-2xl font-semibold tracking-normal text-black">Корзина</h2>
+          <span className="text-sm text-black/48">{cartTotal ? `${cartTotal} шт.` : "пусто"}</span>
+        </div>
+        {cart.length ? (
+          <div className="mt-5 divide-y divide-black/10">
+            {cart.map((item) => (
+              <div key={item.id} className="grid gap-2 py-4 sm:grid-cols-[1fr_auto] sm:items-center">
+                <div>
+                  <p className="text-sm font-semibold text-black">{item.product}</p>
+                  <p className="mt-1 text-sm text-black/54">{item.flavor}</p>
                 </div>
+                <p className="text-sm font-semibold text-black">{item.quantity} шт.</p>
               </div>
-            ) : null}
-          </article>
-        );
-      })}
+            ))}
+          </div>
+        ) : (
+          <p className="mt-5 text-sm leading-6 text-black/54">Выберите карточку, вкус и количество.</p>
+        )}
+      </div>
     </div>
   );
 }
