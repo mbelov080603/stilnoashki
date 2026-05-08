@@ -1,10 +1,8 @@
 import { articles, cities, legalPages, vacancies, stores } from "@/lib/site-content";
-import { featuredProduct, productCategories, products } from "@/lib/catalog-data";
 import { siteOrigin } from "@/lib/site-config";
 import type { LegalPage, ResolvedPage, Store, Vacancy } from "@/lib/site-types";
 
 export const cityMap = new Map(cities.map((city) => [city.id, city]));
-export const categoryMap = new Map(productCategories.map((category) => [category.id, category]));
 
 export const storesByCityId = new Map<string, Store[]>();
 for (const store of stores) {
@@ -13,19 +11,8 @@ for (const store of stores) {
   storesByCityId.set(store.cityId, bucket);
 }
 
-export const productsByCategoryId = new Map<string, typeof products>();
-for (const product of products) {
-  const bucket = productsByCategoryId.get(product.categoryId) ?? [];
-  bucket.push(product);
-  productsByCategoryId.set(product.categoryId, bucket);
-}
-
 export function getCityStoreCount(cityId: string) {
   return storesByCityId.get(cityId)?.length ?? 0;
-}
-
-export function getCategoryProducts(categoryId: string) {
-  return productsByCategoryId.get(categoryId) ?? [];
 }
 
 export function getStorePath(store: Store) {
@@ -35,14 +22,6 @@ export function getStorePath(store: Store) {
 
 export function getVacancyPath(vacancy: Vacancy) {
   return `/careers/${vacancy.slug}`;
-}
-
-export function getProductCategoryPath(category: { slug: string }) {
-  return `/products/${category.slug}`;
-}
-
-export function getProductPath(product: { slug: string }) {
-  return `/catalog/${product.slug}`;
 }
 
 export function getArticlePath(article: { slug: string }) {
@@ -60,14 +39,12 @@ export function getBreadcrumbs(pathname: string[], title: string) {
   }
 
   const labelMap = new Map<string, string>([
-    ["stores", "Где купить"],
+    ["stores", "Каталог"],
     ["map", "Карта магазинов"],
     ["brand", "Бренд"],
     ["about", "О бренде"],
     ["gallery", "Галерея"],
-    ["products", "Ассортимент"],
     ["quality", "Качество"],
-    ["catalog", "Каталог"],
     ["partners", "Партнёрам"],
     ["geography", "География партнёров"],
     ["request", "Заявка"],
@@ -101,9 +78,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     if (!second) {
       return {
         kind: "stores-index",
-        title: "Где купить STILNO",
+        title: "Каталог STILNO",
         description:
-          "Опубликованная точка STILNO в Москве, телефон, маршрут и форма розничного запроса без дистанционной продажи.",
+          "Каталог STILNO с модельной информацией, характеристиками, вкусами, предупреждениями и розничным маршрутом без дистанционной продажи.",
         pathname: slug,
         stores,
       };
@@ -189,7 +166,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     return {
       kind: "gallery",
       title: "Визуальный код STILNO",
-      description: "Корпус, упаковка, вкусовые метки, предупреждения 18+ и retail-среда текущей линии STILNO CLICK ONE.",
+      description: "Визуальная система STILNO, предупреждения 18+ и retail-среда без дублирования каталога.",
       pathname: slug,
     };
   }
@@ -205,86 +182,6 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       description:
         "Фабричное производство STILNO, контроль комплектующих, сборки, упаковки, маркировки и готовой партии для взрослой аудитории 18+.",
       pathname: slug,
-    };
-  }
-
-  if (section === "catalog") {
-    if (!second) {
-      return {
-        kind: "catalog-index",
-        title: "Каталог STILNO",
-        description:
-          "Каталог STILNO с одной опубликованной моделью STILNO CLICK ONE: характеристики, вкусовая линия и переход к заявке без дистанционной продажи.",
-        pathname: slug,
-        products: [featuredProduct],
-      };
-    }
-
-    const product = products.find((item) => item.slug === second);
-    if (!product || third) {
-      return null;
-    }
-
-    return {
-      kind: "catalog-product",
-      title: product.title,
-      description:
-        "STILNO CLICK ONE: опубликованная модель электронных сигарет 18+ с Type-C, 10 мл, 20 мг/см³, 850 мА·ч и сдержанной упаковкой.",
-      pathname: slug,
-      product,
-      category: categoryMap.get(product.categoryId),
-    };
-  }
-
-  if (section === "products") {
-    if (!second) {
-      return {
-        kind: "products-index",
-        title: "Ассортимент STILNO",
-        description:
-          "Текущая линия STILNO CLICK ONE: вкусы, характеристики, упаковка и подтверждённая 18+ маркировка.",
-        pathname: slug,
-        products,
-      };
-    }
-
-    const category = productCategories.find((item) => item.slug === second);
-    if (category) {
-      return {
-        kind: "product-category",
-        title: category.title,
-        description: category.shortDescription,
-        pathname: slug,
-        category,
-        products: getCategoryProducts(category.id),
-      };
-    }
-
-    const product = products.find((item) => item.slug === second);
-    if (!product) {
-      return null;
-    }
-
-    if (product.slug === featuredProduct.slug) {
-      return {
-        kind: "catalog-product",
-        title: product.title,
-        description:
-          "STILNO CLICK ONE: опубликованная модель электронных сигарет 18+ с Type-C, 10 мл, 20 мг/см³, 850 мА·ч и сдержанной упаковкой.",
-        pathname: slug,
-        canonicalPath: ["catalog", product.slug],
-        product,
-        category: categoryMap.get(product.categoryId),
-      };
-    }
-
-    return {
-      kind: "product",
-      title: product.title,
-      description: product.shortDescription,
-      pathname: slug,
-      product,
-      category: categoryMap.get(product.categoryId),
     };
   }
 
@@ -342,7 +239,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "verify",
       title: "Проверка оригинальности STILNO",
       description:
-        "Проверка кода с упаковки STILNO CLICK ONE, статус оригинальности и безопасный маршрут обращения.",
+        "Проверка кода с упаковки STILNO, статус оригинальности и безопасный маршрут обращения.",
       pathname: slug,
     };
   }
@@ -362,7 +259,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "responsible",
       title: "Ответственное потребление",
       description:
-        "Правовая информация STILNO: 18+, предупреждения, состав, условия хранения и отдельная продуктовая коммуникация для никотиновой категории.",
+        "Правовая информация STILNO: 18+, предупреждения, условия хранения и ответственная коммуникация для никотиновой категории.",
       pathname: slug,
     };
   }
@@ -372,7 +269,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       kind: "franchise",
       title: "Запуск STILNO в регионе",
       description:
-        "Запуск под брендом STILNO в регионе: город, команда, бренд-материалы, продуктовая база, legal 18+ и отдельная заявка.",
+        "Запуск под брендом STILNO в регионе: город, команда, бренд-материалы, legal 18+ и отдельная заявка.",
       pathname: slug,
     };
   }
@@ -486,11 +383,6 @@ export function getAllStaticPaths() {
     ["brand"],
     ["gallery"],
     ["quality"],
-    ["catalog"],
-    ["catalog", featuredProduct.slug],
-    ["products"],
-    ...productCategories.map((category) => ["products", category.slug]),
-    ...products.map((product) => ["products", product.slug]),
     ["partners"],
     ["partners", "media-kit"],
     ["partners", "geography"],

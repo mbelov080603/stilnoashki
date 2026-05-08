@@ -21,37 +21,33 @@ const aspectClass: Record<MediaSlotAspect, string> = {
 };
 
 const slotVisuals: Array<[RegExp, MediaVisual]> = [
-  [/home-hero/i, { src: mediaAssets.productLounge, position: "50% 50%" }],
-  [/product-hero|products-hero/i, { src: mediaAssets.productDesk, position: "50% 50%" }],
-  [/gallery-hero/i, { src: mediaAssets.productPremiumShelf, position: "50% 50%" }],
-  [/age-gate-product/i, { src: mediaAssets.lifestylePocket, position: "50% 50%" }],
-  [/product-packaging-spread/i, { src: mediaAssets.productRetailCounter, position: "50% 50%" }],
-  [/product-detail-lifestyle/i, { src: mediaAssets.lifestyleDesk, position: "50% 50%" }],
-  [/home-product|product-card|category-|verify-product/i, { src: mediaAssets.product, fit: "contain", position: "50% 50%" }],
+  [/home-hero/i, { src: mediaAssets.partner, position: "50% 50%" }],
+  [/gallery-hero/i, { src: mediaAssets.partner, position: "50% 50%" }],
+  [/age-gate-product/i, { src: mediaAssets.responsible, fit: "contain", position: "50% 50%" }],
+  [/verify-product/i, { src: mediaAssets.responsible, fit: "contain", position: "50% 50%" }],
   [/product-variant-ananas-mango|variant-ananas-mango|partner-variant-ananas-mango/i, {
-    src: mediaAssets.product,
-    fit: "contain",
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
   [/vishnya-limon-persik|gallery-device-front/i, {
-    src: mediaAssets.productCloseVishnya,
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
   [/slivochnaya-klubnika-mango|gallery-flavour-series-2/i, {
-    src: mediaAssets.productRetailShelf,
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
   [/gallery-packaging-series|gallery-packaging-front|gallery-warning-layer/i, {
-    src: mediaAssets.productRetailCounter,
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
-  [/gallery-current-line/i, { src: mediaAssets.productRetailShelf, position: "50% 50%" }],
+  [/gallery-current-line/i, { src: mediaAssets.partner, position: "50% 50%" }],
   [/gallery-device-silhouette|gallery-logotype-closeup/i, {
     src: mediaAssets.lifestyleHand,
     position: "50% 50%",
   }],
-  [/gallery-device-front/i, { src: mediaAssets.productCloseVishnya, position: "50% 50%" }],
-  [/gallery-technical-flat/i, { src: mediaAssets.productBoardroom, position: "50% 50%" }],
+  [/gallery-device-front/i, { src: mediaAssets.partner, position: "50% 50%" }],
+  [/gallery-technical-flat/i, { src: mediaAssets.production, position: "50% 50%" }],
   [/stores-hero|stores-request|home-stores|store|city|retail/i, {
     src: mediaAssets.stores,
     position: "50% 50%",
@@ -61,24 +57,26 @@ const slotVisuals: Array<[RegExp, MediaVisual]> = [
     position: "50% 50%",
   }],
   [/partner-variant-|product-variant-|variant-|product-variant-fallback/i, {
-    src: mediaAssets.lifestyleHand,
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
-  [/franchise-lineup|franchise/i, { src: mediaAssets.lobbyProduct, position: "50% 50%" }],
+  [/franchise-lineup|franchise/i, { src: mediaAssets.franchise, position: "50% 50%" }],
   [/support-system|support/i, { src: mediaAssets.production, position: "50% 50%" }],
   [/about-secondary/i, { src: mediaAssets.production, position: "50% 50%" }],
-  [/about-primary|brand/i, { src: mediaAssets.productPremiumShelf, position: "50% 50%" }],
-  [/home-faq-side/i, { src: mediaAssets.lifestyleHandPack, position: "50% 50%" }],
+  [/about-primary|brand/i, { src: mediaAssets.partner, position: "50% 50%" }],
+  [/home-faq-side/i, { src: mediaAssets.responsible, position: "50% 50%" }],
   [/article-card-how-to-check-original|article-how-to-check-original/i, {
-    src: mediaAssets.product,
+    src: mediaAssets.responsible,
+    fit: "contain",
     position: "50% 50%",
   }],
   [/article-card-retail-18-rules|article-retail-18-rules/i, {
-    src: mediaAssets.productRetailCounter,
+    src: mediaAssets.responsible,
+    fit: "contain",
     position: "50% 50%",
   }],
   [/article-card-partner-kit-overview|article-partner-kit-overview/i, {
-    src: mediaAssets.productRetailShelf,
+    src: mediaAssets.partner,
     position: "50% 50%",
   }],
 ];
@@ -127,15 +125,15 @@ function getVisual(slotId: string, role: MediaSlotRole): MediaVisual {
   }
 
   if (role === "brand") {
-    return { src: mediaAssets.productPremiumShelf };
+    return { src: mediaAssets.partner };
   }
 
-  return { src: mediaAssets.product, fit: "contain" };
+  return { src: mediaAssets.partner };
 }
 
 export function MediaSlot({
   slotId,
-  title = "STILNO CLICK ONE",
+  title = "STILNO",
   note,
   aspect = "wide",
   className,

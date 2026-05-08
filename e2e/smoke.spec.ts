@@ -8,14 +8,10 @@ const publicPaths = [
   "/about",
   "/brand",
   "/responsible",
-  "/products",
-  "/products/nicotine",
-  "/products/stilno-click-one",
   "/partners",
   "/partners/media-kit",
+  "/partners/geography",
   "/quality",
-  "/catalog",
-  "/catalog/stilno-click-one",
   "/request",
   "/franchise",
   "/stores",
@@ -39,6 +35,7 @@ const publicPaths = [
   "/legal/terms",
   "/legal/not-public-offer",
   "/legal/age-18",
+  "/legal/disclaimer",
 ];
 
 type WebhookLead = {
@@ -143,7 +140,7 @@ test("age gate and cookie consent can be completed in a fresh session", async ({
 test("verify page checks code through verification API", async ({ page }) => {
   await seedConsent(page);
   await page.goto("/verify");
-  await page.locator('input[placeholder="STILNO-XXXX-XXXX"]').fill("STILNO-CLICK-15000");
+  await page.locator('input[placeholder="STILNO-XXXX-XXXX"]').fill("STILNO-CODE-0426");
   await page.locator("#verify-checker button").click();
   await expect(page.getByText("Оригинальность подтверждена")).toBeVisible();
   await expect(page.getByText("ST-0426-A")).toBeVisible();
@@ -247,14 +244,14 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1")).toContainText("Официальный сайт STILNO");
   await expect(page.locator("main")).toContainText("Выберите нужный раздел");
-  await expect(page.locator("main")).toContainText("Одна опубликованная модель STILNO CLICK ONE");
+  await expect(page.locator("main")).toContainText("Единственный раздел с подробным каталогом STILNO");
   await expect(page.getByRole("link", { name: "Смотреть каталог" }).first()).toBeVisible();
   await expect(page.locator("form")).toHaveCount(0);
 
   await page.goto("/brand");
   await expect(page.locator("h1")).toContainText("STILNO — премиальный бренд электронных сигарет");
   await expect(page.locator("main")).toContainText("Бренд без визуального шума");
-  await expect(page.locator("main")).toContainText("Дизайн, который не кричит");
+  await expect(page.locator("main")).toContainText("Каталог не дублируется на брендовой странице");
   await expect(page.locator("main")).toContainText("Подробности разнесены по отдельным страницам");
   await expect(page.locator("form")).toHaveCount(0);
 
@@ -266,14 +263,11 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator("main")).toContainText("Бренд без визуального шума");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/brand");
 
-  await page.goto("/catalog");
+  await page.goto("/stores");
   await expect(page.locator("h1")).toContainText("Каталог STILNO");
   await expect(page.locator("main")).toContainText("STILNO CLICK ONE");
-  await expect(page.getByRole("link", { name: "Подробнее" })).toHaveAttribute("href", "/catalog/stilno-click-one");
-
-  await page.goto("/catalog/stilno-click-one");
-  await expect(page.locator("h1")).toContainText("STILNO CLICK ONE");
-  await expect(page.locator("main")).toContainText("Обсудить сотрудничество или обращение");
+  await expect(page.locator("main")).toContainText("Текущая вкусовая линия");
+  await expect(page.locator("main")).toContainText("10 мл");
 
   await page.goto("/request");
   await expect(page.locator("h1")).toContainText("Оставить заявку STILNO");
@@ -284,17 +278,9 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator("main")).toContainText("Комплект запуска как брендовый набор");
   await expect(page.locator('select[name="interestFormat"]')).toHaveCount(0);
 
-  await page.goto("/products/stilno-click-one");
-  await expect(page.locator("h1")).toContainText("STILNO CLICK ONE");
-  await expect(page.locator("main")).toContainText("Обсудить сотрудничество или обращение");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "http://localhost:3010/catalog/stilno-click-one",
-  );
-
   await page.goto("/gallery");
   await expect(page.locator("h1")).toContainText("Визуальный код STILNO");
-  await expect(page.locator("main")).toContainText("корпус, упаковку, вкус, legal 18+");
+  await expect(page.locator("main")).toContainText("визуальную дисциплину бренда");
 });
 
 test("franchise lead is delivered without optional marketing consent and redirects to thank-you", async ({ page }, testInfo) => {
@@ -368,7 +354,7 @@ test("SEO metadata includes canonical and OG image", async ({ page }) => {
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/verify");
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    "http://localhost:3010/stilno/photos/product-pack-ananas-mango.jpg",
+    "http://localhost:3010/stilno/redesign/og-stilno.svg",
   );
 });
 

@@ -3,8 +3,6 @@ export type VerificationStatus = "valid" | "already_checked" | "revoked" | "unkn
 export type VerificationRecord = {
   code: string;
   status: Exclude<VerificationStatus, "unknown">;
-  product: string;
-  flavor: string;
   batch: string;
   manufacturedAt: string;
   expiresAt: string;
@@ -24,10 +22,8 @@ export type VerificationResult = {
 
 const verificationRegistry: VerificationRecord[] = [
   {
-    code: "STILNO-CLICK-15000",
+    code: "STILNO-CODE-0426",
     status: "valid",
-    product: "STILNO CLICK ONE",
-    flavor: "Мята",
     batch: "ST-0426-A",
     manufacturedAt: "2026-04-01",
     expiresAt: "2030-04-01",
@@ -37,8 +33,6 @@ const verificationRegistry: VerificationRecord[] = [
   {
     code: "STILNO-MSK-0001",
     status: "valid",
-    product: "STILNO CLICK ONE",
-    flavor: "Ананас Манго",
     batch: "ST-0426-MSK",
     manufacturedAt: "2026-04-01",
     expiresAt: "2030-04-01",
@@ -49,8 +43,6 @@ const verificationRegistry: VerificationRecord[] = [
   {
     code: "STILNO-USED-0001",
     status: "already_checked",
-    product: "STILNO CLICK ONE",
-    flavor: "Фруктовый Чай",
     batch: "ST-0326-B",
     manufacturedAt: "2026-03-15",
     expiresAt: "2030-03-15",
@@ -62,8 +54,6 @@ const verificationRegistry: VerificationRecord[] = [
   {
     code: "STILNO-REVOKED-0001",
     status: "revoked",
-    product: "STILNO CLICK ONE",
-    flavor: "Барбарис",
     batch: "ST-0226-R",
     manufacturedAt: "2026-02-20",
     expiresAt: "2030-02-20",

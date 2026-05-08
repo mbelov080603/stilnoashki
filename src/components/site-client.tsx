@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   type FormEvent,
@@ -24,8 +24,6 @@ import type {
   FooterGroup,
   LeadFormSchema,
   NavItem,
-  Product,
-  ProductVariant,
 } from "@/lib/site-data";
 import {
   verifyCodeLocally,
@@ -85,7 +83,7 @@ type StoreMapPoint = {
 
 type VerificationDetailsRecord = Pick<
   VerificationRecord,
-  "product" | "flavor" | "batch" | "expiresAt" | "checks"
+  "batch" | "expiresAt" | "checks"
 >;
 
 function classNames(...values: Array<string | false | undefined>) {
@@ -893,8 +891,7 @@ function isBrandSitePath(pathname: string) {
     normalized === "/about" ||
     normalized === "/brand" ||
     normalized === "/quality" ||
-    normalized === "/catalog" ||
-    normalized === "/catalog/stilno-click-one" ||
+    normalized === "/stores" ||
     normalized === "/request"
   );
 }
@@ -1418,7 +1415,7 @@ export function AgeGate({
           </div>
           <MediaSlot
             slotId="age-gate-product"
-            title="STILNO CLICK ONE"
+            title="STILNO"
             note="Визуал продукта STILNO в возрастном подтверждении."
             aspect="portrait"
             className="hidden min-h-[34rem] border-white/10 lg:block"
@@ -1846,103 +1843,6 @@ export function LeadForm({
   );
 }
 
-export function VariantPicker({ product }: { product: Product }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const activeVariant: ProductVariant =
-    product.variants.find((variant) => variant.id === searchParams.get("flavor")) ??
-    product.variants[0];
-
-  return (
-    <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-      <MediaSlot
-        slotId={`product-variant-${activeVariant.id}`}
-        title={activeVariant.title}
-        note="Визуал выбранного вкуса STILNO CLICK ONE."
-        aspect="square"
-        className="min-h-[21rem] sm:min-h-[30rem] xl:min-h-[34rem]"
-      />
-
-      <div className="rounded-[1.2rem] border border-black/10 bg-[#000000] p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
-        <p className="text-xs uppercase tracking-[0.18em] text-white/44">Вкусовая серия</p>
-        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-white">{activeVariant.title}</h3>
-        <p className="mt-3 text-sm leading-6 text-white/60">
-          Подтверждённые варианты текущей линии STILNO CLICK ONE. Выберите вкус, чтобы обновить визуал и собрать позицию для запроса.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/64">
-            {activeVariant.nicotineStrength}
-          </span>
-          <span className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/64">
-            {activeVariant.status}
-          </span>
-        </div>
-        <div className="mt-6 grid gap-2">
-          {product.variants.map((variant) => (
-            <button
-              type="button"
-              key={variant.id}
-              className={`rounded-[1.15rem] border px-4 py-3 text-left transition ${
-                activeVariant.id === variant.id
-                  ? "border-[#ff6da8] bg-[#ff6da8] text-black"
-                  : "border-white/12 bg-white/[0.06] text-white/72 hover:border-white/28 hover:bg-white/[0.1]"
-              }`}
-              onClick={() => {
-                const nextSearch = new URLSearchParams(searchParams.toString());
-                nextSearch.set("flavor", variant.id);
-                router.replace(`${pathname}?${nextSearch.toString()}`, { scroll: false });
-                pushAnalytics("product_variant_select", {
-                  product: product.slug,
-                  variant: variant.id,
-                });
-              }}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-medium">{variant.title}</span>
-                <span className="text-xs uppercase tracking-[0.22em] opacity-58">
-                  {variant.nicotineStrength}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-        <div className="mt-5 rounded-[1rem] border border-[#ff6da8]/28 bg-white/[0.06] p-4">
-          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#ff6da8]/70">
-            В листе ассортимента
-          </p>
-          <div className="mt-3 flex items-start justify-between gap-4">
-            <div>
-              <p className="text-lg font-semibold leading-tight text-white">{activeVariant.title}</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-white/42">
-                выбранный вкус
-              </p>
-            </div>
-            <span className="rounded-full border border-[#ff6da8]/24 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#ff6da8]/82">
-              {activeVariant.nicotineStrength}
-            </span>
-          </div>
-          <p className="mt-3 text-xs leading-5 text-white/46">
-            Выбор помогает сформировать запрос. Сайт не оформляет дистанционную розничную продажу.
-          </p>
-          <Link
-            href="/request"
-            className="mt-4 inline-flex rounded-full bg-[#ff6da8] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#ff8fc5]"
-            onClick={() =>
-              pushAnalytics("product_assortment_request", {
-                product: product.slug,
-                variant: activeVariant.id,
-              })
-            }
-          >
-            Оставить заявку
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function FaqAccordion({
   items,
   tone = "light",
@@ -2031,8 +1931,6 @@ export function VerifyChecker() {
   }) {
     return [
       { label: "Код", value: normalizedCode },
-      record ? { label: "Продукт", value: record.product } : undefined,
-      record ? { label: "Вкус", value: record.flavor } : undefined,
       record ? { label: "Партия", value: record.batch } : undefined,
       record ? { label: "Срок годности", value: record.expiresAt } : undefined,
       record ? { label: "Проверок", value: String(record.checks) } : undefined,
@@ -2048,7 +1946,7 @@ export function VerifyChecker() {
       setResult({
         tone: "warning",
         title: "Код слишком короткий",
-        body: "Проверьте защитную наклейку или QR-код на упаковке STILNO CLICK ONE и повторите ввод.",
+        body: "Проверьте защитную наклейку или QR-код на упаковке STILNO и повторите ввод.",
       });
       pushAnalytics("verify_code_invalid_length");
       return;
@@ -2100,8 +1998,6 @@ export function VerifyChecker() {
         checkId?: string;
         normalizedCode?: string;
         record?: {
-          product: string;
-          flavor: string;
           batch: string;
           manufacturedAt: string;
           expiresAt: string;
@@ -2184,26 +2080,6 @@ export function VerifyChecker() {
             ))}
           </dl>
         ) : null}
-      </div>
-    </div>
-  );
-}
-
-export function VariantPickerFallback({ product }: { product: Product }) {
-  const firstVariant = useMemo(() => product.variants[0], [product.variants]);
-
-  return (
-    <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-      <MediaSlot
-        slotId="product-variant-fallback"
-        title={product.title}
-        note="Визуал продукта STILNO CLICK ONE."
-        aspect="square"
-      />
-      <div className="rounded-[1rem] border border-black/10 bg-white p-6">
-        <p className="text-xs uppercase tracking-[0.18em] text-black/44">Вкусовая серия</p>
-        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-black">{firstVariant?.title}</h3>
-        <p className="mt-3 text-sm leading-6 text-black/56">Выбор вкуса загружается в лист ассортимента.</p>
       </div>
     </div>
   );

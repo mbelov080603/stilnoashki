@@ -173,12 +173,7 @@ export type ResolvedPage = {
     | "brand"
     | "about"
     | "gallery"
-    | "products-index"
-    | "product-category"
-    | "product"
     | "quality"
-    | "catalog-index"
-    | "catalog-product"
     | "request"
     | "media-kit"
     | "partners-geography"
@@ -201,9 +196,6 @@ export type ResolvedPage = {
   city?: City;
   stores?: Store[];
   store?: Store;
-  category?: ProductCategory;
-  products?: Product[];
-  product?: Product;
   vacancy?: Vacancy;
   article?: Article;
   legalPage?: LegalPage;

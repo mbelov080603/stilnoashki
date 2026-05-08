@@ -19,10 +19,10 @@ export default function NotFound() {
             На главную
           </Link>
           <Link
-            href="/products"
+            href="/stores"
             className="rounded-full border border-black/14 bg-white px-5 py-3 text-center text-sm font-medium text-black transition hover:border-black/34 hover:bg-black/[0.04]"
           >
-            К продукции
+            В каталог
           </Link>
         </div>
       </div>

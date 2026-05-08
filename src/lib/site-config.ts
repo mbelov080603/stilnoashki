@@ -72,33 +72,20 @@ export const analyticsIds = {
 
 export const documentLinks = {
   franchisePresentation: "/stilno/docs/stilno-business-presentation.pdf",
-  deviceAndPackage: "/stilno/docs/stilno-click-one-device-package.pdf",
 };
 
 export const mediaAssets = {
   product: "/stilno/photos/product-pack-ananas-mango.jpg",
-  productHero: "/stilno/photos/cafe-product.webp",
-  productDesk: "/stilno/photos/office-desk.webp",
-  productBoardroom: "/stilno/photos/boardroom-product.webp",
-  productConference: "/stilno/photos/conference-product.webp",
-  productLounge: "/stilno/photos/lounge-product.webp",
-  productRetailCounter: "/stilno/photos/retail-counter.webp",
-  productRetailShelf: "/stilno/photos/retail-shelf.webp",
-  productShelfNight: "/stilno/photos/shelf-night.webp",
-  productPremiumShelf: "/stilno/photos/premium-shelf-books.webp",
   productCloseVishnya: "/stilno/photos/product-close-vishnya.webp",
   lobbyProduct: "/stilno/photos/lobby-product.webp",
   lifestyleHand: "/stilno/photos/lifestyle-hand-car.webp",
-  lifestyleHandPack: "/stilno/photos/car-hand-pack.webp",
-  lifestylePocket: "/stilno/photos/lifestyle-pocket.webp",
-  lifestyleDesk: "/stilno/photos/business-desk.webp",
   production: "/stilno/photos/production-line.webp",
   stores: "/stilno/photos/retail-counter.webp",
   storesPoint: "/stilno/photos/retail-counter.webp",
   partner: "/stilno/photos/business-desk.webp",
-  franchise: "/stilno/photos/lobby-product.webp",
+  franchise: "/stilno/redesign/franchise-process.svg",
   responsible: "/stilno/redesign/legal-18-footer-strip.svg",
-  og: "/stilno/photos/product-pack-ananas-mango.jpg",
+  og: "/stilno/redesign/og-stilno.svg",
 };
 
 export const companyDetails = {
@@ -120,12 +107,11 @@ export const siteSettings = {
   brandName: companyDetails.brandName,
   title: "STILNO | официальный сайт бренда 18+",
   description:
-    "Официальный сайт STILNO: бренд 18+, качество, каталог с одной опубликованной моделью, проверка оригинальности и отдельная страница заявки.",
+    "Официальный сайт STILNO: бренд 18+, качество, каталог, проверка оригинальности и отдельная страница заявки.",
   primaryNav: [
     { label: "Бренд", href: "/brand" },
     { label: "Качество", href: "/quality" },
-    { label: "Каталог", href: "/catalog" },
-    { label: "Где купить", href: "/stores" },
+    { label: "Каталог", href: "/stores" },
     { label: "Карта магазинов", href: "/stores/map" },
     { label: "География партнёров", href: "/partners/geography" },
     { label: "Проверка", href: "/verify" },
@@ -156,7 +142,7 @@ export const siteSettings = {
         { label: "STILNO", href: "/" },
         { label: "Бренд", href: "/brand" },
         { label: "Качество", href: "/quality" },
-        { label: "Каталог", href: "/catalog" },
+        { label: "Каталог", href: "/stores" },
       ],
     },
     {
