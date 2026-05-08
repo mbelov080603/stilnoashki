@@ -1,77 +1,48 @@
 import { companyDetails } from "@/lib/site-config";
 import type { Product, ProductVariant } from "@/lib/site-types";
 
+function variant(id: string, title: string, group: string): ProductVariant {
+  return {
+    id,
+    title,
+    flavor: title,
+    group,
+    nicotineStrength: "20 мг/см³",
+    status: "Текущий вкус",
+  };
+}
+
 const clickOneVariants: ProductVariant[] = [
-  {
-    id: "ananas-mango",
-    title: "Ананас Манго",
-    flavor: "Ананас Манго",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "barbaris",
-    title: "Барбарис",
-    flavor: "Барбарис",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "vishnya-limon-persik",
-    title: "Вишня Лимон Персик",
-    flavor: "Вишня Лимон Персик",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "zemlyanika-dragonfruit",
-    title: "Земляника Драгонфрут",
-    flavor: "Земляника Драгонфрут",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "myata",
-    title: "Мята",
-    flavor: "Мята",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "slivochnaya-klubnika-mango",
-    title: "Сливочная Клубника Манго",
-    flavor: "Сливочная Клубника Манго",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "smorodina-malina-ezhevika",
-    title: "Смородина Малина Ежевика",
-    flavor: "Смородина Малина Ежевика",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "fruktoviy-chay",
-    title: "Фруктовый Чай",
-    flavor: "Фруктовый Чай",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "chernika-klyukva-vishnya",
-    title: "Черника Клюква Вишня",
-    flavor: "Черника Клюква Вишня",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
-  {
-    id: "yagodniy-energetik",
-    title: "Ягодный Энергетик",
-    flavor: "Ягодный Энергетик",
-    nicotineStrength: "20 мг/см³",
-    status: "Текущий вкус",
-  },
+  variant("greypfrut-malina-klubnika-pinkman", "Грейпфрут малина клубника (Пинкман)", "Обычные"),
+  variant("myata", "Мята", "Обычные"),
+  variant("ananas-mango", "Ананас манго", "Обычные"),
+  variant("fruktoviy-chay", "Фруктовый чай", "Обычные"),
+  variant("vishnya-limon-persik", "Вишня Лимон Персик", "Обычные"),
+  variant("yagodniy-energetik", "Ягодный энергетик", "Обычные"),
+  variant("chernika-klyukva-vishnya", "Черника клюква вишня", "Обычные"),
+  variant("smorodina-malina-ezhevika", "Смородина, малина, ежевика", "Обычные"),
+  variant("slivochnaya-klubnika-mango", "Сливочная клубника манго", "Обычные"),
+  variant("zemlyanika-dragonfruit", "Земляника драгонфрут", "Обычные"),
+  variant("barbaris", "Барбарис", "Обычные"),
+  variant("tarhun", "Тархун", "Обычные"),
+  variant("krem-slivki", "Крем-сливки", "Обычные"),
+  variant("kislaya-ezhevika-malina", "Кислая ежевика малина", "Кислые"),
+  variant("kislaya-malina-yabloko", "Кислая малина яблоко", "Кислые"),
+  variant("kislaya-chernaya-smorodina", "Кислая черная смородина", "Кислые"),
+  variant("kisliy-greypfrut-kivi", "Кислый грейпфрут киви", "Кислые"),
+  variant("kisloe-zelenoe-yabloko", "Кислое зеленое яблоко", "Кислые"),
+  variant("kisliy-ananas-malina", "Кислый ананас малина", "Кислые"),
+  variant("kisliy-yagodniy-limonad", "Кислый ягодный лимонад", "Кислые"),
+  variant("kaktus-laym", "Кактус Лайм", "Кислые"),
+  variant("ananas-ice", "Ананас айс", "Айс"),
+  variant("klubnika-ice", "Клубника Айс", "Айс"),
+  variant("persik-ice", "Персик Айс", "Айс"),
+  variant("malina-ice", "Малина Айс", "Айс"),
+  variant("ezhevika-ice", "Ежевика Айс", "Айс"),
+  variant("vishnya-ice", "Вишня Айс", "Айс"),
+  variant("chernichniy-sorbet", "Черничный сорбет", "Айс"),
+  variant("klubnichno-bananoviy-milksheyk", "Клубнично-банановый милкшейк", "Айс"),
+  variant("vinograd-chernika-ice", "Виноград Черника Айс", "Айс"),
 ];
 
 const products: Product[] = [
@@ -82,7 +53,7 @@ const products: Product[] = [
     title: "STILNO CLICK ONE",
     nicotineType: "nicotine",
     shortDescription:
-      "STILNO CLICK ONE — чёрный силуэт, Type-C, десять вкусов и упаковка, которая держит продукт как единую серию для аудитории 18+.",
+      "STILNO CLICK ONE — чёрный силуэт, Type-C, 30 вкусов и упаковка, которая держит продукт как единую серию для аудитории 18+.",
     longDescription:
       "STILNO CLICK ONE — никотинсодержащая продуктовая линия для совершеннолетних пользователей. Характеристики указаны по подтверждённым упаковочным материалам, а визуальная система держится на корпусе, упаковке и вкусовой метке. Показатель количества затяжек зависит от режима использования.",
     availability: "Наличие уточняется через розничный запрос, партнёрские обращения — через страницу «Заявка».",

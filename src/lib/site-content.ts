@@ -41,10 +41,10 @@ export const stores: Store[] = [
     phone: "+7 999 244-28-36",
     hours: "Часы работы уточняйте по телефону точки",
     directionsHref: "https://yandex.ru/maps/?text=Москва%2C%20Бизнес%20центр%20Вавилон%2C%20STILNO",
-    inventoryStatus: "Точка опубликована. Наличие STILNO CLICK ONE уточняйте перед визитом.",
+    inventoryStatus: "Точка опубликована. Наличие картриджей и устройств в сборе уточняйте перед визитом.",
     verifiedAt: "2026-04-29",
     services: ["розничная точка 18+", "уточнение наличия", "маршрут на карте", "проверка оригинальности"],
-    categories: ["STILNO CLICK ONE"],
+    categories: ["Картриджи STILNO CLICK ONE", "Устройство в сборе STILNO CLICK ONE"],
     featured: true,
   },
 ];

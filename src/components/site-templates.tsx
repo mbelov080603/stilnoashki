@@ -9,6 +9,7 @@ import {
   AnalyticsLoader,
   CookieBanner,
   FaqAccordion,
+  CatalogAssortmentCards,
   LeadForm,
   PartnersGeographyMap,
   SiteFooter,
@@ -1047,38 +1048,17 @@ function StoresCatalogSection({ product }: { product: Product }) {
           </div>
 
           <div className="grid gap-5">
-            <article className="rounded-[1rem] border border-black/10 bg-white p-6 shadow-[0_24px_80px_rgba(0,0,0,0.06)] sm:p-8">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Модельный ряд</p>
+            <div className="rounded-[1rem] border border-black/10 bg-white p-6 shadow-[0_24px_80px_rgba(0,0,0,0.06)] sm:p-8">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Ассортимент</p>
               <h2 className="mt-4 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-black sm:text-5xl">
-                {product.title}
+                Картриджи и устройство в сборе
               </h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-black/62">{product.longDescription}</p>
-              <dl className="mt-7 grid gap-px overflow-hidden rounded-[0.95rem] border border-black/10 bg-black/10 sm:grid-cols-2">
-                {product.specs.map((spec) => (
-                  <div key={`${spec.label}-${spec.value}`} className="bg-white p-4">
-                    <dt className="text-[0.65rem] uppercase tracking-[0.16em] text-black/38">{spec.label}</dt>
-                    <dd className="mt-2 text-sm font-semibold leading-5 text-black">{spec.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </article>
-
-            <article className="rounded-[1rem] border border-black/10 bg-white p-6 sm:p-7">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/36">Вкусы</p>
-              <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] text-black">
-                Текущая вкусовая линия
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-black/58">
-                Варианты показаны только в каталоге, чтобы линейка не дублировалась на остальных страницах сайта.
+              <p className="mt-5 max-w-2xl text-base leading-7 text-black/62">
+                {product.longDescription} В каталоге показаны две карточки ассортимента STILNO CLICK ONE с выбором вкуса внутри каждой карточки.
               </p>
-              <div className="mt-6 flex flex-wrap gap-2">
-                {product.variants.map((variant) => (
-                  <span key={variant.id} className="rounded-full border border-black/10 bg-white px-3 py-2 text-sm leading-5 text-black/68">
-                    {variant.title}
-                  </span>
-                ))}
-              </div>
-            </article>
+            </div>
+
+            <CatalogAssortmentCards variants={product.variants} />
 
             <div className="grid gap-5 lg:grid-cols-2">
               <article className="rounded-[1rem] border border-black/10 bg-white p-6 sm:p-7">

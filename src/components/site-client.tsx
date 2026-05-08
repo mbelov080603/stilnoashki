@@ -24,6 +24,7 @@ import type {
   FooterGroup,
   LeadFormSchema,
   NavItem,
+  ProductVariant,
 } from "@/lib/site-data";
 import {
   verifyCodeLocally,
@@ -1840,6 +1841,154 @@ export function LeadForm({
         </p>
       ) : null}
     </form>
+  );
+}
+
+type AssortmentCard = {
+  id: "cartridges" | "device-kit";
+  eyebrow: string;
+  title: string;
+  description: string;
+  selectLabel: string;
+  specs: Array<{ label: string; value: string }>;
+};
+
+const assortmentCards: AssortmentCard[] = [
+  {
+    id: "cartridges",
+    eyebrow: "Картриджи",
+    title: "Картриджи STILNO CLICK ONE",
+    description:
+      "Сменные картриджи для линейки STILNO CLICK ONE. Вкус выбирается прямо в карточке из актуальной таблицы ассортимента.",
+    selectLabel: "Выбрать вкус для картриджей",
+    specs: [
+      { label: "Формат", value: "сменный картридж" },
+      { label: "Объём", value: "10 мл / 10 см³" },
+      { label: "Крепость", value: "20 мг/см³" },
+      { label: "Вкусы", value: "30 вариантов" },
+    ],
+  },
+  {
+    id: "device-kit",
+    eyebrow: "Устройство в сборе",
+    title: "Устройство в сборе STILNO CLICK ONE",
+    description:
+      "Готовый комплект STILNO CLICK ONE: устройство и выбранный картридж. Вкус комплекта выбирается в этой карточке.",
+    selectLabel: "Выбрать вкус для устройства в сборе",
+    specs: [
+      { label: "Комплект", value: "устройство + картридж" },
+      { label: "Аккумулятор", value: "850 мА·ч" },
+      { label: "Порт", value: "Type-C" },
+      { label: "Мощность", value: "10–22 Вт" },
+      { label: "Ресурс", value: "до 15 000 затяжек*" },
+    ],
+  },
+];
+
+function getVariantGroups(variants: ProductVariant[]) {
+  const groupMap = new Map<string, ProductVariant[]>();
+
+  variants.forEach((variant) => {
+    const existing = groupMap.get(variant.group) ?? [];
+    existing.push(variant);
+    groupMap.set(variant.group, existing);
+  });
+
+  return Array.from(groupMap.entries()).map(([group, items]) => ({ group, items }));
+}
+
+export function CatalogAssortmentCards({ variants }: { variants: ProductVariant[] }) {
+  const defaultVariantId = variants[0]?.id ?? "";
+  const [selected, setSelected] = useState<Record<AssortmentCard["id"], string>>({
+    cartridges: defaultVariantId,
+    "device-kit": defaultVariantId,
+  });
+  const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
+
+  return (
+    <div className="grid gap-5 xl:grid-cols-2">
+      {assortmentCards.map((card) => {
+        const selectedId = selected[card.id] || defaultVariantId;
+        const selectedVariant = variants.find((variant) => variant.id === selectedId) ?? variants[0];
+
+        return (
+          <article
+            key={card.id}
+            data-testid={`catalog-card-${card.id}`}
+            className="flex min-h-[36rem] flex-col rounded-[1rem] border border-black/10 bg-white p-6 text-black sm:p-7"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-[0.22em] text-black/36">{card.eyebrow}</p>
+                <h3 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] text-black">
+                  {card.title}
+                </h3>
+              </div>
+              <span className="rounded-full border border-black/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-black/48">
+                {variants.length} вкусов
+              </span>
+            </div>
+
+            <p className="mt-4 text-sm leading-7 text-black/62">{card.description}</p>
+
+            <dl className="mt-6 grid gap-px overflow-hidden rounded-[0.9rem] border border-black/10 bg-black/10 sm:grid-cols-2">
+              {card.specs.map((spec) => (
+                <div key={`${card.id}-${spec.label}`} className="bg-white p-4">
+                  <dt className="text-[0.64rem] uppercase tracking-[0.14em] text-black/38">{spec.label}</dt>
+                  <dd className="mt-2 text-sm font-semibold leading-5 text-black">
+                    {spec.label === "Вкусы" ? `${variants.length} вариантов` : spec.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <label className="mt-6 grid gap-2 text-sm font-medium text-black/70">
+              {card.selectLabel}
+              <select
+                aria-label={card.selectLabel}
+                value={selectedId}
+                onChange={(event) => setSelected((current) => ({ ...current, [card.id]: event.target.value }))}
+                className="min-h-12 rounded-[0.85rem] border border-black/12 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+              >
+                {groupedVariants.map(({ group, items }) => (
+                  <optgroup key={`${card.id}-${group}`} label={`${group} (${items.length})`}>
+                    {items.map((variant) => (
+                      <option key={`${card.id}-${variant.id}`} value={variant.id}>
+                        {variant.title}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+
+            {selectedVariant ? (
+              <div className="mt-auto pt-6">
+                <div className="rounded-[0.95rem] border border-black/10 bg-[#f4f3ef] p-5">
+                  <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-black/42">
+                    Выбранный вкус
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.035em] text-black">
+                    {selectedVariant.title}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/58">
+                      {selectedVariant.group}
+                    </span>
+                    <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/58">
+                      {selectedVariant.nicotineStrength}
+                    </span>
+                    <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/58">
+                      {selectedVariant.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </article>
+        );
+      })}
+    </div>
   );
 }
 
