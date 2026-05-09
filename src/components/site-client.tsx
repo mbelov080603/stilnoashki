@@ -1903,6 +1903,49 @@ function getVariantDescription(variant: ProductVariant) {
   return description || `Профиль вкуса: ${variant.flavor}.`;
 }
 
+function getVariantMark(variant: ProductVariant) {
+  const words = variant.title
+    .replace(/[()]/g, " ")
+    .split(/[\s,.-]+/)
+    .filter(Boolean);
+
+  return words
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("") || "ST";
+}
+
+function getFlavorPattern(variant: ProductVariant) {
+  const group = variant.group.toLowerCase();
+
+  if (group.includes("айс")) {
+    return {
+      backgroundImage:
+        "linear-gradient(135deg, rgba(255,255,255,0.32) 0 12%, transparent 12% 24%, rgba(255,255,255,0.18) 24% 36%, transparent 36% 100%), radial-gradient(circle at 72% 24%, rgba(255,255,255,0.34) 0 0.34rem, transparent 0.38rem)",
+      backgroundSize: "1.6rem 1.6rem, auto",
+    };
+  }
+
+  if (group.includes("кисл")) {
+    return {
+      backgroundImage:
+        "radial-gradient(circle at 24% 30%, rgba(255,255,255,0.4) 0 0.44rem, transparent 0.48rem), radial-gradient(circle at 68% 68%, rgba(255,255,255,0.22) 0 0.7rem, transparent 0.74rem), linear-gradient(135deg, #000 0%, #171717 100%)",
+    };
+  }
+
+  if (group.includes("слад")) {
+    return {
+      backgroundImage:
+        "radial-gradient(circle at 20% 22%, rgba(255,255,255,0.34) 0 0.62rem, transparent 0.66rem), radial-gradient(circle at 76% 54%, rgba(255,255,255,0.22) 0 0.52rem, transparent 0.56rem), linear-gradient(135deg, #050505 0%, #1f1f1f 100%)",
+    };
+  }
+
+  return {
+    backgroundImage:
+      "repeating-linear-gradient(135deg, rgba(255,255,255,0.18) 0 1px, transparent 1px 0.62rem), linear-gradient(135deg, #000 0%, #202020 100%)",
+  };
+}
+
 export function CatalogAssortmentCards({ product }: { product: Product }) {
   const variants = product.variants;
   const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"] | null>(null);
@@ -1987,10 +2030,10 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
         </div>
       ) : (
         <div className="grid gap-6">
-          <div className="grid gap-4 border-b border-black/10 pb-5 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="grid gap-3 border-b border-black/10 pb-4 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <p className="text-xs font-semibold uppercase text-black/38">{activeCard.eyebrow}</p>
-              <h2 className="mt-3 text-3xl font-semibold leading-none tracking-normal text-black sm:text-4xl">
+              <h2 className="mt-2 text-2xl font-semibold leading-none tracking-normal text-black sm:text-3xl">
                 {activeCard.title}
               </h2>
             </div>
@@ -2026,54 +2069,66 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
             </div>
           </div>
 
-          <details
-            open
-            data-testid="catalog-model-specs"
-            className="rounded-lg border border-black/10 bg-white p-4 text-black"
-          >
-            <summary className="cursor-pointer text-sm font-semibold uppercase text-black">
-              Характеристики модели
-            </summary>
-            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-              {product.specs.map((spec) => (
-                <div key={`${spec.label}-${spec.value}`} className="border-t border-black/10 pt-3">
-                  <dt className="text-xs font-semibold uppercase text-black/42">{spec.label}</dt>
-                  <dd className="mt-1 text-sm leading-6 text-black">{spec.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </details>
-
           <div className="grid gap-5">
             {groupedVariants.map(({ group, items }) => (
               <section key={group} aria-labelledby={`catalog-group-${group}`} className="grid gap-3">
-                <div className="flex items-center gap-3">
-                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase text-black">
+                <div className="grid grid-cols-[1fr_auto] items-center rounded-lg border border-black bg-black px-3 py-2 text-white">
+                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase tracking-normal">
                     {group}
                   </h3>
-                  <span className="h-px flex-1 bg-black/10" />
-                  <span className="text-xs text-black/42">{items.length}</span>
+                  <span className="border-l border-white/18 pl-3 text-xs font-semibold uppercase text-white/64">
+                    {items.length} вкусов
+                  </span>
                 </div>
                 <div className="grid gap-3 md:grid-cols-2">
                   {items.map((variant) => {
                     const quantity = getQuantity(activeCard.id, variant.id);
+                    const description = getVariantDescription(variant);
 
                     return (
                       <article
                         key={variant.id}
                         data-testid={`catalog-flavor-card-${variant.id}`}
-                        className="grid min-h-48 rounded-lg border border-black/10 bg-white p-4 text-black transition hover:border-black/30"
+                        className="overflow-hidden rounded-lg border border-black/12 bg-white text-black transition hover:border-black/40"
                       >
-                        <div>
-                          <p className="text-xs font-semibold uppercase text-black/38">{variant.group || group}</p>
-                          <h4 className="mt-3 text-2xl font-semibold leading-tight tracking-normal text-black">
-                            {variant.title}
-                          </h4>
-                          <p className="mt-3 text-sm leading-6 text-black/58">{getVariantDescription(variant)}</p>
+                        <div className="grid min-h-32 grid-cols-[4.5rem_1fr_5.5rem] sm:grid-cols-[5rem_1fr_6.25rem]">
+                          <div className="relative flex items-center justify-center border-r border-black bg-black">
+                            <div
+                              aria-hidden="true"
+                              className="relative h-[5.75rem] w-8 rounded-b-[0.95rem] rounded-t-md border border-white/58 bg-white/8 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+                            >
+                              <span className="absolute -top-2 left-1/2 h-3 w-3 -translate-x-1/2 rounded-t-full border border-white/56 bg-black" />
+                              <span className="absolute left-1/2 top-4 h-2 w-2 -translate-x-1/2 rounded-full border border-white/78" />
+                              <span className="absolute left-1/2 top-8 h-6 w-px -translate-x-1/2 bg-white/48" />
+                              <span className="absolute bottom-3 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/70" />
+                            </div>
+                          </div>
+
+                          <div className="flex min-w-0 flex-col justify-center px-3 py-3 sm:px-4">
+                            <p className="text-[0.68rem] font-semibold uppercase text-black/40">
+                              {variant.group || group}
+                            </p>
+                            <h4 className="mt-1 text-[1.35rem] font-semibold leading-[1.05] tracking-normal text-black sm:text-[1.55rem]">
+                              {variant.title}
+                            </h4>
+                            <p className="mt-2 text-xs leading-5 text-black/58 sm:text-sm">{description}</p>
+                          </div>
+
+                          <div
+                            className="relative overflow-hidden border-l border-black/12 bg-black"
+                            style={getFlavorPattern(variant)}
+                          >
+                            <span className="absolute right-2 top-2 rounded-sm border border-white/55 bg-white px-1.5 py-0.5 text-[0.58rem] font-semibold uppercase leading-none text-black">
+                              {activeCard.id === "device-kit" ? "set" : "pod"}
+                            </span>
+                            <span className="absolute bottom-2 left-2 text-2xl font-semibold leading-none text-white">
+                              {getVariantMark(variant)}
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="mt-5 grid gap-3 self-end">
-                          <div className="grid h-11 grid-cols-[2.75rem_1fr_2.75rem] overflow-hidden rounded-lg border border-black/12 bg-white">
+                        <div className="grid gap-2 border-t border-black/10 bg-white p-2 sm:grid-cols-[1fr_auto]">
+                          <div className="grid h-10 grid-cols-[2.5rem_1fr_2.5rem] overflow-hidden rounded-md border border-black/12 bg-white">
                             <button
                               type="button"
                               aria-label={`Уменьшить количество для ${variant.title}`}
@@ -2107,9 +2162,9 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                             data-testid={`catalog-add-${activeCard.id}-${variant.id}`}
                             aria-label={`Добавить ${variant.title}: ${activeCard.cartLabel}, ${quantity} шт.`}
                             onClick={() => addToCart(variant)}
-                            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                            className="inline-flex min-h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:min-w-32"
                           >
-                            Добавить
+                            В корзину
                           </button>
                         </div>
                       </article>
@@ -2119,6 +2174,20 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
               </section>
             ))}
           </div>
+
+          <details data-testid="catalog-model-specs" className="rounded-lg border border-black/10 bg-white p-4 text-black">
+            <summary className="cursor-pointer text-sm font-semibold uppercase text-black">
+              Характеристики модели
+            </summary>
+            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+              {product.specs.map((spec) => (
+                <div key={`${spec.label}-${spec.value}`} className="border-t border-black/10 pt-3">
+                  <dt className="text-xs font-semibold uppercase text-black/42">{spec.label}</dt>
+                  <dd className="mt-1 text-sm leading-6 text-black">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
         </div>
       )}
 

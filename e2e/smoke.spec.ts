@@ -286,6 +286,7 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator('[data-testid^="catalog-flavor-card-"]')).toHaveCount(30);
   await expect(page.locator('[data-testid="catalog-cart"]')).toBeVisible();
   await expect(page.locator('[data-testid="catalog-model-specs"]')).toBeVisible();
+  await page.locator('[data-testid="catalog-model-specs"] summary').click();
   await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("STILNO CLICK ONE")).toBeVisible();
   await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("10–22 Вт")).toBeVisible();
   await expect(page.locator('[data-testid="catalog-flavor-card-kaktus-laym"]')).toContainText("Кактус и лайм");
