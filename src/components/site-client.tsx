@@ -1903,65 +1903,42 @@ function getVariantDescription(variant: ProductVariant) {
   return description || `Профиль вкуса: ${variant.flavor}.`;
 }
 
-function getVariantMark(variant: ProductVariant) {
-  const words = variant.title
-    .replace(/[()]/g, " ")
-    .split(/[\s,.-]+/)
-    .filter(Boolean);
-
-  return words
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase())
-    .join("") || "ST";
-}
-
-function getFlavorPattern(variant: ProductVariant) {
+function getFlavorMarkerStyle(variant: ProductVariant) {
   const group = variant.group.toLowerCase();
 
   if (group.includes("айс")) {
     return {
       backgroundImage:
-        "linear-gradient(135deg, rgba(255,255,255,0.32) 0 12%, transparent 12% 24%, rgba(255,255,255,0.18) 24% 36%, transparent 36% 100%), radial-gradient(circle at 72% 24%, rgba(255,255,255,0.34) 0 0.34rem, transparent 0.38rem)",
-      backgroundSize: "1.6rem 1.6rem, auto",
+        "linear-gradient(135deg, rgba(17,17,17,0.05) 0 25%, transparent 25% 50%, rgba(17,17,17,0.05) 50% 75%, transparent 75% 100%)",
+      backgroundSize: "1rem 1rem",
     };
   }
 
   if (group.includes("кисл")) {
     return {
       backgroundImage:
-        "radial-gradient(circle at 24% 30%, rgba(255,255,255,0.4) 0 0.44rem, transparent 0.48rem), radial-gradient(circle at 68% 68%, rgba(255,255,255,0.22) 0 0.7rem, transparent 0.74rem), linear-gradient(135deg, #000 0%, #171717 100%)",
-    };
-  }
-
-  if (group.includes("слад")) {
-    return {
-      backgroundImage:
-        "radial-gradient(circle at 20% 22%, rgba(255,255,255,0.34) 0 0.62rem, transparent 0.66rem), radial-gradient(circle at 76% 54%, rgba(255,255,255,0.22) 0 0.52rem, transparent 0.56rem), linear-gradient(135deg, #050505 0%, #1f1f1f 100%)",
+        "radial-gradient(circle at 28% 28%, rgba(17,17,17,0.12) 0 0.3rem, transparent 0.34rem), radial-gradient(circle at 68% 66%, rgba(17,17,17,0.08) 0 0.5rem, transparent 0.54rem)",
     };
   }
 
   return {
     backgroundImage:
-      "repeating-linear-gradient(135deg, rgba(255,255,255,0.18) 0 1px, transparent 1px 0.62rem), linear-gradient(135deg, #000 0%, #202020 100%)",
+      "repeating-linear-gradient(135deg, rgba(17,17,17,0.08) 0 1px, transparent 1px 0.45rem)",
   };
 }
 
 export function CatalogAssortmentCards({ product }: { product: Product }) {
   const variants = product.variants;
   const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"] | null>(null);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [lastAdded, setLastAdded] = useState("");
+  const [cartNotice, setCartNotice] = useState("");
   const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
   const activeCard = activeCardId ? assortmentCards.find((card) => card.id === activeCardId) : null;
+  const cartById = useMemo(() => new Map(cart.map((item) => [item.id, item])), [cart]);
   const cartTotal = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   function quantityKey(cardId: AssortmentCard["id"], variantId: string) {
     return `${cardId}-${variantId}`;
-  }
-
-  function getQuantity(cardId: AssortmentCard["id"], variantId: string) {
-    return quantities[quantityKey(cardId, variantId)] ?? 1;
   }
 
   function addToCart(variant: ProductVariant) {
@@ -1970,12 +1947,11 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
     }
 
     const itemId = quantityKey(activeCard.id, variant.id);
-    const quantity = getQuantity(activeCard.id, variant.id);
     setCart((current) => {
       const existing = current.find((item) => item.id === itemId);
       if (existing) {
         return current.map((item) =>
-          item.id === itemId ? { ...item, quantity: item.quantity + quantity } : item,
+          item.id === itemId ? { ...item, quantity: Math.min(99, item.quantity + 1) } : item,
         );
       }
 
@@ -1986,19 +1962,29 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
           product: activeCard.cartLabel,
           flavor: variant.title,
           group: variant.group || "Линейка",
-          quantity,
+          quantity: 1,
         },
       ];
     });
-    setLastAdded(`${activeCard.cartLabel}: ${variant.title}, ${quantity} шт.`);
+    setCartNotice(`Добавлено: ${activeCard.cartLabel}: ${variant.title}`);
   }
 
-  function updateQuantity(cardId: AssortmentCard["id"], variantId: string, nextQuantity: number) {
+  function updateCartQuantity(cardId: AssortmentCard["id"], variant: ProductVariant, nextQuantity: number) {
+    const productLabel = assortmentCards.find((card) => card.id === cardId)?.cartLabel ?? "Товар";
+    const itemId = quantityKey(cardId, variant.id);
+
+    if (nextQuantity < 1) {
+      setCart((current) => current.filter((item) => item.id !== itemId));
+      setCartNotice(`Удалено: ${productLabel}: ${variant.title}`);
+      return;
+    }
+
     const safeQuantity = Math.min(99, Math.max(1, nextQuantity));
-    setQuantities((current) => ({
-      ...current,
-      [quantityKey(cardId, variantId)]: safeQuantity,
-    }));
+
+    setCart((current) =>
+      current.map((item) => (item.id === itemId ? { ...item, quantity: safeQuantity } : item)),
+    );
+    setCartNotice(`Количество: ${productLabel}: ${variant.title}, ${safeQuantity} шт.`);
   }
 
   return (
@@ -2071,101 +2057,103 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
 
           <div className="grid gap-5">
             {groupedVariants.map(({ group, items }) => (
-              <section key={group} aria-labelledby={`catalog-group-${group}`} className="grid gap-3">
-                <div className="grid grid-cols-[1fr_auto] items-center rounded-lg border border-black bg-black px-3 py-2 text-white">
-                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase tracking-normal">
+              <section key={group} aria-labelledby={`catalog-group-${group}`} className="grid gap-2">
+                <div className="grid grid-cols-[1fr_auto] items-center border-y border-black/10 py-2">
+                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase tracking-normal text-black">
                     {group}
                   </h3>
-                  <span className="border-l border-white/18 pl-3 text-xs font-semibold uppercase text-white/64">
+                  <span className="text-xs font-semibold uppercase text-black/42">
                     {items.length} вкусов
                   </span>
                 </div>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-2 xl:grid-cols-2">
                   {items.map((variant) => {
-                    const quantity = getQuantity(activeCard.id, variant.id);
+                    const cartItem = cartById.get(quantityKey(activeCard.id, variant.id));
+                    const quantity = cartItem?.quantity ?? 1;
                     const description = getVariantDescription(variant);
 
                     return (
                       <article
                         key={variant.id}
                         data-testid={`catalog-flavor-card-${variant.id}`}
-                        className="overflow-hidden rounded-lg border border-black/12 bg-white text-black transition hover:border-black/40"
+                        className={classNames(
+                          "rounded-lg border bg-white text-black transition hover:border-black/32",
+                          cartItem ? "border-black/24 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]" : "border-black/10",
+                        )}
                       >
-                        <div className="grid min-h-32 grid-cols-[4.5rem_1fr_5.5rem] sm:grid-cols-[5rem_1fr_6.25rem]">
-                          <div className="relative flex items-center justify-center border-r border-black bg-black">
-                            <div
-                              aria-hidden="true"
-                              className="relative h-[5.75rem] w-8 rounded-b-[0.95rem] rounded-t-md border border-white/58 bg-white/8 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
-                            >
-                              <span className="absolute -top-2 left-1/2 h-3 w-3 -translate-x-1/2 rounded-t-full border border-white/56 bg-black" />
-                              <span className="absolute left-1/2 top-4 h-2 w-2 -translate-x-1/2 rounded-full border border-white/78" />
-                              <span className="absolute left-1/2 top-8 h-6 w-px -translate-x-1/2 bg-white/48" />
-                              <span className="absolute bottom-3 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/70" />
-                            </div>
+                        <div className="grid grid-cols-[4rem_1fr] gap-3 p-3 sm:grid-cols-[4.25rem_1fr_auto] sm:items-center">
+                          <div
+                            aria-hidden="true"
+                            className="relative flex h-16 w-16 items-center justify-center rounded-md border border-black/10 bg-[#f7f7f7] text-black"
+                            style={getFlavorMarkerStyle(variant)}
+                          >
+                            <span className="text-lg font-semibold leading-none text-black/72">
+                              {variant.title[0]}
+                            </span>
+                            <span className="absolute bottom-1.5 right-1.5 h-2 w-2 rounded-full bg-black/62" />
                           </div>
 
-                          <div className="flex min-w-0 flex-col justify-center px-3 py-3 sm:px-4">
-                            <p className="text-[0.68rem] font-semibold uppercase text-black/40">
-                              {variant.group || group}
-                            </p>
-                            <h4 className="mt-1 text-[1.35rem] font-semibold leading-[1.05] tracking-normal text-black sm:text-[1.55rem]">
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="rounded-sm border border-black/10 px-1.5 py-0.5 text-[0.64rem] font-semibold uppercase leading-none text-black/46">
+                                {variant.group || group}
+                              </span>
+                              <span className="text-[0.68rem] font-medium uppercase leading-none text-black/42">
+                                {activeCard.id === "device-kit" ? "комплект" : "картридж"}
+                              </span>
+                              <span className="text-[0.68rem] font-medium uppercase leading-none text-black/42">
+                                {variant.nicotineStrength}
+                              </span>
+                            </div>
+                            <h4 className="mt-2 text-[1.05rem] font-semibold leading-tight tracking-normal text-black sm:text-lg">
                               {variant.title}
                             </h4>
-                            <p className="mt-2 text-xs leading-5 text-black/58 sm:text-sm">{description}</p>
+                            <p className="mt-1 text-sm leading-5 text-black/58">{description}</p>
                           </div>
 
-                          <div
-                            className="relative overflow-hidden border-l border-black/12 bg-black"
-                            style={getFlavorPattern(variant)}
-                          >
-                            <span className="absolute right-2 top-2 rounded-sm border border-white/55 bg-white px-1.5 py-0.5 text-[0.58rem] font-semibold uppercase leading-none text-black">
-                              {activeCard.id === "device-kit" ? "set" : "pod"}
-                            </span>
-                            <span className="absolute bottom-2 left-2 text-2xl font-semibold leading-none text-white">
-                              {getVariantMark(variant)}
-                            </span>
+                          <div className="col-span-2 grid gap-2 sm:col-span-1 sm:min-w-36 sm:justify-items-end">
+                            {cartItem ? (
+                              <div className="grid h-9 w-full grid-cols-[2.25rem_1fr_2.25rem] overflow-hidden rounded-md border border-black/14 bg-white sm:w-32">
+                                <button
+                                  type="button"
+                                  aria-label={`Уменьшить количество для ${variant.title}`}
+                                  onClick={() => updateCartQuantity(activeCard.id, variant, quantity - 1)}
+                                  className="text-lg leading-none text-black transition hover:bg-black hover:text-white"
+                                >
+                                  -
+                                </button>
+                                <input
+                                  aria-label={`Количество для ${variant.title}`}
+                                  type="number"
+                                  min={1}
+                                  max={99}
+                                  value={quantity}
+                                  onChange={(event) =>
+                                    updateCartQuantity(activeCard.id, variant, Number(event.target.value) || 1)
+                                  }
+                                  className="min-w-0 border-x border-black/12 text-center text-sm font-semibold text-black outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                />
+                                <button
+                                  type="button"
+                                  aria-label={`Увеличить количество для ${variant.title}`}
+                                  onClick={() => updateCartQuantity(activeCard.id, variant, quantity + 1)}
+                                  className="text-lg leading-none text-black transition hover:bg-black hover:text-white"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                data-testid={`catalog-add-${activeCard.id}-${variant.id}`}
+                                aria-label={`Добавить ${variant.title}: ${activeCard.cartLabel}, 1 шт.`}
+                                onClick={() => addToCart(variant)}
+                                className="inline-flex h-9 w-full items-center justify-center rounded-md bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:w-32"
+                              >
+                                В корзину
+                              </button>
+                            )}
                           </div>
-                        </div>
-
-                        <div className="grid gap-2 border-t border-black/10 bg-white p-2 sm:grid-cols-[1fr_auto]">
-                          <div className="grid h-10 grid-cols-[2.5rem_1fr_2.5rem] overflow-hidden rounded-md border border-black/12 bg-white">
-                            <button
-                              type="button"
-                              aria-label={`Уменьшить количество для ${variant.title}`}
-                              onClick={() => updateQuantity(activeCard.id, variant.id, quantity - 1)}
-                              className="text-xl leading-none text-black transition hover:bg-black hover:text-white"
-                            >
-                              -
-                            </button>
-                            <input
-                              aria-label={`Количество для ${variant.title}`}
-                              type="number"
-                              min={1}
-                              max={99}
-                              value={quantity}
-                              onChange={(event) =>
-                                updateQuantity(activeCard.id, variant.id, Number(event.target.value) || 1)
-                              }
-                              className="min-w-0 border-x border-black/12 text-center text-sm font-semibold text-black outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                            />
-                            <button
-                              type="button"
-                              aria-label={`Увеличить количество для ${variant.title}`}
-                              onClick={() => updateQuantity(activeCard.id, variant.id, quantity + 1)}
-                              className="text-xl leading-none text-black transition hover:bg-black hover:text-white"
-                            >
-                              +
-                            </button>
-                          </div>
-                          <button
-                            type="button"
-                            data-testid={`catalog-add-${activeCard.id}-${variant.id}`}
-                            aria-label={`Добавить ${variant.title}: ${activeCard.cartLabel}, ${quantity} шт.`}
-                            onClick={() => addToCart(variant)}
-                            className="inline-flex min-h-10 items-center justify-center rounded-md bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:min-w-32"
-                          >
-                            В корзину
-                          </button>
                         </div>
                       </article>
                     );
@@ -2195,29 +2183,51 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
         <div
           aria-live="polite"
           data-testid="catalog-cart"
-          className="w-full rounded-lg border border-black/10 bg-white p-5 sm:p-6"
+          className={classNames(
+            "w-full rounded-lg border border-black/10 p-3",
+            cart.length
+              ? "sticky bottom-3 z-30 bg-white/96 shadow-[0_14px_42px_rgba(0,0,0,0.12)] backdrop-blur"
+              : "bg-white",
+          )}
         >
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-semibold tracking-normal text-black">Корзина</h2>
-            <span className="text-sm text-black/48">{cartTotal ? `${cartTotal} шт.` : "пусто"}</span>
+          <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-sm font-semibold uppercase tracking-normal text-black">Корзина</h2>
+                <span className="text-sm text-black/48">{cartTotal ? `${cartTotal} шт.` : "пусто"}</span>
+              </div>
+              {cartNotice ? <p className="mt-1 text-xs leading-5 text-black/50">{cartNotice}</p> : null}
+            </div>
+            {cart.length ? (
+              <Link
+                href="/request"
+                className="inline-flex min-h-10 items-center justify-center rounded-md bg-black px-5 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Оформить заявку
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-md bg-black/[0.06] px-5 text-sm font-semibold text-black/36"
+              >
+                Добавьте вкус
+              </button>
+            )}
           </div>
-          {lastAdded ? <p className="mt-3 text-sm leading-6 text-black/54">Добавлено: {lastAdded}</p> : null}
           {cart.length ? (
-            <div className="mt-5 divide-y divide-black/10">
+            <div className="mt-3 flex flex-wrap gap-2">
               {cart.map((item) => (
-                <div key={item.id} className="grid gap-2 py-4 sm:grid-cols-[1fr_auto] sm:items-center">
-                  <div>
-                    <p className="text-sm font-semibold text-black">{item.product}</p>
-                    <p className="mt-1 text-sm text-black/54">
-                      {item.flavor} · {item.group}
-                    </p>
-                  </div>
-                  <p className="text-sm font-semibold text-black">{item.quantity} шт.</p>
-                </div>
+                <span
+                  key={item.id}
+                  className="rounded-md border border-black/10 bg-[#f7f7f7] px-2.5 py-1.5 text-xs leading-5 text-black/64"
+                >
+                  <span className="font-semibold text-black">{item.product}</span> · {item.flavor} · {item.quantity} шт.
+                </span>
               ))}
             </div>
           ) : (
-            <p className="mt-5 text-sm leading-6 text-black/54">Корзина пока пуста.</p>
+            <p className="mt-2 text-sm leading-6 text-black/54">Выберите вкус, чтобы собрать заявку.</p>
           )}
         </div>
       ) : null}
