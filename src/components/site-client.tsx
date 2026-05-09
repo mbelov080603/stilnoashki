@@ -1903,28 +1903,70 @@ function getVariantDescription(variant: ProductVariant) {
   return description || `Профиль вкуса: ${variant.flavor}.`;
 }
 
+function getFlavorCode(variant: ProductVariant) {
+  const ignored = new Set(["и", "айс"]);
+  const tokens = variant.title
+    .replace(/[()]/g, " ")
+    .split(/[\s,.-]+/)
+    .map((token) => token.trim())
+    .filter((token) => token && !ignored.has(token.toLowerCase()));
+  const code = tokens
+    .slice(0, 2)
+    .map((token) => token[0]?.toUpperCase())
+    .join("");
+
+  return code || variant.title[0]?.toUpperCase() || "S";
+}
+
 function getFlavorMarkerStyle(variant: ProductVariant) {
-  const group = variant.group.toLowerCase();
+  const group = (variant.group || "").toLowerCase();
 
   if (group.includes("айс")) {
     return {
       backgroundImage:
-        "linear-gradient(135deg, rgba(17,17,17,0.05) 0 25%, transparent 25% 50%, rgba(17,17,17,0.05) 50% 75%, transparent 75% 100%)",
-      backgroundSize: "1rem 1rem",
+        "repeating-linear-gradient(135deg, rgba(17,17,17,0.16) 0 1px, transparent 1px 0.42rem)",
     };
   }
 
   if (group.includes("кисл")) {
     return {
       backgroundImage:
-        "radial-gradient(circle at 28% 28%, rgba(17,17,17,0.12) 0 0.3rem, transparent 0.34rem), radial-gradient(circle at 68% 66%, rgba(17,17,17,0.08) 0 0.5rem, transparent 0.54rem)",
+        "radial-gradient(circle at 25% 30%, rgba(17,17,17,0.18) 0 0.18rem, transparent 0.22rem), radial-gradient(circle at 72% 68%, rgba(17,17,17,0.14) 0 0.22rem, transparent 0.26rem)",
     };
   }
 
   return {
     backgroundImage:
-      "repeating-linear-gradient(135deg, rgba(17,17,17,0.08) 0 1px, transparent 1px 0.45rem)",
+      "linear-gradient(90deg, rgba(17,17,17,0.1), transparent), repeating-linear-gradient(0deg, rgba(17,17,17,0.1) 0 1px, transparent 1px 0.5rem)",
   };
+}
+
+function CatalogProductGlyph({ mode }: { mode: AssortmentCard["id"] }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 44 92" className="h-14 w-7 text-current" fill="none">
+      <rect x="11" y="10" width="22" height="72" rx="11" stroke="currentColor" strokeWidth="2" />
+      <rect x="17" y="2" width="10" height="14" rx="3" stroke="currentColor" strokeWidth="2" />
+      <path d="M22 34v24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="22" cy="28" r="3.5" stroke="currentColor" strokeWidth="2" />
+      <circle cx="22" cy="69" r="2.5" fill="currentColor" />
+      {mode === "device-kit" ? <path d="M15 18h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> : null}
+    </svg>
+  );
+}
+
+function FlavorMarker({ variant }: { variant: ProductVariant }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="relative flex h-12 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[3px] border border-black/14 bg-white text-black sm:h-14 sm:w-16"
+      style={getFlavorMarkerStyle(variant)}
+    >
+      <span className="absolute inset-1 rounded-[2px] border border-white/70" />
+      <span className="relative text-sm font-semibold leading-none tracking-normal text-black sm:text-base">
+        {getFlavorCode(variant)}
+      </span>
+    </div>
+  );
 }
 
 export function CatalogAssortmentCards({ product }: { product: Product }) {
@@ -1988,42 +2030,70 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-5xl gap-8">
+    <div className="mx-auto grid w-full max-w-[1120px] gap-8 pb-72 sm:pb-48">
       {!activeCard ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {assortmentCards.map((card) => (
-            <button
-              key={card.id}
-              type="button"
-              data-testid={`catalog-card-${card.id}`}
-              aria-label={`Открыть ${card.title}`}
-              onClick={() => setActiveCardId(card.id)}
-              className="group grid min-h-44 cursor-pointer content-between rounded-lg border border-black/12 bg-white p-5 text-left text-black transition hover:border-black hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
-            >
-              <span className="text-xs font-semibold uppercase text-black/38 transition group-hover:text-white/54">
-                {card.eyebrow}
-              </span>
-              <span>
-                <span className="block text-3xl font-semibold leading-none tracking-normal sm:text-4xl">
-                  {card.cartLabel}
-                </span>
-                <span className="mt-5 block border-t border-black/10 pt-4 text-sm text-black/54 transition group-hover:border-white/18 group-hover:text-white/60">
-                  {variants.length} вкусов
-                </span>
-              </span>
-            </button>
-          ))}
+        <div className="mx-auto grid w-full max-w-4xl gap-7 text-center">
+          <div className="grid gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-black/42">STILNO CLICK ONE</p>
+            <h2 className="text-3xl font-semibold leading-none tracking-normal text-black sm:text-5xl">
+              Выберите продукт
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {assortmentCards.map((card) => {
+              const isPrimaryCard = card.id === "cartridges";
+
+              return (
+                <button
+                  key={card.id}
+                  type="button"
+                  data-testid={`catalog-card-${card.id}`}
+                  aria-label={`Открыть ${card.title}`}
+                  onClick={() => setActiveCardId(card.id)}
+                  className={classNames(
+                    "group grid min-h-28 cursor-pointer grid-cols-[4rem_1fr] items-center overflow-hidden rounded-[4px] border border-black text-left transition hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black",
+                    isPrimaryCard ? "bg-black text-white" : "bg-white text-black",
+                  )}
+                >
+                  <span
+                    className={classNames(
+                      "flex h-full items-center justify-center border-r transition group-hover:border-white/16 group-hover:bg-black group-hover:text-white",
+                      isPrimaryCard ? "border-white/16 bg-black text-white" : "border-black/12 bg-white text-black",
+                    )}
+                  >
+                    <CatalogProductGlyph mode={card.id} />
+                  </span>
+                  <span className="grid gap-1 px-5 py-4">
+                    <span className="text-2xl font-semibold leading-none tracking-normal sm:text-3xl">
+                      {card.cartLabel}
+                    </span>
+                    <span
+                      className={classNames(
+                        "text-sm leading-5 transition group-hover:text-white/62",
+                        isPrimaryCard ? "text-white/62" : "text-black/58",
+                      )}
+                    >
+                      {variants.length} вкусов · {card.eyebrow}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       ) : (
-        <div className="grid gap-6">
-          <div className="grid gap-3 border-b border-black/10 pb-4 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="grid gap-7">
+          <div className="grid gap-4 border-b border-black/12 pb-5 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
-              <p className="text-xs font-semibold uppercase text-black/38">{activeCard.eyebrow}</p>
-              <h2 className="mt-2 text-2xl font-semibold leading-none tracking-normal text-black sm:text-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-black/42">{activeCard.eyebrow}</p>
+              <h2 className="mt-2 text-3xl font-semibold leading-none tracking-normal text-black sm:text-4xl">
                 {activeCard.title}
               </h2>
+              <p className="mt-2 text-sm leading-6 text-black/58">
+                {variants.length} вкусов · 20 мг/см³ · выбор в один тап
+              </p>
             </div>
-            <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[30rem]">
+            <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[32rem]">
               {assortmentCards.map((card) => {
                 const isActive = activeCard.id === card.id;
 
@@ -2035,7 +2105,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                     aria-pressed={isActive}
                     onClick={() => setActiveCardId(card.id)}
                     className={classNames(
-                      "min-h-11 rounded-lg border px-4 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
+                      "min-h-11 rounded-[4px] border px-4 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
                       isActive
                         ? "border-black bg-black text-white"
                         : "border-black/12 bg-white text-black hover:border-black",
@@ -2048,7 +2118,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
               <button
                 type="button"
                 onClick={() => setActiveCardId(null)}
-                className="min-h-11 rounded-lg border border-black/12 bg-white px-4 text-sm font-semibold text-black transition hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                className="min-h-11 rounded-[4px] border border-black/12 bg-white px-4 text-sm font-semibold text-black transition hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               >
                 Назад
               </button>
@@ -2058,11 +2128,11 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
           <div className="grid gap-5">
             {groupedVariants.map(({ group, items }) => (
               <section key={group} aria-labelledby={`catalog-group-${group}`} className="grid gap-2">
-                <div className="grid grid-cols-[1fr_auto] items-center border-y border-black/10 py-2">
-                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase tracking-normal text-black">
+                <div className="grid grid-cols-[1fr_auto] items-center border-y border-black py-2.5">
+                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase tracking-[0.08em] text-black">
                     {group}
                   </h3>
-                  <span className="text-xs font-semibold uppercase text-black/42">
+                  <span className="text-xs font-semibold uppercase tracking-[0.08em] text-black/48">
                     {items.length} вкусов
                   </span>
                 </div>
@@ -2077,43 +2147,44 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                         key={variant.id}
                         data-testid={`catalog-flavor-card-${variant.id}`}
                         className={classNames(
-                          "rounded-lg border bg-white text-black transition hover:border-black/32",
-                          cartItem ? "border-black/24 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]" : "border-black/10",
+                          "overflow-hidden rounded-[3px] border bg-white text-black transition hover:border-black hover:bg-[#fbfbfb]",
+                          cartItem ? "border-black shadow-[inset_0_0_0_1px_#111]" : "border-black/14",
                         )}
                       >
-                        <div className="grid grid-cols-[4rem_1fr] gap-3 p-3 sm:grid-cols-[4.25rem_1fr_auto] sm:items-center">
-                          <div
-                            aria-hidden="true"
-                            className="relative flex h-16 w-16 items-center justify-center rounded-md border border-black/10 bg-[#f7f7f7] text-black"
-                            style={getFlavorMarkerStyle(variant)}
-                          >
-                            <span className="text-lg font-semibold leading-none text-black/72">
-                              {variant.title[0]}
-                            </span>
-                            <span className="absolute bottom-1.5 right-1.5 h-2 w-2 rounded-full bg-black/62" />
-                          </div>
-
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="rounded-sm border border-black/10 px-1.5 py-0.5 text-[0.64rem] font-semibold uppercase leading-none text-black/46">
-                                {variant.group || group}
-                              </span>
-                              <span className="text-[0.68rem] font-medium uppercase leading-none text-black/42">
-                                {activeCard.id === "device-kit" ? "комплект" : "картридж"}
-                              </span>
-                              <span className="text-[0.68rem] font-medium uppercase leading-none text-black/42">
-                                {variant.nicotineStrength}
+                        <div className="grid min-h-24 grid-cols-[3.15rem_minmax(0,1fr)_auto] gap-2 px-2 py-2 sm:min-h-[6.25rem] sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-3 sm:px-3 sm:py-2">
+                          <div className="flex items-center justify-center">
+                            <div className="relative flex h-16 w-7 items-center justify-center rounded-full border border-black bg-black text-white sm:h-20">
+                              <CatalogProductGlyph mode={activeCard.id} />
+                              <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rotate-[-90deg] text-[0.45rem] font-semibold uppercase leading-none tracking-[0.08em] text-white/72">
+                                {activeCard.id === "device-kit" ? "kit" : "pod"}
                               </span>
                             </div>
-                            <h4 className="mt-2 text-[1.05rem] font-semibold leading-tight tracking-normal text-black sm:text-lg">
-                              {variant.title}
-                            </h4>
-                            <p className="mt-1 text-sm leading-5 text-black/58">{description}</p>
                           </div>
 
-                          <div className="col-span-2 grid gap-2 sm:col-span-1 sm:min-w-36 sm:justify-items-end">
+                          <div className="grid min-w-0 gap-3 py-2 sm:grid-cols-[1fr_auto] sm:items-center">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="rounded-[3px] border border-black/28 px-2 py-1 text-[0.64rem] font-semibold uppercase leading-none tracking-[0.06em] text-black/62">
+                                  {variant.group || group}
+                                </span>
+                                <span className="text-[0.68rem] font-medium uppercase leading-none tracking-[0.06em] text-black/42">
+                                  {activeCard.id === "device-kit" ? "комплект" : "картридж"}
+                                </span>
+                              </div>
+                              <h4 className="mt-2 text-base font-semibold leading-tight tracking-normal text-black sm:text-lg">
+                                {variant.title}
+                              </h4>
+                              <p className="mt-1 line-clamp-2 text-sm leading-5 text-black/58 sm:line-clamp-1">{description}</p>
+                            </div>
+
+                            <div className="hidden sm:block">
+                              <FlavorMarker variant={variant} />
+                            </div>
+                          </div>
+
+                          <div className="grid items-center justify-items-end py-2 sm:min-w-40">
                             {cartItem ? (
-                              <div className="grid h-9 w-full grid-cols-[2.25rem_1fr_2.25rem] overflow-hidden rounded-md border border-black/14 bg-white sm:w-32">
+                              <div className="grid h-10 w-[6.75rem] grid-cols-[2rem_1fr_2rem] overflow-hidden rounded-[4px] border border-black bg-white sm:h-9 sm:w-32 sm:grid-cols-[2.5rem_1fr_2.5rem]">
                                 <button
                                   type="button"
                                   aria-label={`Уменьшить количество для ${variant.title}`}
@@ -2131,7 +2202,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                                   onChange={(event) =>
                                     updateCartQuantity(activeCard.id, variant, Number(event.target.value) || 1)
                                   }
-                                  className="min-w-0 border-x border-black/12 text-center text-sm font-semibold text-black outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                  className="min-w-0 border-x border-black/18 text-center text-sm font-semibold text-black outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                 />
                                 <button
                                   type="button"
@@ -2148,7 +2219,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                                 data-testid={`catalog-add-${activeCard.id}-${variant.id}`}
                                 aria-label={`Добавить ${variant.title}: ${activeCard.cartLabel}, 1 шт.`}
                                 onClick={() => addToCart(variant)}
-                                className="inline-flex h-9 w-full items-center justify-center rounded-md bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:w-32"
+                                className="inline-flex h-10 w-[6.25rem] items-center justify-center rounded-[4px] bg-black px-3 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:h-9 sm:w-32 sm:px-4"
                               >
                                 В корзину
                               </button>
@@ -2163,8 +2234,8 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
             ))}
           </div>
 
-          <details data-testid="catalog-model-specs" className="rounded-lg border border-black/10 bg-white p-4 text-black">
-            <summary className="cursor-pointer text-sm font-semibold uppercase text-black">
+          <details data-testid="catalog-model-specs" className="rounded-[4px] border border-black/12 bg-white p-4 text-black">
+            <summary className="cursor-pointer text-sm font-semibold uppercase tracking-[0.08em] text-black">
               Характеристики модели
             </summary>
             <dl className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -2183,52 +2254,51 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
         <div
           aria-live="polite"
           data-testid="catalog-cart"
-          className={classNames(
-            "w-full rounded-lg border border-black/10 p-3",
-            cart.length
-              ? "sticky bottom-3 z-30 bg-white/96 shadow-[0_14px_42px_rgba(0,0,0,0.12)] backdrop-blur"
-              : "bg-white",
-          )}
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-black bg-white px-5 py-3 shadow-[0_-18px_44px_rgba(0,0,0,0.12)] sm:px-6 lg:px-8"
         >
-          <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-sm font-semibold uppercase tracking-normal text-black">Корзина</h2>
-                <span className="text-sm text-black/48">{cartTotal ? `${cartTotal} шт.` : "пусто"}</span>
+          <div className="mx-auto w-full max-w-[1120px]">
+            <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-black">Корзина</h2>
+                  <span className="text-2xl font-semibold leading-none text-black">
+                    {cartTotal ? `${cartTotal} шт.` : "пусто"}
+                  </span>
+                </div>
+                {cartNotice ? <p className="mt-1 hidden text-xs leading-5 text-black/50 sm:block">{cartNotice}</p> : null}
               </div>
-              {cartNotice ? <p className="mt-1 text-xs leading-5 text-black/50">{cartNotice}</p> : null}
+              {cart.length ? (
+                <Link
+                  href="/request"
+                  className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-black px-5 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:min-h-12 sm:px-8"
+                >
+                  Оформить заявку
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex min-h-11 cursor-not-allowed items-center justify-center rounded-[4px] bg-black/[0.06] px-4 text-sm font-semibold text-black/36 sm:min-h-12 sm:px-5"
+                >
+                  Добавьте вкус
+                </button>
+              )}
             </div>
             {cart.length ? (
-              <Link
-                href="/request"
-                className="inline-flex min-h-10 items-center justify-center rounded-md bg-black px-5 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-              >
-                Оформить заявку
-              </Link>
+              <div className="mt-3 hidden flex-wrap gap-2 sm:flex">
+                {cart.map((item) => (
+                  <span
+                    key={item.id}
+                    className="rounded-[3px] border border-black/12 bg-white px-2.5 py-1.5 text-xs leading-5 text-black/64"
+                  >
+                    <span className="font-semibold text-black">{item.product}</span> · {item.flavor} · {item.quantity} шт.
+                  </span>
+                ))}
+              </div>
             ) : (
-              <button
-                type="button"
-                disabled
-                className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-md bg-black/[0.06] px-5 text-sm font-semibold text-black/36"
-              >
-                Добавьте вкус
-              </button>
+              <p className="mt-2 text-sm leading-6 text-black/54">Выберите вкус, чтобы собрать заявку.</p>
             )}
           </div>
-          {cart.length ? (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {cart.map((item) => (
-                <span
-                  key={item.id}
-                  className="rounded-md border border-black/10 bg-[#f7f7f7] px-2.5 py-1.5 text-xs leading-5 text-black/64"
-                >
-                  <span className="font-semibold text-black">{item.product}</span> · {item.flavor} · {item.quantity} шт.
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-2 text-sm leading-6 text-black/54">Выберите вкус, чтобы собрать заявку.</p>
-          )}
         </div>
       ) : null}
     </div>

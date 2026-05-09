@@ -846,7 +846,7 @@ function StoresIndexTemplate(page: ResolvedPage) {
   return (
     <section className="min-h-[calc(100vh-8rem)] bg-white text-black">
       <StructuredData data={buildJsonLd(page)} />
-      <section className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-5 py-14 sm:px-6 lg:px-8">
+      <section className="flex min-h-[calc(100vh-8rem)] items-start justify-center px-5 py-14 sm:px-6 lg:px-8">
         <div className="w-full">
           <h1 className="sr-only">Каталог STILNO</h1>
 
