@@ -1903,21 +1903,6 @@ function getVariantDescription(variant: ProductVariant) {
   return description || `Профиль вкуса: ${variant.flavor}.`;
 }
 
-function getFlavorCode(variant: ProductVariant) {
-  const ignored = new Set(["и", "айс"]);
-  const tokens = variant.title
-    .replace(/[()]/g, " ")
-    .split(/[\s,.-]+/)
-    .map((token) => token.trim())
-    .filter((token) => token && !ignored.has(token.toLowerCase()));
-  const code = tokens
-    .slice(0, 2)
-    .map((token) => token[0]?.toUpperCase())
-    .join("");
-
-  return code || variant.title[0]?.toUpperCase() || "S";
-}
-
 function getFlavorMarkerStyle(variant: ProductVariant) {
   const group = (variant.group || "").toLowerCase();
 
@@ -1941,6 +1926,115 @@ function getFlavorMarkerStyle(variant: ProductVariant) {
   };
 }
 
+type FlavorIconKind = "berry" | "citrus" | "tropical" | "mint" | "drink" | "cream" | "ice" | "sour";
+
+function getFlavorIconKind(variant: ProductVariant): FlavorIconKind {
+  const title = variant.title.toLowerCase();
+  const group = (variant.group || "").toLowerCase();
+
+  if (group.includes("айс")) return "ice";
+  if (title.includes("мят") || title.includes("тархун")) return "mint";
+  if (title.includes("чай") || title.includes("лимонад") || title.includes("энергетик")) return "drink";
+  if (title.includes("слив") || title.includes("крем") || title.includes("молок")) return "cream";
+  if (
+    title.includes("ананас") ||
+    title.includes("манго") ||
+    title.includes("персик") ||
+    title.includes("кокос") ||
+    title.includes("драгон")
+  ) {
+    return "tropical";
+  }
+  if (
+    title.includes("грейп") ||
+    title.includes("лимон") ||
+    title.includes("лайм") ||
+    title.includes("яблок") ||
+    title.includes("апельс")
+  ) {
+    return group.includes("кисл") ? "sour" : "citrus";
+  }
+
+  return "berry";
+}
+
+function FlavorGlyph({ kind, className = "h-7 w-7" }: { kind: FlavorIconKind; className?: string }) {
+  if (kind === "mint") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+        <path d="M16 27V10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M16 13C9.5 11.5 6.5 7 6 4.5c5.5.2 10 3.1 10 8.5Z" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M16 16c6.7-1.5 9.5-6.1 10-8.5-5.4.2-10 3-10 8.5Z" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M16 22c-4.4-.9-7-3.7-8-6.5 4.2.2 7.7 2.3 8 6.5Z" stroke="currentColor" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  if (kind === "citrus" || kind === "sour") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+        <path d="M7 23c1-8.5 7.5-14.5 18-16-.8 10-6.9 16.7-18 16Z" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M10 21 23 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M15 16c.5 2.7 2.2 4.8 5 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        {kind === "sour" ? (
+          <>
+            <circle cx="7" cy="8" r="1.6" fill="currentColor" />
+            <circle cx="25" cy="23" r="1.6" fill="currentColor" />
+          </>
+        ) : null}
+      </svg>
+    );
+  }
+
+  if (kind === "tropical") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+        <path d="M16 6c-3.4 4.1-6 8-6 12.5A6 6 0 0 0 16 25a6 6 0 0 0 6-6.5C22 14 19.4 10.1 16 6Z" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M16 4v5M11 9l10 10M21 9 11 19" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        <path d="M11 7c1.7-2 3.4-2.9 5-2.9 1.8 0 3.4 1 5 2.9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === "drink") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+        <path d="M8 12h16l-1.7 14H9.7L8 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+        <path d="M11 8h10M14 4h4M12 17h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M20 8 24 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === "cream") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+        <path d="M9 24h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M10 22c.5-4.8 4-5.5 6-6.9 2-1.3 2.2-3 1.2-5.1 3.7 1.4 6 4.6 6 8 0 3.1-2.2 5-6.2 5H10Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+        <path d="M10.5 17.5c2.6 1.4 5.5 1.7 9 .9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === "ice") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+        <path d="M16 4v24M6 10l20 12M26 10 6 22" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="m12 6 4 4 4-4M12 26l4-4 4 4M5 15l5-1.5L8.8 8.5M27 17l-5 1.5 1.2 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
+      <circle cx="12" cy="18" r="5" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="19" cy="16" r="5" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="17" cy="23" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M17 11c.4-3 2.3-5 5-6M18 11c-2.4-1.7-4.8-2-7-1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function CatalogProductGlyph({ mode }: { mode: AssortmentCard["id"] }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 44 92" className="h-14 w-7 text-current" fill="none">
@@ -1962,9 +2056,7 @@ function FlavorMarker({ variant }: { variant: ProductVariant }) {
       style={getFlavorMarkerStyle(variant)}
     >
       <span className="absolute inset-1 rounded-[2px] border border-white/70" />
-      <span className="relative text-sm font-semibold leading-none tracking-normal text-black sm:text-base">
-        {getFlavorCode(variant)}
-      </span>
+      <FlavorGlyph kind={getFlavorIconKind(variant)} className="relative h-7 w-7 text-black sm:h-8 sm:w-8" />
     </div>
   );
 }
@@ -2169,6 +2261,12 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                                 </span>
                                 <span className="text-[0.68rem] font-medium uppercase leading-none tracking-[0.06em] text-black/42">
                                   {activeCard.id === "device-kit" ? "комплект" : "картридж"}
+                                </span>
+                                <span
+                                  aria-hidden="true"
+                                  className="inline-flex h-5 w-5 items-center justify-center rounded-[3px] border border-black/14 text-black sm:hidden"
+                                >
+                                  <FlavorGlyph kind={getFlavorIconKind(variant)} className="h-3.5 w-3.5" />
                                 </span>
                               </div>
                               <h4 className="mt-2 text-base font-semibold leading-tight tracking-normal text-black sm:text-lg">
