@@ -290,7 +290,7 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("STILNO CLICK ONE")).toBeVisible();
   await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("10–22 Вт")).toBeVisible();
   await expect(page.locator('[data-testid="catalog-flavor-card-kaktus-laym"]')).toContainText("Кактус и лайм");
-  await page.locator('[data-testid="catalog-add-cartridges-kaktus-laym"]').click();
+  await page.locator('[data-testid="catalog-flavor-card-kaktus-laym"]').click();
   await page.getByLabel("Увеличить количество для Кактус Лайм").click();
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Картриджи");
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Кактус Лайм");
@@ -300,7 +300,7 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator('[data-testid="catalog-flavor-card-vinograd-chernika-ice"]')).toContainText(
     "Виноград, черника и холод",
   );
-  await page.locator('[data-testid="catalog-add-device-kit-vinograd-chernika-ice"]').click();
+  await page.locator('[data-testid="catalog-flavor-card-vinograd-chernika-ice"]').click();
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Устройство в сборе");
   await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Виноград Черника Айс");
 

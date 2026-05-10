@@ -1903,29 +1903,6 @@ function getVariantDescription(variant: ProductVariant) {
   return description || `Профиль вкуса: ${variant.flavor}.`;
 }
 
-function getFlavorMarkerStyle(variant: ProductVariant) {
-  const group = (variant.group || "").toLowerCase();
-
-  if (group.includes("айс")) {
-    return {
-      backgroundImage:
-        "repeating-linear-gradient(135deg, rgba(17,17,17,0.16) 0 1px, transparent 1px 0.42rem)",
-    };
-  }
-
-  if (group.includes("кисл")) {
-    return {
-      backgroundImage:
-        "radial-gradient(circle at 25% 30%, rgba(17,17,17,0.18) 0 0.18rem, transparent 0.22rem), radial-gradient(circle at 72% 68%, rgba(17,17,17,0.14) 0 0.22rem, transparent 0.26rem)",
-    };
-  }
-
-  return {
-    backgroundImage:
-      "linear-gradient(90deg, rgba(17,17,17,0.1), transparent), repeating-linear-gradient(0deg, rgba(17,17,17,0.1) 0 1px, transparent 1px 0.5rem)",
-  };
-}
-
 type FlavorIconKind = "berry" | "citrus" | "tropical" | "mint" | "drink" | "cream" | "ice" | "sour";
 
 function getFlavorIconKind(variant: ProductVariant): FlavorIconKind {
@@ -1973,13 +1950,12 @@ function FlavorGlyph({ kind, className = "h-7 w-7" }: { kind: FlavorIconKind; cl
   if (kind === "citrus" || kind === "sour") {
     return (
       <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <path d="M7 23c1-8.5 7.5-14.5 18-16-.8 10-6.9 16.7-18 16Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M10 21 23 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M15 16c.5 2.7 2.2 4.8 5 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        <circle cx="16" cy="16" r="10" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M16 6v20M8.5 16h15M10.5 9.5l11 13M21.5 9.5l-11 13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
         {kind === "sour" ? (
           <>
-            <circle cx="7" cy="8" r="1.6" fill="currentColor" />
-            <circle cx="25" cy="23" r="1.6" fill="currentColor" />
+            <circle cx="6.5" cy="8" r="1.6" fill="currentColor" />
+            <circle cx="25.5" cy="24" r="1.6" fill="currentColor" />
           </>
         ) : null}
       </svg>
@@ -2035,27 +2011,28 @@ function FlavorGlyph({ kind, className = "h-7 w-7" }: { kind: FlavorIconKind; cl
   );
 }
 
-function CatalogProductGlyph({ mode }: { mode: AssortmentCard["id"] }) {
+function CatalogProductGlyph({
+  mode,
+  className = "h-12 w-6",
+}: {
+  mode: AssortmentCard["id"];
+  className?: string;
+}) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 44 92" className="h-14 w-7 text-current" fill="none">
-      <rect x="11" y="10" width="22" height="72" rx="11" stroke="currentColor" strokeWidth="2" />
-      <rect x="17" y="2" width="10" height="14" rx="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M22 34v24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="22" cy="28" r="3.5" stroke="currentColor" strokeWidth="2" />
-      <circle cx="22" cy="69" r="2.5" fill="currentColor" />
-      {mode === "device-kit" ? <path d="M15 18h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> : null}
+    <svg aria-hidden="true" viewBox="0 0 32 80" className={`${className} text-current`} fill="none">
+      <rect x="8.5" y="13" width="15" height="55" rx="7.5" stroke="currentColor" strokeWidth="2" />
+      <rect x="12" y="5" width="8" height="11" rx="2.5" stroke="currentColor" strokeWidth="2" />
+      <path d="M16 32v18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="16" cy="27" r="3" stroke="currentColor" strokeWidth="2" />
+      <circle cx="16" cy="59" r="2.2" fill="currentColor" />
+      {mode === "device-kit" ? <path d="M11.5 20.5h9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> : null}
     </svg>
   );
 }
 
 function FlavorMarker({ variant }: { variant: ProductVariant }) {
   return (
-    <div
-      aria-hidden="true"
-      className="relative flex h-12 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[3px] border border-black/14 bg-white text-black sm:h-14 sm:w-16"
-      style={getFlavorMarkerStyle(variant)}
-    >
-      <span className="absolute inset-1 rounded-[2px] border border-white/70" />
+    <div aria-hidden="true" className="flex h-12 w-14 shrink-0 items-center justify-center rounded-[3px] border border-black/18 bg-white text-black sm:h-14 sm:w-16">
       <FlavorGlyph kind={getFlavorIconKind(variant)} className="relative h-7 w-7 text-black sm:h-8 sm:w-8" />
     </div>
   );
@@ -2233,23 +2210,44 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                     const cartItem = cartById.get(quantityKey(activeCard.id, variant.id));
                     const quantity = cartItem?.quantity ?? 1;
                     const description = getVariantDescription(variant);
+                    const selectVariant = () => {
+                      if (!cartItem) {
+                        addToCart(variant);
+                      }
+                    };
 
                     return (
                       <article
                         key={variant.id}
                         data-testid={`catalog-flavor-card-${variant.id}`}
+                        role={cartItem ? undefined : "button"}
+                        tabIndex={cartItem ? undefined : 0}
+                        aria-label={cartItem ? undefined : `Выбрать ${variant.title}: ${activeCard.cartLabel}`}
+                        onClick={selectVariant}
+                        onKeyDown={(event) => {
+                          if (cartItem || (event.key !== "Enter" && event.key !== " ")) {
+                            return;
+                          }
+                          event.preventDefault();
+                          selectVariant();
+                        }}
                         className={classNames(
-                          "overflow-hidden rounded-[3px] border bg-white text-black transition hover:border-black hover:bg-[#fbfbfb]",
+                          "overflow-hidden rounded-[3px] border bg-white text-black transition hover:border-black hover:bg-[#fbfbfb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
+                          cartItem ? "" : "cursor-pointer",
                           cartItem ? "border-black shadow-[inset_0_0_0_1px_#111]" : "border-black/14",
                         )}
                       >
-                        <div className="grid min-h-24 grid-cols-[3.15rem_minmax(0,1fr)_auto] gap-2 px-2 py-2 sm:min-h-[6.25rem] sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-3 sm:px-3 sm:py-2">
+                        <div
+                          className={classNames(
+                            "grid min-h-24 gap-2 px-2 py-2 sm:min-h-[6.25rem] sm:gap-3 sm:px-3 sm:py-2",
+                            cartItem
+                              ? "grid-cols-[3.15rem_minmax(0,1fr)_auto] sm:grid-cols-[3.5rem_minmax(0,1fr)_auto]"
+                              : "grid-cols-[3.15rem_minmax(0,1fr)] sm:grid-cols-[3.5rem_minmax(0,1fr)]",
+                          )}
+                        >
                           <div className="flex items-center justify-center">
-                            <div className="relative flex h-16 w-7 items-center justify-center rounded-full border border-black bg-black text-white sm:h-20">
-                              <CatalogProductGlyph mode={activeCard.id} />
-                              <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rotate-[-90deg] text-[0.45rem] font-semibold uppercase leading-none tracking-[0.08em] text-white/72">
-                                {activeCard.id === "device-kit" ? "kit" : "pod"}
-                              </span>
+                            <div className="flex h-16 w-8 items-center justify-center rounded-full border border-black bg-black text-white sm:h-20 sm:w-9">
+                              <CatalogProductGlyph mode={activeCard.id} className="h-12 w-5 sm:h-14 sm:w-6" />
                             </div>
                           </div>
 
@@ -2280,13 +2278,16 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                             </div>
                           </div>
 
-                          <div className="grid items-center justify-items-end py-2 sm:min-w-40">
-                            {cartItem ? (
+                          {cartItem ? (
+                            <div className="grid items-center justify-items-end py-2 sm:min-w-40">
                               <div className="grid h-10 w-[6.75rem] grid-cols-[2rem_1fr_2rem] overflow-hidden rounded-[4px] border border-black bg-white sm:h-9 sm:w-32 sm:grid-cols-[2.5rem_1fr_2.5rem]">
                                 <button
                                   type="button"
                                   aria-label={`Уменьшить количество для ${variant.title}`}
-                                  onClick={() => updateCartQuantity(activeCard.id, variant, quantity - 1)}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    updateCartQuantity(activeCard.id, variant, quantity - 1);
+                                  }}
                                   className="text-lg leading-none text-black transition hover:bg-black hover:text-white"
                                 >
                                   -
@@ -2297,6 +2298,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                                   min={1}
                                   max={99}
                                   value={quantity}
+                                  onClick={(event) => event.stopPropagation()}
                                   onChange={(event) =>
                                     updateCartQuantity(activeCard.id, variant, Number(event.target.value) || 1)
                                   }
@@ -2305,24 +2307,17 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                                 <button
                                   type="button"
                                   aria-label={`Увеличить количество для ${variant.title}`}
-                                  onClick={() => updateCartQuantity(activeCard.id, variant, quantity + 1)}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    updateCartQuantity(activeCard.id, variant, quantity + 1);
+                                  }}
                                   className="text-lg leading-none text-black transition hover:bg-black hover:text-white"
                                 >
                                   +
                                 </button>
                               </div>
-                            ) : (
-                              <button
-                                type="button"
-                                data-testid={`catalog-add-${activeCard.id}-${variant.id}`}
-                                aria-label={`Добавить ${variant.title}: ${activeCard.cartLabel}, 1 шт.`}
-                                onClick={() => addToCart(variant)}
-                                className="inline-flex h-10 w-[6.25rem] items-center justify-center rounded-[4px] bg-black px-3 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:h-9 sm:w-32 sm:px-4"
-                              >
-                                В корзину
-                              </button>
-                            )}
-                          </div>
+                            </div>
+                          ) : null}
                         </div>
                       </article>
                     );
