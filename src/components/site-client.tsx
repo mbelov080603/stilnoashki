@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type FormEvent,
   type RefObject,
@@ -937,6 +938,15 @@ export function SiteHeader({
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
   const storeMapHeader = normalizedPathname === "/stores/map";
   const catalogHeader = normalizedPathname === "/stores";
+  const headerNavItems = catalogHeader
+    ? [
+        { label: "Устройства", href: "#catalog-products" },
+        { label: "Картриджи", href: "#catalog-products" },
+        { label: "Вкусы", href: "/stores" },
+        { label: "О STILNO", href: "/brand" },
+        { label: "Поддержка", href: "/support" },
+      ]
+    : navItems;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -993,7 +1003,7 @@ export function SiteHeader({
         storeMapHeader
           ? "fixed inset-x-0 border-white/10 bg-black/58"
           : catalogHeader
-            ? "relative border-black/10 bg-white"
+            ? "sticky border-white/10 bg-[#020202]/94"
             : "sticky border-black/10 bg-white/92",
       )}
     >
@@ -1003,39 +1013,74 @@ export function SiteHeader({
           dataAnalytics="nav_logo"
           className={classNames(
             "inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.28em]",
-            storeMapHeader ? "text-white" : "text-black",
+            catalogHeader ? "text-xl italic tracking-[0.12em] text-white" : storeMapHeader ? "text-white" : "text-black",
           )}
         >
           STILNO
         </ChromeLink>
 
         <nav className="hidden items-center gap-6 xl:flex">
-          {navItems.map((item) => (
-            <ChromeLink
-              key={item.href}
-              href={item.href}
-              dataAnalytics={`nav_${item.href.replace(/\W+/g, "_")}`}
-              className={classNames(
-                "text-[0.92rem] transition",
-                storeMapHeader ? "text-white/66 hover:text-white" : "text-black/58 hover:text-black",
-              )}
-            >
-              {item.label}
-            </ChromeLink>
-          ))}
+          {headerNavItems.map((item) => {
+            const isCatalogActive = catalogHeader && item.label === "Вкусы";
+
+            return (
+              <ChromeLink
+                key={`${item.href}-${item.label}`}
+                href={item.href}
+                dataAnalytics={`nav_${item.href.replace(/\W+/g, "_")}`}
+                className={classNames(
+                  "relative py-2 text-[0.82rem] font-semibold uppercase tracking-[0.06em] transition",
+                  catalogHeader
+                    ? isCatalogActive
+                      ? "text-white after:absolute after:inset-x-0 after:-bottom-2 after:h-0.5 after:bg-white"
+                      : "text-white/62 hover:text-white"
+                    : storeMapHeader
+                      ? "text-white/66 hover:text-white"
+                      : "text-black/58 hover:text-black",
+                )}
+              >
+                {item.label}
+              </ChromeLink>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <ChromeLink
-            href={primaryCta.href}
-            dataAnalytics="primary_cta"
-            className={classNames(
-              "rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
-              storeMapHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
-            )}
-          >
-            {primaryCta.label}
-          </ChromeLink>
+          {catalogHeader ? (
+            <>
+              <ChromeLink
+                href="/support"
+                dataAnalytics="catalog_support_icon"
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/0 text-white/72 transition hover:border-white/18 hover:text-white"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none">
+                  <circle cx="12" cy="8" r="3.4" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </ChromeLink>
+              <ChromeLink
+                href="/request"
+                dataAnalytics="catalog_cart_icon"
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/0 text-white/72 transition hover:border-white/18 hover:text-white"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none">
+                  <path d="M7 9h10l-.8 11H7.8L7 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  <path d="M9 9a3 3 0 0 1 6 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </ChromeLink>
+            </>
+          ) : (
+            <ChromeLink
+              href={primaryCta.href}
+              dataAnalytics="primary_cta"
+              className={classNames(
+                "rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
+                storeMapHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
+              )}
+            >
+              {primaryCta.label}
+            </ChromeLink>
+          )}
         </div>
 
         <button
@@ -1043,7 +1088,7 @@ export function SiteHeader({
           type="button"
           className={classNames(
             "inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_10px_28px_rgba(0,0,0,0.06)] xl:hidden",
-            storeMapHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
+            storeMapHeader || catalogHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
           )}
           onClick={() => setMenuOpen((current) => !current)}
           aria-expanded={menuOpen}
@@ -1064,18 +1109,26 @@ export function SiteHeader({
         <div
           id="mobile-menu"
           ref={menuRef}
-        className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border border-black/10 bg-white p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden"
+          className={classNames(
+            "absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden",
+            catalogHeader ? "border-white/12 bg-black text-white" : "border-black/10 bg-white text-black",
+          )}
           role="dialog"
           aria-modal="true"
           aria-label="Мобильное меню"
         >
           <nav className="flex flex-col gap-2">
-            {navItems.map((item) => (
+            {headerNavItems.map((item) => (
               <ChromeLink
-                key={item.href}
+                key={`${item.href}-${item.label}`}
                 href={item.href}
                 dataAnalytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
-                className="rounded-[0.9rem] border border-black/10 bg-white px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
+                className={classNames(
+                  "rounded-[0.9rem] border px-4 py-3 transition",
+                  catalogHeader
+                    ? "border-white/10 bg-white/[0.06] text-white/72 hover:border-white/24 hover:text-white"
+                    : "border-black/10 bg-white text-black/70 hover:border-black/24 hover:text-black",
+                )}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -1085,9 +1138,10 @@ export function SiteHeader({
           <ChromeLink
             href={primaryCta.href}
             dataAnalytics="mobile_primary_cta"
-            className={`mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition ${ctaClassName(
-              primaryCta.variant,
-            )}`}
+            className={classNames(
+              "mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition",
+              catalogHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
+            )}
             onClick={() => setMenuOpen(false)}
           >
             {primaryCta.label}
@@ -1883,6 +1937,18 @@ type CatalogVariant = ProductVariant & {
   flavorDescription?: string;
 };
 
+type FlavorFilterId = "all" | "fruit" | "berry" | "fresh" | "tropical" | "drink" | "mix";
+
+const flavorFilters: Array<{ id: FlavorFilterId; label: string }> = [
+  { id: "all", label: "Все вкусы" },
+  { id: "fruit", label: "Фруктовые" },
+  { id: "berry", label: "Ягодные" },
+  { id: "fresh", label: "Освежающие" },
+  { id: "tropical", label: "Тропические" },
+  { id: "drink", label: "Напитки" },
+  { id: "mix", label: "Миксы" },
+];
+
 function getVariantGroups(variants: ProductVariant[]) {
   const groupMap = new Map<string, ProductVariant[]>();
 
@@ -1904,6 +1970,78 @@ function getVariantDescription(variant: ProductVariant) {
 }
 
 type FlavorIconKind = "berry" | "citrus" | "tropical" | "mint" | "drink" | "cream" | "ice" | "sour";
+
+function getVariantFilterIds(variant: ProductVariant): FlavorFilterId[] {
+  const title = variant.title.toLowerCase();
+  const group = (variant.group || "").toLowerCase();
+  const filters = new Set<FlavorFilterId>();
+
+  filters.add("all");
+
+  if (group.includes("айс") || title.includes("мят") || title.includes("тархун") || title.includes("лед")) {
+    filters.add("fresh");
+  }
+
+  if (
+    title.includes("клуб") ||
+    title.includes("малин") ||
+    title.includes("черник") ||
+    title.includes("смород") ||
+    title.includes("ежев") ||
+    title.includes("виш") ||
+    title.includes("ягод") ||
+    title.includes("землян") ||
+    title.includes("виноград") ||
+    title.includes("клюк")
+  ) {
+    filters.add("berry");
+  }
+
+  if (
+    title.includes("ананас") ||
+    title.includes("манго") ||
+    title.includes("кокос") ||
+    title.includes("драгон") ||
+    title.includes("мараку")
+  ) {
+    filters.add("tropical");
+  }
+
+  if (
+    title.includes("чай") ||
+    title.includes("лимонад") ||
+    title.includes("энергетик") ||
+    title.includes("тархун") ||
+    title.includes("сок")
+  ) {
+    filters.add("drink");
+  }
+
+  if (
+    title.includes("грейп") ||
+    title.includes("лимон") ||
+    title.includes("лайм") ||
+    title.includes("яблок") ||
+    title.includes("апельс") ||
+    title.includes("персик") ||
+    title.includes("барбарис")
+  ) {
+    filters.add("fruit");
+  }
+
+  if (title.split(/[\s,()-]+/).filter(Boolean).length > 2 || title.includes("микс")) {
+    filters.add("mix");
+  }
+
+  return Array.from(filters);
+}
+
+function formatFlavorTitle(title: string) {
+  return title
+    .replace(/\s*\(Пинкман\)/i, "")
+    .replace(/\s+Айс$/i, " Лёд")
+    .trim();
+}
 
 function getFlavorIconKind(variant: ProductVariant): FlavorIconKind {
   const title = variant.title.toLowerCase();
@@ -2013,50 +2151,132 @@ function FlavorGlyph({ kind, className = "h-7 w-7" }: { kind: FlavorIconKind; cl
 
 function CatalogProductGlyph({
   mode,
-  className = "h-12 w-6",
+  className = "h-24 w-14",
 }: {
   mode: AssortmentCard["id"];
   className?: string;
 }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 32 80" className={`${className} text-current`} fill="none">
-      <rect x="8.5" y="13" width="15" height="55" rx="7.5" stroke="currentColor" strokeWidth="2" />
-      <rect x="12" y="5" width="8" height="11" rx="2.5" stroke="currentColor" strokeWidth="2" />
-      <path d="M16 32v18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="16" cy="27" r="3" stroke="currentColor" strokeWidth="2" />
-      <circle cx="16" cy="59" r="2.2" fill="currentColor" />
-      {mode === "device-kit" ? <path d="M11.5 20.5h9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> : null}
+    <svg aria-hidden="true" viewBox="0 0 74 150" className={`${className} text-current`} fill="none">
+      <path d="M29 23h16v10H29z" fill="#111" stroke="#6f6f6f" strokeWidth="1" />
+      <path d="M24 4h26l2 20H22L24 4Z" fill="#090909" stroke="#6a6a6a" strokeWidth="1.1" />
+      <rect x="19" y="28" width="36" height="114" rx="13" fill="#050505" stroke="#777" strokeWidth="1.2" />
+      <path d="M23 35c9 4 19 4 28 0" stroke="#ffffff" strokeOpacity="0.18" strokeWidth="2" />
+      <path d="M37 58v46" stroke="#ffffff" strokeOpacity="0.42" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="37" cy="50" r="4.5" stroke="#ffffff" strokeOpacity="0.58" strokeWidth="1.7" />
+      <circle cx="37" cy="122" r="2.7" fill="#ffffff" fillOpacity="0.75" />
+      <text
+        x="30"
+        y="96"
+        fill="#ffffff"
+        fillOpacity="0.8"
+        fontFamily="Arial, sans-serif"
+        fontSize="9"
+        fontWeight="700"
+        letterSpacing="1.4"
+        transform="rotate(-90 30 96)"
+      >
+        STILNO
+      </text>
+      {mode === "device-kit" ? <path d="M26 36h22" stroke="#ffffff" strokeOpacity="0.5" strokeWidth="2" strokeLinecap="round" /> : null}
     </svg>
   );
 }
 
-function FlavorMarker({ variant }: { variant: ProductVariant }) {
+function getFlavorScenePalette(variant: ProductVariant) {
+  const kind = getFlavorIconKind(variant);
+
+  if (kind === "mint") return ["#d6d6d6", "#202020", "#ffffff"];
+  if (kind === "drink") return ["#c4c4c4", "#1d1d1d", "#f5f5f5"];
+  if (kind === "cream") return ["#e4e4e4", "#292929", "#ffffff"];
+  if (kind === "ice") return ["#f3f3f3", "#373737", "#ffffff"];
+  if (kind === "tropical") return ["#d0d0d0", "#232323", "#ffffff"];
+  if (kind === "citrus" || kind === "sour") return ["#dddddd", "#252525", "#ffffff"];
+
+  return ["#c9c9c9", "#1f1f1f", "#ffffff"];
+}
+
+function FlavorScene({ variant }: { variant: ProductVariant }) {
+  const [primary, deep, shine] = getFlavorScenePalette(variant);
+  const isIce = (variant.group || "").toLowerCase().includes("айс");
+  const title = variant.title.toLowerCase();
+  const isSlice = /грейп|лимон|лайм|апельс|яблок|кокос|ананас|манго|персик/.test(title);
+
   return (
-    <div aria-hidden="true" className="flex h-12 w-14 shrink-0 items-center justify-center rounded-[3px] border border-black/18 bg-white text-black sm:h-14 sm:w-16">
-      <FlavorGlyph kind={getFlavorIconKind(variant)} className="relative h-7 w-7 text-black sm:h-8 sm:w-8" />
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-y-0 right-0 hidden w-[48%] overflow-hidden rounded-r-[0.42rem] opacity-95 sm:block"
+      style={
+        {
+          "--scene-primary": primary,
+          "--scene-deep": deep,
+          "--scene-shine": shine,
+        } as CSSProperties
+      }
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0)_0%,rgba(8,8,8,0.68)_42%,rgba(8,8,8,0.12)_100%)]" />
+      <span className="absolute -right-8 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_35%_32%,var(--scene-shine),var(--scene-primary)_36%,var(--scene-deep)_66%,rgba(0,0,0,0)_70%)] opacity-70 blur-[0.5px]" />
+      <span className="absolute right-24 top-4 h-10 w-10 rounded-full bg-[radial-gradient(circle_at_35%_30%,#fff,var(--scene-primary)_38%,var(--scene-deep)_72%)] opacity-48" />
+      <span className="absolute bottom-4 right-14 h-14 w-14 rounded-full bg-[radial-gradient(circle_at_35%_30%,#fff,var(--scene-primary)_34%,var(--scene-deep)_72%)] opacity-42" />
+      <span className="absolute right-3 top-2 h-px w-48 rotate-[-18deg] bg-white/14" />
+      <span className="absolute bottom-2 right-8 h-px w-40 rotate-[17deg] bg-white/10" />
+      {isSlice ? (
+        <span className="absolute right-10 top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border border-white/28 shadow-[inset_0_0_0_10px_rgba(255,255,255,0.08)]" />
+      ) : null}
+      {isIce ? (
+        <>
+          <span className="absolute right-5 top-6 h-px w-28 rotate-45 bg-white/26" />
+          <span className="absolute right-12 bottom-7 h-px w-32 -rotate-45 bg-white/18" />
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function IceBanner() {
+  return (
+    <div className="relative overflow-hidden rounded-[0.42rem] border border-white/18 bg-[#0e0e0f] px-6 py-4 text-white sm:col-span-2">
+      <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.28),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.08))]" />
+      <div className="relative grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+        <p className="text-3xl font-semibold leading-none tracking-normal sm:text-4xl">X-Ice Pod</p>
+        <div className="flex items-center gap-3 text-sm leading-5 text-white/74">
+          <span className="grid h-9 w-9 place-items-center rounded-[0.28rem] border border-white/54">
+            <FlavorGlyph kind="ice" className="h-5 w-5" />
+          </span>
+          <span>Регулируемый<br />холодок</span>
+        </div>
+      </div>
     </div>
   );
 }
 
 export function CatalogAssortmentCards({ product }: { product: Product }) {
   const variants = product.variants;
-  const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"] | null>(null);
+  const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"]>("cartridges");
+  const [activeFilter, setActiveFilter] = useState<FlavorFilterId>("all");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartNotice, setCartNotice] = useState("");
   const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
-  const activeCard = activeCardId ? assortmentCards.find((card) => card.id === activeCardId) : null;
+  const filteredGroups = useMemo(
+    () =>
+      groupedVariants
+        .map(({ group, items }) => ({
+          group,
+          items: items.filter((variant) => getVariantFilterIds(variant).includes(activeFilter)),
+        }))
+        .filter(({ items }) => items.length > 0),
+    [activeFilter, groupedVariants],
+  );
+  const activeCard = assortmentCards.find((card) => card.id === activeCardId) ?? assortmentCards[0];
   const cartById = useMemo(() => new Map(cart.map((item) => [item.id, item])), [cart]);
   const cartTotal = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const visibleVariantCount = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
 
   function quantityKey(cardId: AssortmentCard["id"], variantId: string) {
     return `${cardId}-${variantId}`;
   }
 
   function addToCart(variant: ProductVariant) {
-    if (!activeCard) {
-      return;
-    }
-
     const itemId = quantityKey(activeCard.id, variant.id);
     setCart((current) => {
       const existing = current.find((item) => item.id === itemId);
@@ -2099,271 +2319,212 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-[1120px] gap-8 pb-72 sm:pb-48">
-      {!activeCard ? (
-        <div className="mx-auto grid w-full max-w-4xl gap-7 text-center">
-          <div className="grid gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-black/42">STILNO CLICK ONE</p>
-            <h2 className="text-3xl font-semibold leading-none tracking-normal text-black sm:text-5xl">
-              Выберите продукт
-            </h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+    <div id="catalog-products" className="mx-auto grid w-full max-w-[76rem] gap-6 pb-40 text-white sm:pb-44">
+      <div className="grid gap-4 pt-2 sm:pt-4">
+        <div className="grid gap-2">
+          <h2 className="text-4xl font-semibold leading-[0.94] tracking-normal text-white sm:text-6xl">
+            Витрина вкусов STILNO
+          </h2>
+          <p className="max-w-2xl text-sm leading-6 text-white/58 sm:text-base">
+            Премиальные вкусы. Чистые ингредиенты. Максимальное удовольствие.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {flavorFilters.map((filter) => {
+            const isActive = activeFilter === filter.id;
+
+            return (
+              <button
+                key={filter.id}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => setActiveFilter(filter.id)}
+                className={classNames(
+                  "min-h-10 rounded-full border px-5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+                  isActive
+                    ? "border-white bg-white text-black shadow-[0_0_22px_rgba(255,255,255,0.22)]"
+                    : "border-white/12 bg-white/[0.07] text-white/74 hover:border-white/30 hover:bg-white/[0.12] hover:text-white",
+                )}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
+          <div className="flex flex-wrap gap-2">
             {assortmentCards.map((card) => {
-              const isPrimaryCard = card.id === "cartridges";
+              const isActive = activeCard.id === card.id;
 
               return (
                 <button
                   key={card.id}
                   type="button"
                   data-testid={`catalog-card-${card.id}`}
-                  aria-label={`Открыть ${card.title}`}
+                  aria-pressed={isActive}
                   onClick={() => setActiveCardId(card.id)}
                   className={classNames(
-                    "group grid min-h-28 cursor-pointer grid-cols-[4rem_1fr] items-center overflow-hidden rounded-[4px] border border-black text-left transition hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black",
-                    isPrimaryCard ? "bg-black text-white" : "bg-white text-black",
+                    "min-h-10 rounded-full border px-5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+                    isActive
+                      ? "border-white/70 bg-white/12 text-white"
+                      : "border-white/10 bg-black text-white/54 hover:border-white/34 hover:text-white",
                   )}
                 >
-                  <span
-                    className={classNames(
-                      "flex h-full items-center justify-center border-r transition group-hover:border-white/16 group-hover:bg-black group-hover:text-white",
-                      isPrimaryCard ? "border-white/16 bg-black text-white" : "border-black/12 bg-white text-black",
-                    )}
-                  >
-                    <CatalogProductGlyph mode={card.id} />
-                  </span>
-                  <span className="grid gap-1 px-5 py-4">
-                    <span className="text-2xl font-semibold leading-none tracking-normal sm:text-3xl">
-                      {card.cartLabel}
-                    </span>
-                    <span
-                      className={classNames(
-                        "text-sm leading-5 transition group-hover:text-white/62",
-                        isPrimaryCard ? "text-white/62" : "text-black/58",
-                      )}
-                    >
-                      {variants.length} вкусов · {card.eyebrow}
-                    </span>
-                  </span>
+                  {card.cartLabel}
                 </button>
               );
             })}
           </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/38">
+            {visibleVariantCount} из {variants.length} вкусов
+          </p>
         </div>
-      ) : (
-        <div className="grid gap-7">
-          <div className="grid gap-4 border-b border-black/12 pb-5 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-black/42">{activeCard.eyebrow}</p>
-              <h2 className="mt-2 text-3xl font-semibold leading-none tracking-normal text-black sm:text-4xl">
-                {activeCard.title}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-black/58">
-                {variants.length} вкусов · 20 мг/см³ · выбор в один тап
-              </p>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[32rem]">
-              {assortmentCards.map((card) => {
-                const isActive = activeCard.id === card.id;
+      </div>
 
-                return (
-                  <button
-                    key={card.id}
-                    type="button"
-                    data-testid={`catalog-card-${card.id}`}
-                    aria-pressed={isActive}
-                    onClick={() => setActiveCardId(card.id)}
-                    className={classNames(
-                      "min-h-11 rounded-[4px] border px-4 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
-                      isActive
-                        ? "border-black bg-black text-white"
-                        : "border-black/12 bg-white text-black hover:border-black",
-                    )}
-                  >
-                    {card.cartLabel}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                onClick={() => setActiveCardId(null)}
-                className="min-h-11 rounded-[4px] border border-black/12 bg-white px-4 text-sm font-semibold text-black transition hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-              >
-                Назад
-              </button>
-            </div>
-          </div>
+      <div className="grid gap-2 xl:grid-cols-2">
+        {filteredGroups.map(({ group, items }) => (
+          <section key={group} aria-labelledby={`catalog-group-${group}`} className="contents">
+            <h3 id={`catalog-group-${group}`} className="sr-only">
+              {group}
+            </h3>
+            {group.toLowerCase().includes("айс") ? <IceBanner /> : null}
+            {items.map((variant) => {
+              const cartItem = cartById.get(quantityKey(activeCard.id, variant.id));
+              const quantity = cartItem?.quantity ?? 1;
+              const description = getVariantDescription(variant);
+              const selectVariant = () => {
+                if (!cartItem) {
+                  addToCart(variant);
+                }
+              };
 
-          <div className="grid gap-5">
-            {groupedVariants.map(({ group, items }) => (
-              <section key={group} aria-labelledby={`catalog-group-${group}`} className="grid gap-2">
-                <div className="grid grid-cols-[1fr_auto] items-center border-y border-black py-2.5">
-                  <h3 id={`catalog-group-${group}`} className="text-sm font-semibold uppercase tracking-[0.08em] text-black">
-                    {group}
-                  </h3>
-                  <span className="text-xs font-semibold uppercase tracking-[0.08em] text-black/48">
-                    {items.length} вкусов
-                  </span>
-                </div>
-                <div className="grid gap-2 xl:grid-cols-2">
-                  {items.map((variant) => {
-                    const cartItem = cartById.get(quantityKey(activeCard.id, variant.id));
-                    const quantity = cartItem?.quantity ?? 1;
-                    const description = getVariantDescription(variant);
-                    const selectVariant = () => {
-                      if (!cartItem) {
-                        addToCart(variant);
-                      }
-                    };
+              return (
+                <article
+                  key={variant.id}
+                  data-testid={`catalog-flavor-card-${variant.id}`}
+                  role={cartItem ? undefined : "button"}
+                  tabIndex={cartItem ? undefined : 0}
+                  aria-label={cartItem ? undefined : `Выбрать ${variant.title}: ${activeCard.cartLabel}`}
+                  onClick={selectVariant}
+                  onKeyDown={(event) => {
+                    if (cartItem || (event.key !== "Enter" && event.key !== " ")) {
+                      return;
+                    }
+                    event.preventDefault();
+                    selectVariant();
+                  }}
+                  className={classNames(
+                    "group relative min-h-[6.6rem] overflow-hidden rounded-[0.42rem] border bg-[#0a0a0b] text-white transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:min-h-[6.2rem]",
+                    cartItem
+                      ? "border-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.22),0_0_34px_rgba(255,255,255,0.09)]"
+                      : "cursor-pointer border-white/14 hover:border-white/42 hover:bg-[#111113]",
+                  )}
+                >
+                  <FlavorScene variant={variant} />
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.96)_0%,rgba(10,10,10,0.88)_43%,rgba(10,10,10,0.28)_100%)]" />
+                  <div className="relative grid min-h-[6.6rem] grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 px-4 py-3 sm:min-h-[6.2rem] sm:grid-cols-[6.6rem_minmax(0,1fr)_auto] sm:gap-4 sm:px-5 sm:py-2">
+                    <div className="flex h-full items-center justify-center">
+                      <CatalogProductGlyph mode={activeCard.id} className="h-24 w-12 sm:h-24 sm:w-14" />
+                    </div>
 
-                    return (
-                      <article
-                        key={variant.id}
-                        data-testid={`catalog-flavor-card-${variant.id}`}
-                        role={cartItem ? undefined : "button"}
-                        tabIndex={cartItem ? undefined : 0}
-                        aria-label={cartItem ? undefined : `Выбрать ${variant.title}: ${activeCard.cartLabel}`}
-                        onClick={selectVariant}
-                        onKeyDown={(event) => {
-                          if (cartItem || (event.key !== "Enter" && event.key !== " ")) {
-                            return;
-                          }
-                          event.preventDefault();
-                          selectVariant();
-                        }}
-                        className={classNames(
-                          "overflow-hidden rounded-[3px] border bg-white text-black transition hover:border-black hover:bg-[#fbfbfb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
-                          cartItem ? "" : "cursor-pointer",
-                          cartItem ? "border-black shadow-[inset_0_0_0_1px_#111]" : "border-black/14",
-                        )}
-                      >
-                        <div
-                          className={classNames(
-                            "grid min-h-24 gap-2 px-2 py-2 sm:min-h-[6.25rem] sm:gap-3 sm:px-3 sm:py-2",
-                            cartItem
-                              ? "grid-cols-[3.15rem_minmax(0,1fr)_auto] sm:grid-cols-[3.5rem_minmax(0,1fr)_auto]"
-                              : "grid-cols-[3.15rem_minmax(0,1fr)] sm:grid-cols-[3.5rem_minmax(0,1fr)]",
-                          )}
-                        >
-                          <div className="flex items-center justify-center">
-                            <div className="flex h-16 w-8 items-center justify-center rounded-full border border-black bg-black text-white sm:h-20 sm:w-9">
-                              <CatalogProductGlyph mode={activeCard.id} className="h-12 w-5 sm:h-14 sm:w-6" />
-                            </div>
-                          </div>
+                    <div className="min-w-0">
+                      <h4 className="max-w-[16rem] text-2xl font-medium leading-[0.98] tracking-normal text-white sm:text-[1.72rem]">
+                        {formatFlavorTitle(variant.title)}
+                      </h4>
+                      <span className="sr-only">{description}</span>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <span className="inline-flex min-h-5 items-center rounded-[0.16rem] border border-white/60 px-2 text-[0.66rem] font-semibold uppercase leading-none tracking-[0.08em] text-white">
+                          Новое
+                        </span>
+                        <span className="text-xs leading-5 text-white/42 sm:hidden">{description}</span>
+                      </div>
+                    </div>
 
-                          <div className="grid min-w-0 gap-3 py-2 sm:grid-cols-[1fr_auto] sm:items-center">
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="rounded-[3px] border border-black/28 px-2 py-1 text-[0.64rem] font-semibold uppercase leading-none tracking-[0.06em] text-black/62">
-                                  {variant.group || group}
-                                </span>
-                                <span className="text-[0.68rem] font-medium uppercase leading-none tracking-[0.06em] text-black/42">
-                                  {activeCard.id === "device-kit" ? "комплект" : "картридж"}
-                                </span>
-                                <span
-                                  aria-hidden="true"
-                                  className="inline-flex h-5 w-5 items-center justify-center rounded-[3px] border border-black/14 text-black sm:hidden"
-                                >
-                                  <FlavorGlyph kind={getFlavorIconKind(variant)} className="h-3.5 w-3.5" />
-                                </span>
-                              </div>
-                              <h4 className="mt-2 text-base font-semibold leading-tight tracking-normal text-black sm:text-lg">
-                                {variant.title}
-                              </h4>
-                              <p className="mt-1 line-clamp-2 text-sm leading-5 text-black/58 sm:line-clamp-1">{description}</p>
-                            </div>
-
-                            <div className="hidden sm:block">
-                              <FlavorMarker variant={variant} />
-                            </div>
-                          </div>
-
-                          {cartItem ? (
-                            <div className="grid items-center justify-items-end py-2 sm:min-w-40">
-                              <div className="grid h-10 w-[6.75rem] grid-cols-[2rem_1fr_2rem] overflow-hidden rounded-[4px] border border-black bg-white sm:h-9 sm:w-32 sm:grid-cols-[2.5rem_1fr_2.5rem]">
-                                <button
-                                  type="button"
-                                  aria-label={`Уменьшить количество для ${variant.title}`}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    updateCartQuantity(activeCard.id, variant, quantity - 1);
-                                  }}
-                                  className="text-lg leading-none text-black transition hover:bg-black hover:text-white"
-                                >
-                                  -
-                                </button>
-                                <input
-                                  aria-label={`Количество для ${variant.title}`}
-                                  type="number"
-                                  min={1}
-                                  max={99}
-                                  value={quantity}
-                                  onClick={(event) => event.stopPropagation()}
-                                  onChange={(event) =>
-                                    updateCartQuantity(activeCard.id, variant, Number(event.target.value) || 1)
-                                  }
-                                  className="min-w-0 border-x border-black/18 text-center text-sm font-semibold text-black outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                />
-                                <button
-                                  type="button"
-                                  aria-label={`Увеличить количество для ${variant.title}`}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    updateCartQuantity(activeCard.id, variant, quantity + 1);
-                                  }}
-                                  className="text-lg leading-none text-black transition hover:bg-black hover:text-white"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-                          ) : null}
+                    {cartItem ? (
+                      <div className="col-span-2 grid justify-start sm:col-span-1 sm:justify-end">
+                        <div className="grid h-9 w-32 grid-cols-[2.4rem_1fr_2.4rem] overflow-hidden rounded-[0.28rem] border border-white/50 bg-black/70 text-white backdrop-blur">
+                          <button
+                            type="button"
+                            aria-label={`Уменьшить количество для ${variant.title}`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              updateCartQuantity(activeCard.id, variant, quantity - 1);
+                            }}
+                            className="text-lg leading-none transition hover:bg-white hover:text-black"
+                          >
+                            -
+                          </button>
+                          <input
+                            aria-label={`Количество для ${variant.title}`}
+                            type="number"
+                            min={1}
+                            max={99}
+                            value={quantity}
+                            onClick={(event) => event.stopPropagation()}
+                            onChange={(event) =>
+                              updateCartQuantity(activeCard.id, variant, Number(event.target.value) || 1)
+                            }
+                            className="min-w-0 border-x border-white/24 bg-transparent text-center text-sm font-semibold text-white outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          />
+                          <button
+                            type="button"
+                            aria-label={`Увеличить количество для ${variant.title}`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              updateCartQuantity(activeCard.id, variant, quantity + 1);
+                            }}
+                            className="text-lg leading-none transition hover:bg-white hover:text-black"
+                          >
+                            +
+                          </button>
                         </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        ))}
+      </div>
 
-          <details data-testid="catalog-model-specs" className="rounded-[4px] border border-black/12 bg-white p-4 text-black">
-            <summary className="cursor-pointer text-sm font-semibold uppercase tracking-[0.08em] text-black">
-              Характеристики модели
-            </summary>
-            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-              {product.specs.map((spec) => (
-                <div key={`${spec.label}-${spec.value}`} className="border-t border-black/10 pt-3">
-                  <dt className="text-xs font-semibold uppercase text-black/42">{spec.label}</dt>
-                  <dd className="mt-1 text-sm leading-6 text-black">{spec.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </details>
-        </div>
-      )}
+      <details data-testid="catalog-model-specs" className="rounded-[0.45rem] border border-white/12 bg-white/[0.04] p-5 text-white">
+        <summary className="cursor-pointer text-sm font-semibold uppercase tracking-[0.14em] text-white/72">
+          Характеристики модели
+        </summary>
+        <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {product.specs.map((spec) => (
+            <div key={`${spec.label}-${spec.value}`} className="border-t border-white/10 pt-3">
+              <dt className="text-xs font-semibold uppercase text-white/36">{spec.label}</dt>
+              <dd className="mt-1 text-sm leading-6 text-white/80">{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </details>
 
       {activeCard || cart.length ? (
         <div
           aria-live="polite"
           data-testid="catalog-cart"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-black bg-white px-5 py-3 shadow-[0_-18px_44px_rgba(0,0,0,0.12)] sm:px-6 lg:px-8"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-white/12 bg-black/94 px-5 py-3 text-white shadow-[0_-18px_44px_rgba(0,0,0,0.44)] backdrop-blur sm:px-6 lg:px-8"
         >
-          <div className="mx-auto w-full max-w-[1120px]">
+          <div className="mx-auto w-full max-w-[76rem]">
             <div className="grid grid-cols-[1fr_auto] items-center gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-black">Корзина</h2>
-                  <span className="text-2xl font-semibold leading-none text-black">
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-white">Корзина</h2>
+                  <span className="text-2xl font-semibold leading-none text-white">
                     {cartTotal ? `${cartTotal} шт.` : "пусто"}
                   </span>
                 </div>
-                {cartNotice ? <p className="mt-1 hidden text-xs leading-5 text-black/50 sm:block">{cartNotice}</p> : null}
+                {cartNotice ? <p className="mt-1 hidden text-xs leading-5 text-white/46 sm:block">{cartNotice}</p> : null}
               </div>
               {cart.length ? (
                 <Link
                   href="/request"
-                  className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-black px-5 text-sm font-semibold text-white transition hover:bg-black/84 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black sm:min-h-12 sm:px-8"
+                  className="inline-flex min-h-11 items-center justify-center rounded-[0.35rem] bg-white px-5 text-sm font-semibold text-black transition hover:bg-white/86 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:min-h-12 sm:px-8"
                 >
                   Оформить заявку
                 </Link>
@@ -2371,7 +2532,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                 <button
                   type="button"
                   disabled
-                  className="inline-flex min-h-11 cursor-not-allowed items-center justify-center rounded-[4px] bg-black/[0.06] px-4 text-sm font-semibold text-black/36 sm:min-h-12 sm:px-5"
+                  className="inline-flex min-h-11 cursor-not-allowed items-center justify-center rounded-[0.35rem] bg-white/[0.08] px-4 text-sm font-semibold text-white/34 sm:min-h-12 sm:px-5"
                 >
                   Добавьте вкус
                 </button>
@@ -2382,14 +2543,14 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                 {cart.map((item) => (
                   <span
                     key={item.id}
-                    className="rounded-[3px] border border-black/12 bg-white px-2.5 py-1.5 text-xs leading-5 text-black/64"
+                    className="rounded-[0.25rem] border border-white/12 bg-white/[0.06] px-2.5 py-1.5 text-xs leading-5 text-white/64"
                   >
-                    <span className="font-semibold text-black">{item.product}</span> · {item.flavor} · {item.quantity} шт.
+                    <span className="font-semibold text-white">{item.product}</span> · {item.flavor} · {item.quantity} шт.
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="mt-2 text-sm leading-6 text-black/54">Выберите вкус, чтобы собрать заявку.</p>
+              <p className="mt-2 text-sm leading-6 text-white/46">Выберите вкус, чтобы собрать заявку.</p>
             )}
           </div>
         </div>
