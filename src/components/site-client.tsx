@@ -937,16 +937,6 @@ export function SiteHeader({
   const pathname = usePathname();
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
   const storeMapHeader = normalizedPathname === "/stores/map";
-  const catalogHeader = normalizedPathname === "/stores";
-  const headerNavItems = catalogHeader
-    ? [
-        { label: "Устройства", href: "#catalog-products" },
-        { label: "Картриджи", href: "#catalog-products" },
-        { label: "Вкусы", href: "/stores" },
-        { label: "О STILNO", href: "/brand" },
-        { label: "Поддержка", href: "/support" },
-      ]
-    : navItems;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -1002,9 +992,7 @@ export function SiteHeader({
         "top-0 z-40 border-b backdrop-blur-xl",
         storeMapHeader
           ? "fixed inset-x-0 border-white/10 bg-black/58"
-          : catalogHeader
-            ? "sticky border-white/10 bg-[#020202]/94"
-            : "sticky border-black/10 bg-white/92",
+          : "sticky border-black/10 bg-white/92",
       )}
     >
       <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-5 px-5 py-4 sm:px-6 lg:px-8">
@@ -1013,74 +1001,39 @@ export function SiteHeader({
           dataAnalytics="nav_logo"
           className={classNames(
             "inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.28em]",
-            catalogHeader ? "text-xl italic tracking-[0.12em] text-white" : storeMapHeader ? "text-white" : "text-black",
+            storeMapHeader ? "text-white" : "text-black",
           )}
         >
           STILNO
         </ChromeLink>
 
         <nav className="hidden items-center gap-6 xl:flex">
-          {headerNavItems.map((item) => {
-            const isCatalogActive = catalogHeader && item.label === "Вкусы";
-
-            return (
-              <ChromeLink
-                key={`${item.href}-${item.label}`}
-                href={item.href}
-                dataAnalytics={`nav_${item.href.replace(/\W+/g, "_")}`}
-                className={classNames(
-                  "relative py-2 text-[0.82rem] font-semibold uppercase tracking-[0.06em] transition",
-                  catalogHeader
-                    ? isCatalogActive
-                      ? "text-white after:absolute after:inset-x-0 after:-bottom-2 after:h-0.5 after:bg-white"
-                      : "text-white/62 hover:text-white"
-                    : storeMapHeader
-                      ? "text-white/66 hover:text-white"
-                      : "text-black/58 hover:text-black",
-                )}
-              >
-                {item.label}
-              </ChromeLink>
-            );
-          })}
+          {navItems.map((item) => (
+            <ChromeLink
+              key={item.href}
+              href={item.href}
+              dataAnalytics={`nav_${item.href.replace(/\W+/g, "_")}`}
+              className={classNames(
+                "text-[0.92rem] transition",
+                storeMapHeader ? "text-white/66 hover:text-white" : "text-black/58 hover:text-black",
+              )}
+            >
+              {item.label}
+            </ChromeLink>
+          ))}
         </nav>
 
         <div className="hidden items-center gap-3 xl:flex">
-          {catalogHeader ? (
-            <>
-              <ChromeLink
-                href="/support"
-                dataAnalytics="catalog_support_icon"
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/0 text-white/72 transition hover:border-white/18 hover:text-white"
-              >
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-                  <circle cx="12" cy="8" r="3.4" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </ChromeLink>
-              <ChromeLink
-                href="/request"
-                dataAnalytics="catalog_cart_icon"
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/0 text-white/72 transition hover:border-white/18 hover:text-white"
-              >
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-                  <path d="M7 9h10l-.8 11H7.8L7 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                  <path d="M9 9a3 3 0 0 1 6 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </ChromeLink>
-            </>
-          ) : (
-            <ChromeLink
-              href={primaryCta.href}
-              dataAnalytics="primary_cta"
-              className={classNames(
-                "rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
-                storeMapHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
-              )}
-            >
-              {primaryCta.label}
-            </ChromeLink>
-          )}
+          <ChromeLink
+            href={primaryCta.href}
+            dataAnalytics="primary_cta"
+            className={classNames(
+              "rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
+              storeMapHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
+            )}
+          >
+            {primaryCta.label}
+          </ChromeLink>
         </div>
 
         <button
@@ -1088,7 +1041,7 @@ export function SiteHeader({
           type="button"
           className={classNames(
             "inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_10px_28px_rgba(0,0,0,0.06)] xl:hidden",
-            storeMapHeader || catalogHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
+            storeMapHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
           )}
           onClick={() => setMenuOpen((current) => !current)}
           aria-expanded={menuOpen}
@@ -1109,26 +1062,18 @@ export function SiteHeader({
         <div
           id="mobile-menu"
           ref={menuRef}
-          className={classNames(
-            "absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden",
-            catalogHeader ? "border-white/12 bg-black text-white" : "border-black/10 bg-white text-black",
-          )}
+          className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border border-black/10 bg-white p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Мобильное меню"
         >
           <nav className="flex flex-col gap-2">
-            {headerNavItems.map((item) => (
+            {navItems.map((item) => (
               <ChromeLink
-                key={`${item.href}-${item.label}`}
+                key={item.href}
                 href={item.href}
                 dataAnalytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
-                className={classNames(
-                  "rounded-[0.9rem] border px-4 py-3 transition",
-                  catalogHeader
-                    ? "border-white/10 bg-white/[0.06] text-white/72 hover:border-white/24 hover:text-white"
-                    : "border-black/10 bg-white text-black/70 hover:border-black/24 hover:text-black",
-                )}
+                className="rounded-[0.9rem] border border-black/10 bg-white px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -1138,10 +1083,9 @@ export function SiteHeader({
           <ChromeLink
             href={primaryCta.href}
             dataAnalytics="mobile_primary_cta"
-            className={classNames(
-              "mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition",
-              catalogHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
-            )}
+            className={`mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition ${ctaClassName(
+              primaryCta.variant,
+            )}`}
             onClick={() => setMenuOpen(false)}
           >
             {primaryCta.label}
