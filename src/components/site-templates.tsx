@@ -835,9 +835,69 @@ function LegalWarningStrip() {
 }
 
 export function HomeTemplate() {
+  const specificationLines = [
+    "Устройство с возможностью зарядки : Type-C",
+    "Встроенный аккумулятор: 850 mAч",
+    "Мощность: 10-22 Вт",
+    "Объем жидкости: 10 см3 (10 мл)",
+    "Срок годности: 4 года",
+  ];
+  const flavorLines = ["Наборы - 13 вкусов", "Кислые - 8 вкусов", "С холодком - 9 вкусов"];
+
   return (
-    <section className="min-h-[calc(100vh-8rem)] bg-white" data-testid="empty-home-page">
+    <section className="bg-black text-white" data-testid="home-hero">
       <StructuredData data={buildJsonLd()} />
+      <section className="relative isolate min-h-[calc(100svh-4.5rem)] overflow-hidden bg-black px-5 py-10 sm:px-6 lg:min-h-[calc(100svh-5rem)] lg:px-8">
+        <Image
+          src={assetPath("/stilno/photos/home-click-one-hero.png")}
+          alt="STILNO CLICK ONE: устройство и сменный картридж"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 -z-30 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 -z-20 bg-black/54 lg:bg-black/16" aria-hidden="true" />
+        <div
+          className="absolute inset-y-0 left-0 -z-10 w-[58%] bg-gradient-to-r from-black via-black/74 to-transparent lg:w-[44%]"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-y-0 right-0 -z-10 w-[58%] bg-gradient-to-l from-black via-black/74 to-transparent lg:w-[44%]"
+          aria-hidden="true"
+        />
+        <div className="mx-auto grid min-h-[calc(100svh-9rem)] max-w-[90rem] items-center gap-10 py-8 lg:grid-cols-[minmax(18rem,0.78fr)_minmax(24rem,1.18fr)_minmax(18rem,0.78fr)] lg:py-12">
+          <div className="max-w-[27rem]">
+            <h1 className="text-[clamp(1.85rem,2.5vw,3.2rem)] font-semibold leading-[1.03] tracking-normal text-white">
+              Перезаряжаемая электронная сигарета доставки никотина одноразового использования STILNO CLICK ONE
+            </h1>
+            <p className="mt-6 max-w-[25rem] text-base leading-7 text-white/72 sm:text-lg">
+              Вы приобретаете стартовый набор (POD + Картридж) со своим любимым вкусом, а дальше меняете только
+              картриджи
+            </p>
+          </div>
+
+          <div className="hidden min-h-[24rem] lg:block" aria-hidden="true" />
+
+          <aside className="max-w-[27rem] justify-self-start text-white lg:justify-self-end">
+            <ul className="grid gap-3 text-sm leading-6 text-white/76 sm:text-base">
+              {specificationLines.map((line) => (
+                <li key={line} className="border-b border-white/14 pb-3 font-medium text-white">
+                  {line}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8">
+              <h2 className="text-xl font-semibold leading-tight text-white sm:text-2xl">Вкусовая линейка:</h2>
+              <ul className="mt-4 grid gap-2 text-base leading-6 text-white/74">
+                {flavorLines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
     </section>
   );
 }

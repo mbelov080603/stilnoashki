@@ -116,8 +116,8 @@ for (const path of publicPaths) {
     await page.goto(path);
     await page.waitForTimeout(250);
     if (path === "/") {
-      await expect(page.locator('[data-testid="empty-home-page"]')).toBeVisible();
-      await expect(page.locator("main h1")).toHaveCount(0);
+      await expect(page.locator('[data-testid="home-hero"]')).toBeVisible();
+      await expect(page.locator("main h1")).toContainText("STILNO CLICK ONE");
     } else if (path === "/stores") {
       await expect(page.locator("h1").first()).toContainText("Каталог STILNO");
     } else {
@@ -249,7 +249,10 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await seedConsent(page);
 
   await page.goto("/");
-  await expect(page.locator('[data-testid="empty-home-page"]')).toBeVisible();
+  await expect(page.locator('[data-testid="home-hero"]')).toBeVisible();
+  await expect(page.locator("main")).toContainText("Вы приобретаете стартовый набор");
+  await expect(page.locator("main")).toContainText("Устройство с возможностью зарядки : Type-C");
+  await expect(page.locator("main")).toContainText("С холодком - 9 вкусов");
   await expect(page.locator("main")).not.toContainText("Официальный сайт STILNO");
   await expect(page.locator("main")).not.toContainText("Выберите нужный раздел");
   await expect(page.locator("main")).not.toContainText("Единственный раздел с подробным каталогом STILNO");

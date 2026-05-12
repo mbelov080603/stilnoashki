@@ -889,6 +889,7 @@ const landingFooterLinks: NavItem[] = [
 function isBrandSitePath(pathname: string) {
   const normalized = pathname.replace(/\/+$/, "") || "/";
   return (
+    normalized === "/" ||
     normalized === "/partners" ||
     normalized === "/partners/geography" ||
     normalized === "/about" ||
@@ -937,6 +938,8 @@ export function SiteHeader({
   const pathname = usePathname();
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
   const storeMapHeader = normalizedPathname === "/stores/map";
+  const homeHeader = normalizedPathname === "/";
+  const darkHeader = storeMapHeader || homeHeader;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -992,7 +995,9 @@ export function SiteHeader({
         "top-0 z-40 border-b backdrop-blur-xl",
         storeMapHeader
           ? "fixed inset-x-0 border-white/10 bg-black/58"
-          : "sticky border-black/10 bg-white/92",
+          : homeHeader
+            ? "sticky border-white/10 bg-black/94"
+            : "sticky border-black/10 bg-white/92",
       )}
     >
       <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-5 px-5 py-4 sm:px-6 lg:px-8">
@@ -1001,7 +1006,7 @@ export function SiteHeader({
           dataAnalytics="nav_logo"
           className={classNames(
             "inline-flex items-center text-[0.78rem] font-semibold uppercase tracking-[0.28em]",
-            storeMapHeader ? "text-white" : "text-black",
+            darkHeader ? "text-white" : "text-black",
           )}
         >
           STILNO
@@ -1015,7 +1020,7 @@ export function SiteHeader({
               dataAnalytics={`nav_${item.href.replace(/\W+/g, "_")}`}
               className={classNames(
                 "text-[0.92rem] transition",
-                storeMapHeader ? "text-white/66 hover:text-white" : "text-black/58 hover:text-black",
+                darkHeader ? "text-white/66 hover:text-white" : "text-black/58 hover:text-black",
               )}
             >
               {item.label}
@@ -1029,7 +1034,11 @@ export function SiteHeader({
             dataAnalytics="primary_cta"
             className={classNames(
               "rounded-full px-5 py-2.5 text-sm font-medium transition shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
-              storeMapHeader ? "border border-white bg-white text-black hover:bg-white/86" : ctaClassName(primaryCta.variant),
+              storeMapHeader
+                ? "border border-white bg-white text-black hover:bg-white/86"
+                : homeHeader
+                  ? "border border-white/22 bg-transparent text-white hover:border-white hover:bg-white hover:text-black"
+                  : ctaClassName(primaryCta.variant),
             )}
           >
             {primaryCta.label}
@@ -1041,7 +1050,7 @@ export function SiteHeader({
           type="button"
           className={classNames(
             "inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_10px_28px_rgba(0,0,0,0.06)] xl:hidden",
-            storeMapHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
+            darkHeader ? "border-white/14 bg-white/10 text-white" : "border-black/10 bg-white text-black",
           )}
           onClick={() => setMenuOpen((current) => !current)}
           aria-expanded={menuOpen}
@@ -1062,7 +1071,10 @@ export function SiteHeader({
         <div
           id="mobile-menu"
           ref={menuRef}
-          className="absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border border-black/10 bg-white p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden"
+          className={classNames(
+            "absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden",
+            darkHeader ? "border-white/14 bg-black text-white" : "border-black/10 bg-white text-black",
+          )}
           role="dialog"
           aria-modal="true"
           aria-label="Мобильное меню"
@@ -1073,7 +1085,12 @@ export function SiteHeader({
                 key={item.href}
                 href={item.href}
                 dataAnalytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
-                className="rounded-[0.9rem] border border-black/10 bg-white px-4 py-3 text-black/70 transition hover:border-black/24 hover:text-black"
+                className={classNames(
+                  "rounded-[0.9rem] border px-4 py-3 transition",
+                  darkHeader
+                    ? "border-white/12 bg-white/[0.04] text-white/72 hover:border-white/28 hover:text-white"
+                    : "border-black/10 bg-white text-black/70 hover:border-black/24 hover:text-black",
+                )}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -1083,9 +1100,12 @@ export function SiteHeader({
           <ChromeLink
             href={primaryCta.href}
             dataAnalytics="mobile_primary_cta"
-            className={`mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition ${ctaClassName(
-              primaryCta.variant,
-            )}`}
+            className={classNames(
+              "mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition",
+              darkHeader
+                ? "border border-white/22 bg-transparent text-white hover:border-white hover:bg-white hover:text-black"
+                : ctaClassName(primaryCta.variant),
+            )}
             onClick={() => setMenuOpen(false)}
           >
             {primaryCta.label}
