@@ -866,9 +866,11 @@ export function HomeTemplate() {
           aria-hidden="true"
         />
         <div className="mx-auto grid min-h-[calc(100svh-9rem)] max-w-[96rem] items-center gap-10 py-8 lg:grid-cols-[minmax(17rem,0.74fr)_minmax(32rem,1.44fr)_minmax(17rem,0.74fr)] lg:py-12 xl:gap-12">
-          <div className="max-w-[25rem]">
-            <h1 className="text-[clamp(1.85rem,2.5vw,3.2rem)] font-semibold leading-[1.03] tracking-normal text-white">
-              Перезаряжаемая электронная сигарета доставки никотина одноразового использования STILNO CLICK ONE
+          <div className="w-full max-w-[25rem] lg:w-[25rem]">
+            <h1 className="text-[clamp(1.18rem,1.28vw,1.85rem)] font-normal leading-[1.16] tracking-normal text-white [text-shadow:0_0_18px_rgba(255,255,255,0.26)]">
+              <span className="lg:block">Перезаряжаемая электронная сигарета</span>{" "}
+              <span className="lg:block">доставки никотина одноразового</span>{" "}
+              <span className="lg:block">использования STILNO CLICK ONE</span>
             </h1>
             <p className="mt-6 max-w-[24rem] text-base leading-7 text-white/72 sm:text-lg">
               Вы приобретаете стартовый набор (POD + Картридж) со своим любимым вкусом, а дальше меняете только
