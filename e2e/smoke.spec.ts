@@ -280,29 +280,28 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator('[data-testid="catalog-card-cartridges"]')).toBeVisible();
   await expect(page.locator('[data-testid="catalog-card-device-kit"]')).toBeVisible();
   await expect(page.locator('[data-testid^="catalog-flavor-card-"]')).toHaveCount(30);
-  await expect(page.locator('[data-testid="catalog-cart"]')).toBeVisible();
+  await expect(page.locator('[data-testid="catalog-cart"]')).toHaveCount(0);
+  await expect(page.locator("main")).not.toContainText("Корзина");
+  await expect(page.locator("main")).not.toContainText("Добавьте вкус");
   await page.locator('[data-testid="catalog-card-cartridges"]').click();
   await expect(page.locator("main")).toContainText("Витрина вкусов STILNO");
   await expect(page.locator('[data-testid^="catalog-flavor-card-"]')).toHaveCount(30);
-  await expect(page.locator('[data-testid="catalog-cart"]')).toBeVisible();
+  await expect(page.locator('[data-testid="catalog-cart"]')).toHaveCount(0);
   await expect(page.locator('[data-testid="catalog-model-specs"]')).toBeVisible();
   await page.locator('[data-testid="catalog-model-specs"] summary').click();
   await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("STILNO CLICK ONE")).toBeVisible();
   await expect(page.locator('[data-testid="catalog-model-specs"]').getByText("10–22 Вт")).toBeVisible();
   await expect(page.locator('[data-testid="catalog-flavor-card-kaktus-laym"]')).toContainText("Кактус и лайм");
   await page.locator('[data-testid="catalog-flavor-card-kaktus-laym"]').click();
-  await page.getByLabel("Увеличить количество для Кактус Лайм").click();
-  await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Картриджи");
-  await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Кактус Лайм");
-  await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("2 шт.");
+  await expect(page.locator('[data-testid="catalog-cart"]')).toHaveCount(0);
+  await expect(page.locator('input[type="number"]')).toHaveCount(0);
   await page.locator('[data-testid="catalog-card-device-kit"]').click();
   await expect(page.locator('[data-testid="catalog-card-device-kit"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-testid="catalog-flavor-card-vinograd-chernika-ice"]')).toContainText(
     "Виноград, черника и холод",
   );
   await page.locator('[data-testid="catalog-flavor-card-vinograd-chernika-ice"]').click();
-  await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Устройство в сборе");
-  await expect(page.locator('[data-testid="catalog-cart"]')).toContainText("Виноград Черника Айс");
+  await expect(page.locator('[data-testid="catalog-cart"]')).toHaveCount(0);
 
   await page.goto("/request");
   await expect(page.locator("h1")).toContainText("Оставить заявку STILNO");

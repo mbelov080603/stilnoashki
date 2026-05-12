@@ -1849,7 +1849,7 @@ export function LeadForm({
 type AssortmentCard = {
   id: "cartridges" | "device-kit";
   title: string;
-  cartLabel: string;
+  label: string;
   eyebrow: string;
 };
 
@@ -1857,24 +1857,16 @@ const assortmentCards: AssortmentCard[] = [
   {
     id: "cartridges",
     title: "Картриджи STILNO CLICK ONE",
-    cartLabel: "Картриджи",
+    label: "Картриджи",
     eyebrow: "сменные вкусы",
   },
   {
     id: "device-kit",
     title: "Устройство в сборе STILNO CLICK ONE",
-    cartLabel: "Устройство в сборе",
+    label: "Устройство в сборе",
     eyebrow: "готовый комплект",
   },
 ];
-
-type CartItem = {
-  id: string;
-  product: string;
-  flavor: string;
-  group: string;
-  quantity: number;
-};
 
 type CatalogVariant = ProductVariant & {
   description?: string;
@@ -2198,8 +2190,6 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
   const variants = product.variants;
   const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"]>("cartridges");
   const [activeFilter, setActiveFilter] = useState<FlavorFilterId>("all");
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [cartNotice, setCartNotice] = useState("");
   const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
   const filteredGroups = useMemo(
     () =>
@@ -2212,58 +2202,10 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
     [activeFilter, groupedVariants],
   );
   const activeCard = assortmentCards.find((card) => card.id === activeCardId) ?? assortmentCards[0];
-  const cartById = useMemo(() => new Map(cart.map((item) => [item.id, item])), [cart]);
-  const cartTotal = cart.reduce((sum, item) => sum + item.quantity, 0);
   const visibleVariantCount = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
 
-  function quantityKey(cardId: AssortmentCard["id"], variantId: string) {
-    return `${cardId}-${variantId}`;
-  }
-
-  function addToCart(variant: ProductVariant) {
-    const itemId = quantityKey(activeCard.id, variant.id);
-    setCart((current) => {
-      const existing = current.find((item) => item.id === itemId);
-      if (existing) {
-        return current.map((item) =>
-          item.id === itemId ? { ...item, quantity: Math.min(99, item.quantity + 1) } : item,
-        );
-      }
-
-      return [
-        ...current,
-        {
-          id: itemId,
-          product: activeCard.cartLabel,
-          flavor: variant.title,
-          group: variant.group || "Линейка",
-          quantity: 1,
-        },
-      ];
-    });
-    setCartNotice(`Добавлено: ${activeCard.cartLabel}: ${variant.title}`);
-  }
-
-  function updateCartQuantity(cardId: AssortmentCard["id"], variant: ProductVariant, nextQuantity: number) {
-    const productLabel = assortmentCards.find((card) => card.id === cardId)?.cartLabel ?? "Товар";
-    const itemId = quantityKey(cardId, variant.id);
-
-    if (nextQuantity < 1) {
-      setCart((current) => current.filter((item) => item.id !== itemId));
-      setCartNotice(`Удалено: ${productLabel}: ${variant.title}`);
-      return;
-    }
-
-    const safeQuantity = Math.min(99, Math.max(1, nextQuantity));
-
-    setCart((current) =>
-      current.map((item) => (item.id === itemId ? { ...item, quantity: safeQuantity } : item)),
-    );
-    setCartNotice(`Количество: ${productLabel}: ${variant.title}, ${safeQuantity} шт.`);
-  }
-
   return (
-    <div id="catalog-products" className="mx-auto grid w-full max-w-[76rem] gap-6 pb-40 text-white sm:pb-44">
+    <div id="catalog-products" className="mx-auto grid w-full max-w-[76rem] gap-6 pb-12 text-white sm:pb-16">
       <div className="grid gap-4 pt-2 sm:pt-4">
         <div className="grid gap-2">
           <h2 className="text-4xl font-semibold leading-[0.94] tracking-normal text-white sm:text-6xl">
@@ -2316,7 +2258,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                       : "border-white/10 bg-black text-white/54 hover:border-white/34 hover:text-white",
                   )}
                 >
-                  {card.cartLabel}
+                  {card.label}
                 </button>
               );
             })}
@@ -2335,40 +2277,17 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
             </h3>
             {group.toLowerCase().includes("айс") ? <IceBanner /> : null}
             {items.map((variant) => {
-              const cartItem = cartById.get(quantityKey(activeCard.id, variant.id));
-              const quantity = cartItem?.quantity ?? 1;
               const description = getVariantDescription(variant);
-              const selectVariant = () => {
-                if (!cartItem) {
-                  addToCart(variant);
-                }
-              };
 
               return (
                 <article
                   key={variant.id}
                   data-testid={`catalog-flavor-card-${variant.id}`}
-                  role={cartItem ? undefined : "button"}
-                  tabIndex={cartItem ? undefined : 0}
-                  aria-label={cartItem ? undefined : `Выбрать ${variant.title}: ${activeCard.cartLabel}`}
-                  onClick={selectVariant}
-                  onKeyDown={(event) => {
-                    if (cartItem || (event.key !== "Enter" && event.key !== " ")) {
-                      return;
-                    }
-                    event.preventDefault();
-                    selectVariant();
-                  }}
-                  className={classNames(
-                    "group relative min-h-[6.6rem] overflow-hidden rounded-[0.42rem] border bg-[#0a0a0b] text-white transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:min-h-[6.2rem]",
-                    cartItem
-                      ? "border-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.22),0_0_34px_rgba(255,255,255,0.09)]"
-                      : "cursor-pointer border-white/14 hover:border-white/42 hover:bg-[#111113]",
-                  )}
+                  className="group relative min-h-[6.6rem] overflow-hidden rounded-[0.42rem] border border-white/14 bg-[#0a0a0b] text-white transition duration-200 hover:border-white/34 hover:bg-[#111113] sm:min-h-[6.2rem]"
                 >
                   <FlavorScene variant={variant} />
                   <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.96)_0%,rgba(10,10,10,0.88)_43%,rgba(10,10,10,0.28)_100%)]" />
-                  <div className="relative grid min-h-[6.6rem] grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 px-4 py-3 sm:min-h-[6.2rem] sm:grid-cols-[6.6rem_minmax(0,1fr)_auto] sm:gap-4 sm:px-5 sm:py-2">
+                  <div className="relative grid min-h-[6.6rem] grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 px-4 py-3 sm:min-h-[6.2rem] sm:grid-cols-[6.6rem_minmax(0,1fr)] sm:gap-4 sm:px-5 sm:py-2">
                     <div className="flex h-full items-center justify-center">
                       <CatalogProductGlyph mode={activeCard.id} className="h-24 w-12 sm:h-24 sm:w-14" />
                     </div>
@@ -2385,47 +2304,6 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                         <span className="text-xs leading-5 text-white/42 sm:hidden">{description}</span>
                       </div>
                     </div>
-
-                    {cartItem ? (
-                      <div className="col-span-2 grid justify-start sm:col-span-1 sm:justify-end">
-                        <div className="grid h-9 w-32 grid-cols-[2.4rem_1fr_2.4rem] overflow-hidden rounded-[0.28rem] border border-white/50 bg-black/70 text-white backdrop-blur">
-                          <button
-                            type="button"
-                            aria-label={`Уменьшить количество для ${variant.title}`}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              updateCartQuantity(activeCard.id, variant, quantity - 1);
-                            }}
-                            className="text-lg leading-none transition hover:bg-white hover:text-black"
-                          >
-                            -
-                          </button>
-                          <input
-                            aria-label={`Количество для ${variant.title}`}
-                            type="number"
-                            min={1}
-                            max={99}
-                            value={quantity}
-                            onClick={(event) => event.stopPropagation()}
-                            onChange={(event) =>
-                              updateCartQuantity(activeCard.id, variant, Number(event.target.value) || 1)
-                            }
-                            className="min-w-0 border-x border-white/24 bg-transparent text-center text-sm font-semibold text-white outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                          />
-                          <button
-                            type="button"
-                            aria-label={`Увеличить количество для ${variant.title}`}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              updateCartQuantity(activeCard.id, variant, quantity + 1);
-                            }}
-                            className="text-lg leading-none transition hover:bg-white hover:text-black"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    ) : null}
                   </div>
                 </article>
               );
@@ -2447,58 +2325,6 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
           ))}
         </dl>
       </details>
-
-      {activeCard || cart.length ? (
-        <div
-          aria-live="polite"
-          data-testid="catalog-cart"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-white/12 bg-black/94 px-5 py-3 text-white shadow-[0_-18px_44px_rgba(0,0,0,0.44)] backdrop-blur sm:px-6 lg:px-8"
-        >
-          <div className="mx-auto w-full max-w-[76rem]">
-            <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-white">Корзина</h2>
-                  <span className="text-2xl font-semibold leading-none text-white">
-                    {cartTotal ? `${cartTotal} шт.` : "пусто"}
-                  </span>
-                </div>
-                {cartNotice ? <p className="mt-1 hidden text-xs leading-5 text-white/46 sm:block">{cartNotice}</p> : null}
-              </div>
-              {cart.length ? (
-                <Link
-                  href="/request"
-                  className="inline-flex min-h-11 items-center justify-center rounded-[0.35rem] bg-white px-5 text-sm font-semibold text-black transition hover:bg-white/86 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:min-h-12 sm:px-8"
-                >
-                  Оформить заявку
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="inline-flex min-h-11 cursor-not-allowed items-center justify-center rounded-[0.35rem] bg-white/[0.08] px-4 text-sm font-semibold text-white/34 sm:min-h-12 sm:px-5"
-                >
-                  Добавьте вкус
-                </button>
-              )}
-            </div>
-            {cart.length ? (
-              <div className="mt-3 hidden flex-wrap gap-2 sm:flex">
-                {cart.map((item) => (
-                  <span
-                    key={item.id}
-                    className="rounded-[0.25rem] border border-white/12 bg-white/[0.06] px-2.5 py-1.5 text-xs leading-5 text-white/64"
-                  >
-                    <span className="font-semibold text-white">{item.product}</span> · {item.flavor} · {item.quantity} шт.
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-2 text-sm leading-6 text-white/46">Выберите вкус, чтобы собрать заявку.</p>
-            )}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
