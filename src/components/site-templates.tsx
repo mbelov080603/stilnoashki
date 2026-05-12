@@ -865,12 +865,12 @@ export function HomeTemplate() {
           className="absolute inset-y-0 right-0 -z-10 w-[58%] bg-gradient-to-l from-black via-black/74 to-transparent lg:w-[44%]"
           aria-hidden="true"
         />
-        <div className="mx-auto grid min-h-[calc(100svh-9rem)] max-w-[90rem] items-center gap-10 py-8 lg:grid-cols-[minmax(18rem,0.78fr)_minmax(24rem,1.18fr)_minmax(18rem,0.78fr)] lg:py-12">
-          <div className="max-w-[27rem]">
+        <div className="mx-auto grid min-h-[calc(100svh-9rem)] max-w-[96rem] items-center gap-10 py-8 lg:grid-cols-[minmax(17rem,0.74fr)_minmax(32rem,1.44fr)_minmax(17rem,0.74fr)] lg:py-12 xl:gap-12">
+          <div className="max-w-[25rem]">
             <h1 className="text-[clamp(1.85rem,2.5vw,3.2rem)] font-semibold leading-[1.03] tracking-normal text-white">
               Перезаряжаемая электронная сигарета доставки никотина одноразового использования STILNO CLICK ONE
             </h1>
-            <p className="mt-6 max-w-[25rem] text-base leading-7 text-white/72 sm:text-lg">
+            <p className="mt-6 max-w-[24rem] text-base leading-7 text-white/72 sm:text-lg">
               Вы приобретаете стартовый набор (POD + Картридж) со своим любимым вкусом, а дальше меняете только
               картриджи
             </p>
@@ -878,8 +878,8 @@ export function HomeTemplate() {
 
           <div className="hidden min-h-[24rem] lg:block" aria-hidden="true" />
 
-          <aside className="max-w-[27rem] justify-self-start text-white lg:justify-self-end">
-            <ul className="grid gap-3 text-sm leading-6 text-white/76 sm:text-base">
+          <aside className="max-w-[25rem] justify-self-start text-white lg:justify-self-end">
+            <ul className="grid gap-3 text-sm leading-6 text-white/76">
               {specificationLines.map((line) => (
                 <li key={line} className="border-b border-white/14 pb-3 font-medium text-white">
                   {line}
