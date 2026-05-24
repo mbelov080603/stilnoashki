@@ -1118,6 +1118,8 @@ export function SiteFooter({
     return null;
   }
 
+  const isDarkFullFooter = normalizedPathname === "/verify";
+
   if (isBrandSitePath(pathname)) {
     return (
       <footer className="border-t border-white/10 bg-[#000000] text-white">
@@ -1172,18 +1174,18 @@ export function SiteFooter({
   }
 
   return (
-    <footer className="border-t border-black/10 bg-white">
+    <footer className={classNames("border-t", isDarkFullFooter ? "border-white/10 bg-black text-white" : "border-black/10 bg-white")}>
       <div className="mx-auto grid max-w-[86rem] gap-8 px-5 py-12 sm:px-6 md:grid-cols-3 lg:grid-cols-5 lg:px-8">
         <div className="min-w-0">
-          <p className="text-xs uppercase tracking-[0.22em] text-black/42">Бренд</p>
-          <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">STILNO</h2>
-          <p className="mt-4 text-sm leading-6 text-black/62">
+          <p className={classNames("text-xs uppercase tracking-[0.22em]", isDarkFullFooter ? "text-white/38" : "text-black/42")}>Бренд</p>
+          <h2 className={classNames("mt-4 text-2xl font-semibold tracking-[-0.04em]", isDarkFullFooter ? "text-white" : "text-black")}>STILNO</h2>
+          <p className={classNames("mt-4 text-sm leading-6", isDarkFullFooter ? "text-white/62" : "text-black/62")}>
             Информация о бренде, продукте, розничной точке и B2B-маршрутах STILNO для аудитории 18+.
           </p>
-          <div className="mt-5 grid gap-3 text-xs leading-5 text-black/58">
+          <div className={classNames("mt-5 grid gap-3 text-xs leading-5", isDarkFullFooter ? "text-white/58" : "text-black/58")}>
             {contactLines.slice(0, 2).map((line) => (
               <p key={line.label}>
-                <span className="block text-black/38">{line.label}</span>
+                <span className={classNames("block", isDarkFullFooter ? "text-white/36" : "text-black/38")}>{line.label}</span>
                 <span className="mt-1 block">{line.value}</span>
               </p>
             ))}
@@ -1192,10 +1194,17 @@ export function SiteFooter({
 
         {footerGroups.map((group) => (
           <div key={group.label} className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.22em] text-black/42">{group.label}</p>
+            <p className={classNames("text-xs uppercase tracking-[0.22em]", isDarkFullFooter ? "text-white/38" : "text-black/42")}>{group.label}</p>
             <div className="mt-4 grid gap-2 text-sm">
               {group.links.map((item) => (
-                <Link key={item.href} href={item.href} className="text-black/68 transition hover:text-black">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={classNames(
+                    "transition",
+                    isDarkFullFooter ? "text-white/68 hover:text-white" : "text-black/68 hover:text-black",
+                  )}
+                >
                   {item.label}
                 </Link>
               ))}
@@ -1204,10 +1213,15 @@ export function SiteFooter({
         ))}
       </div>
 
-      <div className="border-t border-black/10">
-        <div className="mx-auto grid max-w-[86rem] gap-4 px-5 py-5 text-[0.72rem] leading-5 text-black/42 sm:px-6 md:grid-cols-3 lg:px-8">
+      <div className={classNames("border-t", isDarkFullFooter ? "border-white/10" : "border-black/10")}>
+        <div
+          className={classNames(
+            "mx-auto grid max-w-[86rem] gap-4 px-5 py-5 text-[0.72rem] leading-5 sm:px-6 md:grid-cols-3 lg:px-8",
+            isDarkFullFooter ? "text-white/42" : "text-black/42",
+          )}
+        >
           <p>
-            <span className="font-medium text-black/58">18+.</span> Никотин вызывает зависимость. Продажа
+            <span className={classNames("font-medium", isDarkFullFooter ? "text-white/58" : "text-black/58")}>18+.</span> Никотин вызывает зависимость. Продажа
             несовершеннолетним запрещена.
           </p>
           <p>Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции.</p>
@@ -1215,8 +1229,13 @@ export function SiteFooter({
         </div>
       </div>
 
-      <div className="border-t border-black/10">
-        <div className="mx-auto flex max-w-[86rem] flex-col gap-2 px-5 py-4 text-xs leading-5 text-black/38 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+      <div className={classNames("border-t", isDarkFullFooter ? "border-white/10" : "border-black/10")}>
+        <div
+          className={classNames(
+            "mx-auto flex max-w-[86rem] flex-col gap-2 px-5 py-4 text-xs leading-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8",
+            isDarkFullFooter ? "text-white/38" : "text-black/38",
+          )}
+        >
           <p>© 2026 STILNO. Все права защищены.</p>
           <p>ООО &quot;ВОСТОК ИМПОРТ ПРОМ&quot;</p>
         </div>
