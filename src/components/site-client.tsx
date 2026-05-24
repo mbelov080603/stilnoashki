@@ -1881,18 +1881,6 @@ type CatalogVariant = ProductVariant & {
   flavorDescription?: string;
 };
 
-type FlavorFilterId = "all" | "fruit" | "berry" | "fresh" | "tropical" | "drink" | "mix";
-
-const flavorFilters: Array<{ id: FlavorFilterId; label: string }> = [
-  { id: "all", label: "Все вкусы" },
-  { id: "fruit", label: "Фруктовые" },
-  { id: "berry", label: "Ягодные" },
-  { id: "fresh", label: "Освежающие" },
-  { id: "tropical", label: "Тропические" },
-  { id: "drink", label: "Напитки" },
-  { id: "mix", label: "Миксы" },
-];
-
 function getVariantGroups(variants: ProductVariant[]) {
   const groupMap = new Map<string, ProductVariant[]>();
 
@@ -1914,71 +1902,6 @@ function getVariantDescription(variant: ProductVariant) {
 }
 
 type FlavorIconKind = "berry" | "citrus" | "tropical" | "mint" | "drink" | "cream" | "ice" | "sour";
-
-function getVariantFilterIds(variant: ProductVariant): FlavorFilterId[] {
-  const title = variant.title.toLowerCase();
-  const group = (variant.group || "").toLowerCase();
-  const filters = new Set<FlavorFilterId>();
-
-  filters.add("all");
-
-  if (group.includes("айс") || title.includes("мят") || title.includes("тархун") || title.includes("лед")) {
-    filters.add("fresh");
-  }
-
-  if (
-    title.includes("клуб") ||
-    title.includes("малин") ||
-    title.includes("черник") ||
-    title.includes("смород") ||
-    title.includes("ежев") ||
-    title.includes("виш") ||
-    title.includes("ягод") ||
-    title.includes("землян") ||
-    title.includes("виноград") ||
-    title.includes("клюк")
-  ) {
-    filters.add("berry");
-  }
-
-  if (
-    title.includes("ананас") ||
-    title.includes("манго") ||
-    title.includes("кокос") ||
-    title.includes("драгон") ||
-    title.includes("мараку")
-  ) {
-    filters.add("tropical");
-  }
-
-  if (
-    title.includes("чай") ||
-    title.includes("лимонад") ||
-    title.includes("энергетик") ||
-    title.includes("тархун") ||
-    title.includes("сок")
-  ) {
-    filters.add("drink");
-  }
-
-  if (
-    title.includes("грейп") ||
-    title.includes("лимон") ||
-    title.includes("лайм") ||
-    title.includes("яблок") ||
-    title.includes("апельс") ||
-    title.includes("персик") ||
-    title.includes("барбарис")
-  ) {
-    filters.add("fruit");
-  }
-
-  if (title.split(/[\s,()-]+/).filter(Boolean).length > 2 || title.includes("микс")) {
-    filters.add("mix");
-  }
-
-  return Array.from(filters);
-}
 
 function formatFlavorTitle(title: string) {
   return title
@@ -2177,17 +2100,51 @@ function FlavorScene({ variant }: { variant: ProductVariant }) {
   );
 }
 
-function IceBanner() {
+function getCatalogGroupBanner(group: string) {
+  const normalizedGroup = group.toLowerCase();
+
+  if (normalizedGroup.includes("айс")) {
+    return {
+      title: "X-Ice Pod",
+      label: "Регулируемый холодок",
+      icon: "ice" as FlavorIconKind,
+      accent:
+        "bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.28),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.08))]",
+    };
+  }
+
+  if (normalizedGroup.includes("кисл")) {
+    return {
+      title: "Кислые",
+      label: "Яркий кислый профиль",
+      icon: "sour" as FlavorIconKind,
+      accent:
+        "bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.18),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.06))]",
+    };
+  }
+
+  return {
+    title: "Наборы",
+    label: "Основная линейка",
+    icon: "berry" as FlavorIconKind,
+    accent:
+      "bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.16),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.05))]",
+  };
+}
+
+function CatalogGroupBanner({ group }: { group: string }) {
+  const banner = getCatalogGroupBanner(group);
+
   return (
     <div className="relative overflow-hidden rounded-[0.42rem] border border-white/18 bg-[#0e0e0f] px-6 py-4 text-white sm:col-span-2">
-      <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.28),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.08))]" />
+      <div className={classNames("absolute inset-y-0 right-0 w-1/2", banner.accent)} />
       <div className="relative grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
-        <p className="text-3xl font-semibold leading-none tracking-normal sm:text-4xl">X-Ice Pod</p>
+        <p className="text-3xl font-semibold leading-none tracking-normal sm:text-4xl">{banner.title}</p>
         <div className="flex items-center gap-3 text-sm leading-5 text-white/74">
           <span className="grid h-9 w-9 place-items-center rounded-[0.28rem] border border-white/54">
-            <FlavorGlyph kind="ice" className="h-5 w-5" />
+            <FlavorGlyph kind={banner.icon} className="h-5 w-5" />
           </span>
-          <span>Регулируемый<br />холодок</span>
+          <span>{banner.label}</span>
         </div>
       </div>
     </div>
@@ -2197,20 +2154,9 @@ function IceBanner() {
 export function CatalogAssortmentCards({ product }: { product: Product }) {
   const variants = product.variants;
   const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"]>("cartridges");
-  const [activeFilter, setActiveFilter] = useState<FlavorFilterId>("all");
   const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
-  const filteredGroups = useMemo(
-    () =>
-      groupedVariants
-        .map(({ group, items }) => ({
-          group,
-          items: items.filter((variant) => getVariantFilterIds(variant).includes(activeFilter)),
-        }))
-        .filter(({ items }) => items.length > 0),
-    [activeFilter, groupedVariants],
-  );
   const activeCard = assortmentCards.find((card) => card.id === activeCardId) ?? assortmentCards[0];
-  const visibleVariantCount = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
+  const visibleVariantCount = groupedVariants.reduce((sum, group) => sum + group.items.length, 0);
 
   return (
     <div id="catalog-products" className="mx-auto grid w-full max-w-[76rem] gap-6 pb-12 text-white sm:pb-16">
@@ -2222,29 +2168,6 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
           <p className="max-w-2xl text-sm leading-6 text-white/58 sm:text-base">
             Премиальные вкусы. Чистые ингредиенты. Максимальное удовольствие.
           </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {flavorFilters.map((filter) => {
-            const isActive = activeFilter === filter.id;
-
-            return (
-              <button
-                key={filter.id}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => setActiveFilter(filter.id)}
-                className={classNames(
-                  "min-h-10 rounded-full border px-5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
-                  isActive
-                    ? "border-white bg-white text-black shadow-[0_0_22px_rgba(255,255,255,0.22)]"
-                    : "border-white/12 bg-white/[0.07] text-white/74 hover:border-white/30 hover:bg-white/[0.12] hover:text-white",
-                )}
-              >
-                {filter.label}
-              </button>
-            );
-          })}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
@@ -2278,12 +2201,12 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
       </div>
 
       <div className="grid gap-2 xl:grid-cols-2">
-        {filteredGroups.map(({ group, items }) => (
+        {groupedVariants.map(({ group, items }) => (
           <section key={group} aria-labelledby={`catalog-group-${group}`} className="contents">
             <h3 id={`catalog-group-${group}`} className="sr-only">
               {group}
             </h3>
-            {group.toLowerCase().includes("айс") ? <IceBanner /> : null}
+            <CatalogGroupBanner group={group} />
             {items.map((variant) => {
               const description = getVariantDescription(variant);
 
