@@ -126,7 +126,7 @@ export const siteSettings = {
     { label: "Галерея", href: "/gallery" },
     { label: "Вакансии", href: "/careers" },
     { label: "Материалы", href: "/articles" },
-    { label: "Проверка оригинальности", href: "/verify" },
+    { label: "Инструкция", href: "/verify" },
     { label: "Поддержка", href: "/support" },
     { label: "Вопросы и ответы", href: "/faq" },
     { label: "Политика обработки данных", href: "/legal/privacy" },
@@ -158,7 +158,7 @@ export const siteSettings = {
     {
       label: "Информация",
       links: [
-        { label: "Проверка оригинальности", href: "/verify" },
+        { label: "Инструкция", href: "/verify" },
         { label: "Поддержка", href: "/support" },
         { label: "Ответственное потребление", href: "/responsible" },
       ],

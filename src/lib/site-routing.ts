@@ -49,7 +49,7 @@ export function getBreadcrumbs(pathname: string[], title: string) {
     ["geography", "География партнёров"],
     ["request", "Заявка"],
     ["media-kit", "B2B-пакет"],
-    ["verify", "Проверка оригинальности"],
+    ["verify", "Инструкция"],
     ["support", "Поддержка"],
     ["responsible", "Ответственное потребление"],
     ["franchise", "Франчайзинг"],
@@ -237,9 +237,9 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
   if (section === "verify") {
     return {
       kind: "verify",
-      title: "Проверка оригинальности STILNO",
+      title: "Инструкция по замене картриджа",
       description:
-        "Проверка кода с упаковки STILNO, статус оригинальности и безопасный маршрут обращения.",
+        "Видеоинструкция STILNO по подготовке картриджа и сбросу показаний остатка жидкости.",
       pathname: slug,
     };
   }

@@ -144,17 +144,25 @@ test("age gate and cookie consent can be completed in a fresh session", async ({
   await expect(page.getByText("Cookie-файлы")).toHaveCount(0);
 });
 
-test("verify page checks code through verification API", async ({ page }) => {
+test("verify page shows the reset video and instruction", async ({ page }) => {
   await seedConsent(page);
   await page.goto("/verify");
-  await page.locator('input[placeholder="STILNO-XXXX-XXXX"]').fill("STILNO-CODE-0426");
-  await page.locator("#verify-checker button").click();
-  await expect(page.getByText("Оригинальность подтверждена")).toBeVisible();
-  await expect(page.getByText("ST-0426-A")).toBeVisible();
+  await expect(page.locator("h1").first()).toHaveText("Инструкция по замене картриджа");
+  await expect(page.getByText("Снимите силиконовую насадку")).toBeVisible();
+  await expect(page.getByText("трижды отсоединить и подключить")).toBeVisible();
 
-  await page.locator('input[placeholder="STILNO-XXXX-XXXX"]').fill("STILNO-UNKNOWN-0000");
-  await page.locator("#verify-checker button").click();
-  await expect(page.getByText("Код не найден в реестре")).toBeVisible();
+  const video = page.locator("video").first();
+  await expect(video).toBeVisible();
+  await expect(video).toHaveAttribute("preload", "metadata");
+  await expect(video.locator('source[type="video/webm"]')).toHaveAttribute(
+    "src",
+    /\/stilno\/video\/verification-reset\.webm$/,
+  );
+  await expect(video.locator('source[type="video\/mp4"]')).toHaveAttribute(
+    "src",
+    /\/stilno\/video\/verification-reset\.mp4$/,
+  );
+  await expect(page.locator("#verify-checker")).toHaveCount(0);
 });
 
 test("store locator shows the published Moscow point and route controls", async ({ page }) => {

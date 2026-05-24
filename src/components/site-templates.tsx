@@ -15,7 +15,6 @@ import {
   SiteFooter,
   SiteHeader,
   StoresMap,
-  VerifyChecker,
 } from "@/components/site-client";
 import { featuredProduct } from "@/lib/catalog-data";
 import { assetPath, assetUrl, companyDetails, documentLinks, mediaAssets, siteOrigin, siteSettings } from "@/lib/site-config";
@@ -1505,49 +1504,38 @@ function FranchiseTemplate(page: ResolvedPage) {
 
 function VerifyTemplate(page: ResolvedPage) {
   return (
-    <section className="bg-[var(--color-page)]">
+    <section className="bg-black">
       <StructuredData data={buildJsonLd(page)} />
-      <div className="mx-auto max-w-[86rem] px-5 py-16 sm:px-6 lg:px-8">
-        <BreadcrumbTrail pathname={page.pathname} title={page.title} />
-        <PageHero
-          contract={{
-            eyebrow: "Проверка",
-            title: "Проверка оригинальности STILNO",
-            body:
-              "Введите код с упаковки STILNO. Проверка помогает отличить подтверждённый продукт и быстро перейти в поддержку при спорном результате.",
-            actions: [
-              { label: "Проверить код", href: "#verify-checker", variant: "primary" },
-              { label: "Поддержка", href: "/support", variant: "secondary" },
-            ],
-          }}
-          media={<ProductPhotoCard slotId="verify-product" title="Проверка кода STILNO" />}
-          compact
-        />
-
-        <div id="verify-checker" className="mt-12 grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-          <div className="grid gap-5">
-            <VerifyChecker />
-            <div className="rounded-[1rem] border border-black/10 bg-white p-6 text-black">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/42">Где искать код</p>
-              <div className="mt-5 grid gap-3 text-sm leading-6 text-black/64">
-                <p>Код расположен на защитной зоне упаковки или рядом с QR-маркировкой.</p>
-                <p>Не передавайте код третьим лицам до проверки и сохраняйте упаковку при обращении в поддержку.</p>
-                <p>Если код повреждён, отправьте фото упаковки через страницу поддержки.</p>
-              </div>
-            </div>
+      <div className="mx-auto max-w-[86rem] px-5 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="grid min-h-[calc(100svh-9rem)] gap-10 lg:grid-cols-[minmax(0,1.12fr)_minmax(22rem,0.88fr)] lg:items-center">
+          <div className="overflow-hidden rounded-lg border border-white/14 bg-white/[0.03] shadow-2xl shadow-black/40">
+            <video
+              className="block aspect-video h-auto w-full bg-black object-contain"
+              controls
+              playsInline
+              preload="metadata"
+              poster={assetPath("/stilno/video/verification-reset-poster.jpg")}
+              aria-label="Видеоинструкция по сбросу показаний остатка жидкости STILNO"
+            >
+              <source src={assetPath("/stilno/video/verification-reset.webm")} type="video/webm" />
+              <source src={assetPath("/stilno/video/verification-reset.mp4")} type="video/mp4" />
+            </video>
           </div>
-          <div className="grid gap-4">
-            {[
-              ["01", "Введите код", "Используйте код с упаковки без пробелов и лишних символов."],
-              ["02", "Сравните статус", "Сайт подскажет, похож ли код на формат STILNO и какой следующий шаг выбрать."],
-              ["03", "Обратитесь в поддержку", "При сомнительном результате сохраните упаковку и отправьте фото защитной зоны."],
-            ].map(([index, title, body]) => (
-              <article key={index} className="rounded-[1rem] border border-black/10 bg-white p-6">
-                <p className="text-xs uppercase tracking-[0.22em] text-black/36">{index}</p>
-                <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-black">{title}</h2>
-                <p className="mt-3 text-sm leading-6 text-black/62">{body}</p>
-              </article>
-            ))}
+
+          <div className="text-[#c8cdd3]">
+            <h1 className="text-3xl font-semibold leading-tight text-[#eef1f4] sm:text-4xl">
+              Инструкция по замене картриджа
+            </h1>
+            <ol className="mt-7 grid list-none gap-6 text-base leading-8 sm:text-lg">
+              <li>
+                <span className="font-semibold text-[#f3f5f7]">1. </span>
+                Снимите силиконовую насадку с верхней части картриджа, а затем снимите защитную пленку с корпуса.
+              </li>
+              <li>
+                <span className="font-semibold text-[#f3f5f7]">2. </span>
+                Для сброса показаний остатка жидкости необходимо отсоединить картридж, включится индикатор остатка жидкости и зарядки, после (до того как он погаснет) необходимо в течении двух секунд трижды отсоединить и подключить катридж. Индикатор показаний остатка жидкости перезагрузится.
+              </li>
+            </ol>
           </div>
         </div>
       </div>
@@ -1570,7 +1558,7 @@ function SupportTemplate(page: ResolvedPage) {
             body:
               "Здесь собраны действия по спорному коду, претензии к качеству, правила хранения, утилизация и контакты поддержки.",
             actions: [
-              { label: "Проверить код", href: "/verify", variant: "primary" },
+              { label: "Смотреть инструкцию", href: "/verify", variant: "primary" },
               { label: "Написать в поддержку", href: `mailto:${companyDetails.supportEmail}`, variant: "secondary" },
             ],
           }}
@@ -2244,7 +2232,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
     request: "Оставить заявку STILNO | официальный сайт бренда 18+",
     "media-kit": "B2B-пакет STILNO | материалы 18+",
     "partners-geography": "География партнёров STILNO | карта регионов",
-    verify: "Проверка оригинальности STILNO | код упаковки 18+",
+    verify: "Инструкция по замене картриджа STILNO",
     support: "Поддержка STILNO | качество, оригинальность и утилизация",
     responsible: "Ответственное потребление STILNO | информация 18+",
     contacts: "Контакты STILNO | официальный сайт бренда 18+",
@@ -2269,7 +2257,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
     "partners-geography":
       "Интерактивная карта географии партнёров STILNO: регионы России, розовая подсветка и опубликованный контакт в Москве.",
     verify:
-      "Проверка оригинальности STILNO: ввод кода с упаковки, подсказки по спорному результату и переход в поддержку.",
+      "Видеоинструкция STILNO: подготовка картриджа и сброс показаний остатка жидкости.",
     support:
       "Поддержка STILNO: оригинальность, качество, правила хранения, утилизация и контакты поддержки.",
     contacts:
