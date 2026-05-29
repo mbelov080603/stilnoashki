@@ -1,0 +1,874 @@
+[
+  {
+    "code": "R01",
+    "name": "Грейпфрут малина клубника",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Цитрус, малина и клубника",
+    "tags": [
+      "цитрус",
+      "ягоды",
+      "свежесть"
+    ],
+    "ingredients": [
+      "грейпфрут",
+      "малина",
+      "клубника"
+    ],
+    "colors": [
+      "#D17841",
+      "#B32A42",
+      "#C9484A"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 63,
+      "sourness": 48,
+      "coolness": 8
+    },
+    "asset": "assets/flavor-marks/grapefruit-raspberry-strawberry.svg",
+    "pngPreview": "assets/flavor-card-png/grapefruit-raspberry-strawberry.png"
+  },
+  {
+    "code": "R02",
+    "name": "Мята",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Чистый мятный профиль",
+    "tags": [
+      "мята",
+      "чисто",
+      "свежесть"
+    ],
+    "ingredients": [
+      "мята"
+    ],
+    "colors": [
+      "#5E9A6B",
+      "#9BC48A",
+      "#C7A160"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 16,
+      "sourness": 10,
+      "coolness": 22
+    },
+    "asset": "assets/flavor-marks/mint.svg",
+    "pngPreview": "assets/flavor-card-png/mint.png"
+  },
+  {
+    "code": "R03",
+    "name": "Ананас манго",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Ананас и спелое манго",
+    "tags": [
+      "тропики",
+      "сочно",
+      "мягко"
+    ],
+    "ingredients": [
+      "ананас",
+      "манго"
+    ],
+    "colors": [
+      "#E0A73A",
+      "#D46F2E",
+      "#C7A160"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 78,
+      "sourness": 24,
+      "coolness": 5
+    },
+    "asset": "assets/flavor-marks/pineapple-mango.svg",
+    "pngPreview": "assets/flavor-card-png/pineapple-mango.png"
+  },
+  {
+    "code": "R04",
+    "name": "Фруктовый чай",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Чай с фруктовыми нотами",
+    "tags": [
+      "чай",
+      "фрукты",
+      "тепло"
+    ],
+    "ingredients": [
+      "чай",
+      "фрукты"
+    ],
+    "colors": [
+      "#9B6238",
+      "#D49A42",
+      "#B65B4B"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 52,
+      "sourness": 20,
+      "coolness": 3
+    },
+    "asset": "assets/flavor-marks/fruit-tea.svg",
+    "pngPreview": "assets/flavor-card-png/fruit-tea.png"
+  },
+  {
+    "code": "R05",
+    "name": "Вишня Лимон Персик",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Вишня, лимон и персик",
+    "tags": [
+      "ягоды",
+      "цитрус",
+      "персик"
+    ],
+    "ingredients": [
+      "вишня",
+      "лимон",
+      "персик"
+    ],
+    "colors": [
+      "#8F2332",
+      "#E2B53D",
+      "#D9884A"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 61,
+      "sourness": 45,
+      "coolness": 6
+    },
+    "asset": "assets/flavor-marks/cherry-lemon-peach.svg",
+    "pngPreview": "assets/flavor-card-png/cherry-lemon-peach.png"
+  },
+  {
+    "code": "R06",
+    "name": "Ягодный энергетик",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Ягоды и энергетический оттенок",
+    "tags": [
+      "ягоды",
+      "энергия",
+      "ярко"
+    ],
+    "ingredients": [
+      "ягоды",
+      "энергетик"
+    ],
+    "colors": [
+      "#A3284D",
+      "#6E283E",
+      "#C7A160"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 58,
+      "sourness": 34,
+      "coolness": 5
+    },
+    "asset": "assets/flavor-marks/berry-energy.svg",
+    "pngPreview": "assets/flavor-card-png/berry-energy.png"
+  },
+  {
+    "code": "R07",
+    "name": "Черника клюква вишня",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Черника, клюква и вишня",
+    "tags": [
+      "темные ягоды",
+      "терпко",
+      "плотно"
+    ],
+    "ingredients": [
+      "черника",
+      "клюква",
+      "вишня"
+    ],
+    "colors": [
+      "#354A8B",
+      "#9A2F42",
+      "#77233A"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 54,
+      "sourness": 42,
+      "coolness": 6
+    },
+    "asset": "assets/flavor-marks/blueberry-cranberry-cherry.svg",
+    "pngPreview": "assets/flavor-card-png/blueberry-cranberry-cherry.png"
+  },
+  {
+    "code": "R08",
+    "name": "Смородина, малина, ежевика",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Смородина, малина и ежевика",
+    "tags": [
+      "ягоды",
+      "глубина",
+      "кислинка"
+    ],
+    "ingredients": [
+      "смородина",
+      "малина",
+      "ежевика"
+    ],
+    "colors": [
+      "#322442",
+      "#B32B47",
+      "#4B2E59"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 56,
+      "sourness": 44,
+      "coolness": 6
+    },
+    "asset": "assets/flavor-marks/currant-raspberry-blackberry.svg",
+    "pngPreview": "assets/flavor-card-png/currant-raspberry-blackberry.png"
+  },
+  {
+    "code": "R09",
+    "name": "Сливочная клубника манго",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Сливки, клубника и манго",
+    "tags": [
+      "сливки",
+      "ягоды",
+      "тропики"
+    ],
+    "ingredients": [
+      "сливки",
+      "клубника",
+      "манго"
+    ],
+    "colors": [
+      "#D7B89A",
+      "#C94651",
+      "#D48638"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 74,
+      "sourness": 18,
+      "coolness": 3
+    },
+    "asset": "assets/flavor-marks/cream-strawberry-mango.svg",
+    "pngPreview": "assets/flavor-card-png/cream-strawberry-mango.png"
+  },
+  {
+    "code": "R10",
+    "name": "Земляника драгонфрут",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Земляника и драгонфрут",
+    "tags": [
+      "земляника",
+      "экзотика",
+      "мягко"
+    ],
+    "ingredients": [
+      "земляника",
+      "драгонфрут"
+    ],
+    "colors": [
+      "#C94749",
+      "#D46A8C",
+      "#6C8C5E"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 67,
+      "sourness": 25,
+      "coolness": 4
+    },
+    "asset": "assets/flavor-marks/wild-strawberry-dragonfruit.svg",
+    "pngPreview": "assets/flavor-card-png/wild-strawberry-dragonfruit.png"
+  },
+  {
+    "code": "R11",
+    "name": "Барбарис",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Классический барбарисовый вкус",
+    "tags": [
+      "барбарис",
+      "карамельно",
+      "кислинка"
+    ],
+    "ingredients": [
+      "барбарис"
+    ],
+    "colors": [
+      "#C5353A",
+      "#B12B2F",
+      "#C7A160"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 62,
+      "sourness": 38,
+      "coolness": 3
+    },
+    "asset": "assets/flavor-marks/barberry.svg",
+    "pngPreview": "assets/flavor-card-png/barberry.png"
+  },
+  {
+    "code": "R12",
+    "name": "Тархун",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Травяной вкус тархуна",
+    "tags": [
+      "травы",
+      "свежо",
+      "зелень"
+    ],
+    "ingredients": [
+      "тархун"
+    ],
+    "colors": [
+      "#59804A",
+      "#7E9A54",
+      "#C7A160"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 42,
+      "sourness": 18,
+      "coolness": 8
+    },
+    "asset": "assets/flavor-marks/tarragon.svg",
+    "pngPreview": "assets/flavor-card-png/tarragon.png"
+  },
+  {
+    "code": "R13",
+    "name": "Крем-сливки",
+    "category": "regular",
+    "categoryLabel": "ОСНОВНАЯ",
+    "description": "Мягкий сливочный профиль",
+    "tags": [
+      "крем",
+      "сливки",
+      "мягко"
+    ],
+    "ingredients": [
+      "крем",
+      "сливки"
+    ],
+    "colors": [
+      "#D8C2A4",
+      "#B79A74",
+      "#C7A160"
+    ],
+    "accent": "#C7A160",
+    "profile": {
+      "sweetness": 72,
+      "sourness": 4,
+      "coolness": 2
+    },
+    "asset": "assets/flavor-marks/cream.svg",
+    "pngPreview": "assets/flavor-card-png/cream.png"
+  },
+  {
+    "code": "S01",
+    "name": "Кислая ежевика малина",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислая ежевика и малина",
+    "tags": [
+      "кисло",
+      "ягоды",
+      "резко"
+    ],
+    "ingredients": [
+      "ежевика",
+      "малина"
+    ],
+    "colors": [
+      "#4D2A67",
+      "#B12D49",
+      "#A9D949"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 44,
+      "sourness": 82,
+      "coolness": 5
+    },
+    "asset": "assets/flavor-marks/sour-blackberry-raspberry.svg",
+    "pngPreview": "assets/flavor-card-png/sour-blackberry-raspberry.png"
+  },
+  {
+    "code": "S02",
+    "name": "Кислая малина яблоко",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислая малина и яблоко",
+    "tags": [
+      "кисло",
+      "яблоко",
+      "малина"
+    ],
+    "ingredients": [
+      "малина",
+      "яблоко"
+    ],
+    "colors": [
+      "#B72E4B",
+      "#78A84B",
+      "#A9D949"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 45,
+      "sourness": 84,
+      "coolness": 5
+    },
+    "asset": "assets/flavor-marks/sour-raspberry-apple.svg",
+    "pngPreview": "assets/flavor-card-png/sour-raspberry-apple.png"
+  },
+  {
+    "code": "S03",
+    "name": "Кислая черная смородина",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислая черная смородина",
+    "tags": [
+      "кисло",
+      "смородина",
+      "терпко"
+    ],
+    "ingredients": [
+      "черная смородина"
+    ],
+    "colors": [
+      "#2D243E",
+      "#5F315B",
+      "#A9D949"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 35,
+      "sourness": 88,
+      "coolness": 4
+    },
+    "asset": "assets/flavor-marks/sour-blackcurrant.svg",
+    "pngPreview": "assets/flavor-card-png/sour-blackcurrant.png"
+  },
+  {
+    "code": "S04",
+    "name": "Кислый грейпфрут киви",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислый грейпфрут и киви",
+    "tags": [
+      "кисло",
+      "цитрус",
+      "киви"
+    ],
+    "ingredients": [
+      "грейпфрут",
+      "киви"
+    ],
+    "colors": [
+      "#D57B43",
+      "#7CAA44",
+      "#A9D949"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 39,
+      "sourness": 86,
+      "coolness": 4
+    },
+    "asset": "assets/flavor-marks/sour-grapefruit-kiwi.svg",
+    "pngPreview": "assets/flavor-card-png/sour-grapefruit-kiwi.png"
+  },
+  {
+    "code": "S05",
+    "name": "Кислое зеленое яблоко",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислое зеленое яблоко",
+    "tags": [
+      "кисло",
+      "яблоко",
+      "зелень"
+    ],
+    "ingredients": [
+      "зеленое яблоко"
+    ],
+    "colors": [
+      "#80A84E",
+      "#A9D949",
+      "#D4E277"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 38,
+      "sourness": 90,
+      "coolness": 5
+    },
+    "asset": "assets/flavor-marks/sour-green-apple.svg",
+    "pngPreview": "assets/flavor-card-png/sour-green-apple.png"
+  },
+  {
+    "code": "S06",
+    "name": "Кислый ананас малина",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислый ананас и малина",
+    "tags": [
+      "кисло",
+      "тропики",
+      "малина"
+    ],
+    "ingredients": [
+      "ананас",
+      "малина"
+    ],
+    "colors": [
+      "#E0A63C",
+      "#B32E49",
+      "#A9D949"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 48,
+      "sourness": 80,
+      "coolness": 5
+    },
+    "asset": "assets/flavor-marks/sour-pineapple-raspberry.svg",
+    "pngPreview": "assets/flavor-card-png/sour-pineapple-raspberry.png"
+  },
+  {
+    "code": "S07",
+    "name": "Кислый ягодный лимонад",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кислый ягодный лимонад",
+    "tags": [
+      "кисло",
+      "лимонад",
+      "ягоды"
+    ],
+    "ingredients": [
+      "ягоды",
+      "лимонад"
+    ],
+    "colors": [
+      "#A4324A",
+      "#D9B23E",
+      "#A9D949"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 43,
+      "sourness": 87,
+      "coolness": 6
+    },
+    "asset": "assets/flavor-marks/sour-berry-lemonade.svg",
+    "pngPreview": "assets/flavor-card-png/sour-berry-lemonade.png"
+  },
+  {
+    "code": "S08",
+    "name": "Кактус Лайм",
+    "category": "sour",
+    "categoryLabel": "КИСЛЫЕ",
+    "description": "Кактус и лайм",
+    "tags": [
+      "кисло",
+      "лайм",
+      "зелень"
+    ],
+    "ingredients": [
+      "кактус",
+      "лайм"
+    ],
+    "colors": [
+      "#5F8B52",
+      "#A9D949",
+      "#D8D35B"
+    ],
+    "accent": "#A9D949",
+    "profile": {
+      "sweetness": 36,
+      "sourness": 79,
+      "coolness": 7
+    },
+    "asset": "assets/flavor-marks/cactus-lime.svg",
+    "pngPreview": "assets/flavor-card-png/cactus-lime.png"
+  },
+  {
+    "code": "I01",
+    "name": "Ананас Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Ананас с холодным оттенком",
+    "tags": [
+      "ананас",
+      "холод",
+      "тропики"
+    ],
+    "ingredients": [
+      "ананас",
+      "лед"
+    ],
+    "colors": [
+      "#E0A73A",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 62,
+      "sourness": 22,
+      "coolness": 78
+    },
+    "asset": "assets/flavor-marks/pineapple-ice.svg",
+    "pngPreview": "assets/flavor-card-png/pineapple-ice.png"
+  },
+  {
+    "code": "I02",
+    "name": "Клубника Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Клубника с холодным оттенком",
+    "tags": [
+      "клубника",
+      "холод",
+      "ягоды"
+    ],
+    "ingredients": [
+      "клубника",
+      "лед"
+    ],
+    "colors": [
+      "#C94749",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 58,
+      "sourness": 24,
+      "coolness": 80
+    },
+    "asset": "assets/flavor-marks/strawberry-ice.svg",
+    "pngPreview": "assets/flavor-card-png/strawberry-ice.png"
+  },
+  {
+    "code": "I03",
+    "name": "Персик Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Персик с холодным оттенком",
+    "tags": [
+      "персик",
+      "холод",
+      "мягко"
+    ],
+    "ingredients": [
+      "персик",
+      "лед"
+    ],
+    "colors": [
+      "#D98A4E",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 60,
+      "sourness": 16,
+      "coolness": 77
+    },
+    "asset": "assets/flavor-marks/peach-ice.svg",
+    "pngPreview": "assets/flavor-card-png/peach-ice.png"
+  },
+  {
+    "code": "I04",
+    "name": "Малина Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Малина с холодным оттенком",
+    "tags": [
+      "малина",
+      "холод",
+      "ягоды"
+    ],
+    "ingredients": [
+      "малина",
+      "лед"
+    ],
+    "colors": [
+      "#B52D49",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 55,
+      "sourness": 30,
+      "coolness": 82
+    },
+    "asset": "assets/flavor-marks/raspberry-ice.svg",
+    "pngPreview": "assets/flavor-card-png/raspberry-ice.png"
+  },
+  {
+    "code": "I05",
+    "name": "Ежевика Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Ежевика с холодным оттенком",
+    "tags": [
+      "ежевика",
+      "холод",
+      "темные ягоды"
+    ],
+    "ingredients": [
+      "ежевика",
+      "лед"
+    ],
+    "colors": [
+      "#4A2A60",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 50,
+      "sourness": 28,
+      "coolness": 82
+    },
+    "asset": "assets/flavor-marks/blackberry-ice.svg",
+    "pngPreview": "assets/flavor-card-png/blackberry-ice.png"
+  },
+  {
+    "code": "I06",
+    "name": "Вишня Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Вишня с холодным оттенком",
+    "tags": [
+      "вишня",
+      "холод",
+      "ягоды"
+    ],
+    "ingredients": [
+      "вишня",
+      "лед"
+    ],
+    "colors": [
+      "#8F2332",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 54,
+      "sourness": 26,
+      "coolness": 81
+    },
+    "asset": "assets/flavor-marks/cherry-ice.svg",
+    "pngPreview": "assets/flavor-card-png/cherry-ice.png"
+  },
+  {
+    "code": "I07",
+    "name": "Черничный сорбет",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Черника и сорбетная нота",
+    "tags": [
+      "черника",
+      "сорбет",
+      "холод"
+    ],
+    "ingredients": [
+      "черника",
+      "сорбет"
+    ],
+    "colors": [
+      "#374C8E",
+      "#82D8F4",
+      "#BDEAF4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 59,
+      "sourness": 20,
+      "coolness": 67
+    },
+    "asset": "assets/flavor-marks/blueberry-sorbet.svg",
+    "pngPreview": "assets/flavor-card-png/blueberry-sorbet.png"
+  },
+  {
+    "code": "I08",
+    "name": "Клубнично-банановый милкшейк",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Клубника, банан и молоко",
+    "tags": [
+      "милкшейк",
+      "клубника",
+      "банан"
+    ],
+    "ingredients": [
+      "клубника",
+      "банан",
+      "молоко"
+    ],
+    "colors": [
+      "#C94749",
+      "#DDBD65",
+      "#D8C2A4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 82,
+      "sourness": 8,
+      "coolness": 34
+    },
+    "asset": "assets/flavor-marks/strawberry-banana-milkshake.svg",
+    "pngPreview": "assets/flavor-card-png/strawberry-banana-milkshake.png"
+  },
+  {
+    "code": "I09",
+    "name": "Виноград Черника Лёд",
+    "category": "ice",
+    "categoryLabel": "АЙС",
+    "description": "Виноград, черника и холод",
+    "tags": [
+      "виноград",
+      "черника",
+      "холод"
+    ],
+    "ingredients": [
+      "виноград",
+      "черника",
+      "лед"
+    ],
+    "colors": [
+      "#5B3D87",
+      "#374C8E",
+      "#82D8F4"
+    ],
+    "accent": "#82D8F4",
+    "profile": {
+      "sweetness": 58,
+      "sourness": 24,
+      "coolness": 84
+    },
+    "asset": "assets/flavor-marks/grape-blueberry-ice.svg",
+    "pngPreview": "assets/flavor-card-png/grape-blueberry-ice.png"
+  }
+]

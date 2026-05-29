@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 360 240" fill="none">
+<defs>
+<radialGradient id="g" cx="50%" cy="50%" r="58%"><stop offset="0" stop-color="#5F8B52" stop-opacity="0.22"/><stop offset="1" stop-color="#D8D35B" stop-opacity="0"/></radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<ellipse cx="180" cy="120" rx="128" ry="76" fill="url(#g)"/>
+<ellipse cx="180" cy="120" rx="72" ry="41" stroke="#A9D949" stroke-opacity="0.160" stroke-width="1"/>
+<ellipse cx="180" cy="120" rx="96" ry="55" stroke="#A9D949" stroke-opacity="0.125" stroke-width="1"/>
+<ellipse cx="180" cy="120" rx="120" ry="69" stroke="#A9D949" stroke-opacity="0.090" stroke-width="1"/>
+<polyline points="62.0,106.5 84.0,145.4 106.0,103.3 128.0,143.2 150.0,94.2 172.0,121.2 194.0,96.2 216.0,140.2 238.0,104.9 260.0,117.7 282.0,114.7" stroke="#A9D949" stroke-opacity="0.58" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="253.0" cy="113.1" r="5.0" fill="#5F8B52" fill-opacity="0.61"/>
+<circle cx="118.7" cy="94.2" r="3.2" fill="#A9D949" fill-opacity="0.52"/>
+<circle cx="215.3" cy="88.4" r="2.5" fill="#D8D35B" fill-opacity="0.76"/>
+<circle cx="220.7" cy="95.9" r="3.2" fill="#5F8B52" fill-opacity="0.59"/>
+<circle cx="244.4" cy="78.9" r="2.5" fill="#A9D949" fill-opacity="0.61"/>
+<circle cx="282.4" cy="120.1" r="2.5" fill="#D8D35B" fill-opacity="0.47"/>
+<circle cx="87.9" cy="140.0" r="3.2" fill="#5F8B52" fill-opacity="0.50"/>
+<circle cx="140.3" cy="72.0" r="4.0" fill="#A9D949" fill-opacity="0.73"/>
+<circle cx="250.3" cy="112.8" r="4.0" fill="#D8D35B" fill-opacity="0.45"/>
+<circle cx="192.0" cy="127.9" r="4.0" fill="#5F8B52" fill-opacity="0.60"/>
+<circle cx="126.5" cy="108.8" r="5.0" fill="#A9D949" fill-opacity="0.45"/>
+<circle cx="214.6" cy="141.5" r="4.0" fill="#D8D35B" fill-opacity="0.58"/>
+<circle cx="265.6" cy="124.7" r="4.0" fill="#5F8B52" fill-opacity="0.70"/>
+<circle cx="203.6" cy="152.3" r="4.0" fill="#A9D949" fill-opacity="0.56"/>
+<circle cx="225.2" cy="71.7" r="4.0" fill="#D8D35B" fill-opacity="0.67"/>
+<circle cx="167.1" cy="118.6" r="4.0" fill="#5F8B52" fill-opacity="0.54"/>
+<circle cx="96.6" cy="120.5" r="4.0" fill="#A9D949" fill-opacity="0.46"/>
+<circle cx="83.0" cy="64.2" r="3.2" fill="#D8D35B" fill-opacity="0.50"/>
+<text x="18" y="218" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="2" fill="#A9D949" fill-opacity="0.62">S08</text>
+</svg>

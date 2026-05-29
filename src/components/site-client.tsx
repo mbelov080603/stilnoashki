@@ -29,6 +29,11 @@ import type {
   ProductVariant,
 } from "@/lib/site-data";
 import {
+  stilnoFlavorByCode,
+  stilnoFlavors,
+  type StilnoFlavor,
+} from "@/lib/stilno-flavors";
+import {
   verifyCodeLocally,
   type VerificationRecord,
   type VerificationStatus,
@@ -442,7 +447,7 @@ export function StoresMap() {
   }
 
   return (
-    <div className="relative bg-[#050505] lg:min-h-screen">
+    <div className="relative overflow-hidden bg-[#050505] lg:min-h-screen">
       <div className="stilno-store-map relative h-[26.375rem] overflow-hidden bg-[#0a0a0a] shadow-[0_38px_120px_rgba(0,0,0,0.42)] lg:absolute lg:inset-0 lg:h-auto">
         <div ref={mapContainerRef} className="absolute inset-0" aria-label="Интерактивная карта магазинов STILNO" />
 
@@ -502,7 +507,7 @@ export function StoresMap() {
         `}</style>
       </div>
 
-      <aside className="relative z-20 mx-[15px] mb-20 mt-5 rounded-[0.65rem] border border-[#292929] bg-[rgba(18,18,18,0.92)] p-5 text-white shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur sm:p-6 lg:absolute lg:right-[30px] lg:top-[124px] lg:mx-0 lg:mb-0 lg:mt-0 lg:w-[300px] xl:w-[320px]">
+      <aside className="relative z-20 mx-[15px] mb-20 mt-5 min-w-0 rounded-[0.65rem] border border-[#292929] bg-[rgba(18,18,18,0.92)] p-5 text-white shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur sm:p-6 lg:absolute lg:right-[30px] lg:top-[124px] lg:mx-0 lg:mb-0 lg:mt-0 lg:w-[300px] xl:w-[320px]">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.22em] text-white/42">STILNO</p>
@@ -510,7 +515,7 @@ export function StoresMap() {
           </div>
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="mt-5 grid gap-3 min-[390px]:grid-cols-[minmax(0,1fr)_auto] min-[390px]:items-center">
           <button
             type="button"
             onClick={() => {
@@ -521,7 +526,7 @@ export function StoresMap() {
           >
             Москва (1)
           </button>
-          <div className="grid grid-cols-2 rounded-[0.55rem] border border-white/12 bg-black/24 p-1">
+          <div className="grid min-w-0 grid-cols-2 rounded-[0.55rem] border border-white/12 bg-black/24 p-1">
             {(["map", "list"] as const).map((mode) => (
               <button
                 key={mode}
@@ -550,16 +555,16 @@ export function StoresMap() {
 
         <article className="mt-5 rounded-[0.6rem] border border-white/10 bg-black/18 p-4 transition hover:border-white/32 hover:bg-white hover:text-black">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-[0.68rem] uppercase tracking-[0.18em] opacity-48">{selectedPoint.city}</p>
-              <h2 className="mt-2 text-xl font-semibold leading-tight">{selectedPoint.title}</h2>
+              <h2 className="mt-2 break-words text-xl font-semibold leading-tight">{selectedPoint.title}</h2>
             </div>
             <span className="shrink-0 rounded-full border border-current/16 px-2.5 py-1 text-[0.66rem] font-semibold opacity-72">
               {selectedPoint.type === "own" ? "Наша" : "Партнёр"}
             </span>
           </div>
-          <p className="mt-4 text-sm leading-6 opacity-72">{selectedPoint.address}</p>
-          <p className="mt-3 text-sm leading-6 opacity-64">{selectedPoint.hours}</p>
+          <p className="mt-4 break-words text-sm leading-6 opacity-72">{selectedPoint.address}</p>
+          <p className="mt-3 break-words text-sm leading-6 opacity-64">{selectedPoint.hours}</p>
           <a href={phoneHref(selectedPoint.phone)} className="mt-4 inline-flex text-sm font-semibold transition hover:text-[#cf3f7d]">
             {selectedPoint.phone}
           </a>
@@ -570,7 +575,7 @@ export function StoresMap() {
             href={selectedPoint.directionsHref}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-3 text-center text-sm font-semibold text-black transition hover:border-[#ff8fc5] hover:bg-[#ff8fc5]"
+            className="inline-flex min-h-11 items-center justify-center whitespace-normal rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-3 text-center text-sm font-semibold text-black transition hover:border-[#ff8fc5] hover:bg-[#ff8fc5]"
           >
             Построить маршрут
           </a>
@@ -580,7 +585,7 @@ export function StoresMap() {
               setSelectedPointId(selectedPoint.id);
               mapInstanceRef.current?.setCenter(selectedPoint.coordinates, 16, { duration: 300 });
             }}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/16 bg-white/[0.06] px-5 py-3 text-center text-sm font-semibold text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+            className="inline-flex min-h-11 items-center justify-center whitespace-normal rounded-full border border-white/16 bg-white/[0.06] px-5 py-3 text-center text-sm font-semibold text-white transition hover:border-white/34 hover:bg-white/[0.12]"
           >
             Показать на карте
           </button>
@@ -1064,7 +1069,7 @@ export function SiteHeader({
           id="mobile-menu"
           ref={menuRef}
           className={classNames(
-            "absolute inset-x-4 top-[calc(100%+0.75rem)] z-50 rounded-[1.25rem] border p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] xl:hidden",
+            "absolute inset-x-3 top-[calc(100%+0.75rem)] z-50 max-h-[calc(100svh-6.5rem)] overflow-y-auto rounded-[1.25rem] border p-4 shadow-[0_30px_80px_rgba(0,0,0,0.16)] sm:inset-x-4 xl:hidden",
             "border-white/14 bg-[#030303] text-white",
           )}
           role="dialog"
@@ -1078,7 +1083,7 @@ export function SiteHeader({
                 href={item.href}
                 dataAnalytics={`mobile_nav_${item.href.replace(/\W+/g, "_")}`}
                 className={classNames(
-                  "rounded-[0.9rem] border px-4 py-3 transition",
+                  "min-w-0 break-words rounded-[0.9rem] border px-4 py-3 leading-5 transition",
                   "border-white/12 bg-white/[0.04] text-white/72 hover:border-white/28 hover:text-white",
                 )}
                 onClick={() => setMenuOpen(false)}
@@ -1091,7 +1096,7 @@ export function SiteHeader({
             href={primaryCta.href}
             dataAnalytics="mobile_primary_cta"
             className={classNames(
-              "mt-4 inline-flex w-full justify-center rounded-full px-4 py-3 text-center text-sm font-medium transition",
+              "mt-4 inline-flex min-h-11 w-full justify-center whitespace-normal rounded-full px-4 py-3 text-center text-sm font-medium leading-5 transition",
               "border border-white/22 bg-transparent text-white hover:border-white hover:bg-white hover:text-black",
             )}
             onClick={() => setMenuOpen(false)}
@@ -1376,13 +1381,13 @@ export function AgeGate({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#000000]/86 px-4 backdrop-blur-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#000000]/86 px-3 py-4 backdrop-blur-xl sm:px-4">
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="age-gate-title"
-        className="relative w-full max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#000000] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:p-7 lg:p-8"
+        className="relative max-h-[calc(100svh-2rem)] w-full max-w-5xl overflow-y-auto rounded-[1.15rem] border border-white/12 bg-[#000000] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:rounded-[1.35rem] sm:p-7 lg:p-8"
       >
         <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-stretch">
           <div className="flex min-w-0 flex-col p-2 sm:p-3">
@@ -1392,7 +1397,7 @@ export function AgeGate({
             </div>
             <h2
               id="age-gate-title"
-              className="max-w-2xl text-3xl font-semibold leading-[0.98] tracking-[-0.055em] sm:text-5xl"
+              className="max-w-2xl break-words text-[clamp(2rem,8.5vw,3rem)] font-semibold leading-[1.02] tracking-[-0.03em] sm:text-5xl sm:leading-[0.98] sm:tracking-[-0.055em]"
             >
               STILNO доступен только совершеннолетним пользователям.
             </h2>
@@ -1408,10 +1413,10 @@ export function AgeGate({
               </div>
             ) : null}
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
-                className="rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium text-black transition hover:bg-[#ff8fc5]"
+                className="min-h-11 rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5]"
                 onClick={() => {
                   window.localStorage.setItem(AGE_KEY, version);
                   window.dispatchEvent(new Event("stilno:age-accepted"));
@@ -1423,7 +1428,7 @@ export function AgeGate({
               </button>
               <button
                 type="button"
-                className="rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+                className="min-h-11 rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12]"
                 onClick={() => {
                   pushAnalytics("age_gate_decline", { version });
                   setDenied(true);
@@ -1504,12 +1509,12 @@ export function CookieBanner({
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-3 z-[70] px-4">
-      <div className="pointer-events-auto mx-auto max-w-4xl rounded-[1.2rem] border border-white/12 bg-[#000000] px-5 py-5 text-white shadow-[0_28px_85px_rgba(0,0,0,0.28)] sm:px-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-3 z-[70] px-3 sm:px-4">
+      <div className="pointer-events-auto mx-auto max-h-[calc(100svh-2rem)] max-w-4xl overflow-y-auto rounded-[1.2rem] border border-white/12 bg-[#000000] px-5 py-5 text-white shadow-[0_28px_85px_rgba(0,0,0,0.28)] sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
+          <div className="min-w-0 max-w-2xl">
             <p className="text-sm font-medium text-white">Cookie-файлы</p>
-            <p className="mt-1 text-sm leading-6 text-white/62">
+            <p className="mt-1 break-words text-sm leading-6 text-white/62">
               Мы используем необходимые cookie для работы сайта и сохранения подтверждения возраста.
               Аналитические cookie подключаются только с вашего согласия. Подробнее — в{" "}
               <Link href={legalHref} className="underline decoration-white/24 underline-offset-4 hover:text-white">
@@ -1521,21 +1526,21 @@ export function CookieBanner({
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
             <button
               type="button"
-              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-2.5 text-sm font-medium leading-none text-black transition hover:bg-[#ff8fc5] sm:w-52"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-normal rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-2.5 text-center text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5] sm:w-52"
               onClick={() => saveConsent(true)}
             >
               Принять все
             </button>
             <button
               type="button"
-              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/18 bg-white/[0.07] px-5 py-2.5 text-sm leading-none text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:w-52"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-normal rounded-full border border-white/18 bg-white/[0.07] px-5 py-2.5 text-center text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:w-52"
               onClick={() => saveConsent(false)}
             >
               Только необходимые
             </button>
             <button
               type="button"
-              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/18 bg-white/[0.07] px-5 py-2.5 text-sm leading-none text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:w-52"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center whitespace-normal rounded-full border border-white/18 bg-white/[0.07] px-5 py-2.5 text-center text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:w-52"
               onClick={() => setSettingsOpen((current) => !current)}
             >
               Настроить
@@ -1568,7 +1573,7 @@ export function CookieBanner({
             <div className="sm:col-span-3">
               <button
                 type="button"
-                className="inline-flex min-h-11 w-full max-w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-2.5 text-sm font-medium leading-none text-black transition hover:bg-[#ff8fc5] sm:w-52"
+                className="inline-flex min-h-11 w-full max-w-full shrink-0 items-center justify-center whitespace-normal rounded-full border border-[#ff6da8] bg-[#ff6da8] px-5 py-2.5 text-center text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5] sm:w-52"
                 onClick={() => saveConsent(analyticsEnabled)}
               >
                 Сохранить настройки
@@ -1740,15 +1745,15 @@ export function LeadForm({
     <form
       onSubmit={handleSubmit}
       noValidate
-      className={`rounded-[1rem] border p-6 ${
+      className={`min-w-0 overflow-hidden rounded-[1rem] border p-5 sm:p-6 ${
         theme === "dark"
           ? "border-black/10 bg-white text-black"
           : "border-black/10 bg-white text-black"
       }`}
     >
       <div className="mb-6">
-        <h3 className="text-2xl font-semibold">{schema.title}</h3>
-        <p className={`mt-3 text-sm leading-6 ${theme === "dark" ? "text-black/62" : "text-black/62"}`}>
+        <h3 className="break-words text-[1.55rem] font-semibold leading-tight sm:text-2xl">{schema.title}</h3>
+        <p className={`mt-3 break-words text-sm leading-6 ${theme === "dark" ? "text-black/62" : "text-black/62"}`}>
           {schema.description}
         </p>
       </div>
@@ -1760,7 +1765,7 @@ export function LeadForm({
         {schema.fields.map((field) => (
           <label
             key={field.name}
-            className={`grid gap-2 text-sm ${field.halfWidth === false ? "sm:col-span-2" : ""} ${
+            className={`grid min-w-0 gap-2 break-words text-sm ${field.halfWidth === false ? "sm:col-span-2" : ""} ${
               theme === "dark" ? "text-black/70" : "text-black/70"
             }`}
           >
@@ -1771,14 +1776,14 @@ export function LeadForm({
                 required={field.required}
                 rows={4}
                 autoComplete={field.autoComplete}
-                className={`rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
+                className={`min-w-0 rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
                 placeholder={field.placeholder}
               />
             ) : field.type === "select" ? (
               <select
                 name={field.name}
                 required={field.required}
-                className={`rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
+                className={`min-w-0 rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
                 defaultValue=""
               >
                 <option value="" disabled className="text-black">
@@ -1796,7 +1801,7 @@ export function LeadForm({
                 type={field.type ?? "text"}
                 required={field.required}
                 autoComplete={field.autoComplete}
-                className={`rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
+                className={`min-w-0 rounded-[1rem] border px-4 py-3 outline-none transition ${fieldClass(theme)}`}
                 placeholder={field.placeholder}
               />
             )}
@@ -1808,7 +1813,7 @@ export function LeadForm({
         {schema.checkboxes.map((checkbox) => (
           <label
             key={checkbox.name}
-            className={`flex items-start gap-3 text-sm leading-6 ${
+            className={`flex min-w-0 items-start gap-3 break-words text-sm leading-6 ${
               theme === "dark" ? "text-black/60" : "text-black/60"
             }`}
           >
@@ -1820,7 +1825,7 @@ export function LeadForm({
                 theme === "dark" ? "border-black/20 bg-transparent" : "border-black/20 bg-transparent"
               }`}
             />
-            <span className="min-w-0 flex-1">
+            <span className="min-w-0 flex-1 break-words">
               {checkbox.label}
               {checkbox.links?.length ? (
                 <>
@@ -1856,7 +1861,7 @@ export function LeadForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className={`mt-5 inline-flex rounded-full px-5 py-3 text-sm font-medium transition disabled:cursor-wait disabled:opacity-70 ${
+        className={`mt-5 inline-flex min-h-11 w-full items-center justify-center whitespace-normal rounded-full px-5 py-3 text-center text-sm font-medium leading-5 transition disabled:cursor-wait disabled:opacity-70 sm:w-auto ${
           theme === "dark"
             ? ctaClassName("primary")
             : "border border-transparent bg-black text-white hover:bg-black/86"
@@ -1865,7 +1870,7 @@ export function LeadForm({
         {isSubmitting ? "Отправляем…" : schema.submitLabel}
       </button>
       {schema.disclaimer ? (
-        <p className={`mt-4 text-sm leading-6 ${theme === "dark" ? "text-black/50" : "text-black/50"}`}>
+        <p className={`mt-4 break-words text-sm leading-6 ${theme === "dark" ? "text-black/50" : "text-black/50"}`}>
           {schema.disclaimer}
         </p>
       ) : null}
@@ -1895,11 +1900,6 @@ const assortmentCards: AssortmentCard[] = [
   },
 ];
 
-type CatalogVariant = ProductVariant & {
-  description?: string;
-  flavorDescription?: string;
-};
-
 function getVariantGroups(variants: ProductVariant[]) {
   const groupMap = new Map<string, ProductVariant[]>();
 
@@ -1913,260 +1913,173 @@ function getVariantGroups(variants: ProductVariant[]) {
   return Array.from(groupMap.entries()).map(([group, items]) => ({ group, items }));
 }
 
-function getVariantDescription(variant: ProductVariant) {
-  const catalogVariant = variant as CatalogVariant;
-  const description = catalogVariant.description?.trim() || catalogVariant.flavorDescription?.trim();
-
-  return description || `Профиль вкуса: ${variant.flavor}.`;
+function catalogCssVars(values: Record<`--${string}`, string | number>) {
+  return values as CSSProperties;
 }
 
-type FlavorIconKind = "berry" | "citrus" | "tropical" | "mint" | "drink" | "cream" | "ice" | "sour";
+function getVariantFlavor(variant: ProductVariant) {
+  if (variant.flavorCode) {
+    return stilnoFlavorByCode.get(variant.flavorCode);
+  }
 
-function formatFlavorTitle(title: string) {
-  return title
-    .replace(/\s*\(Пинкман\)/i, "")
-    .replace(/\s+Айс$/i, " Лёд")
-    .trim();
+  return stilnoFlavors.find((flavor) => flavor.name === variant.flavor || flavor.name === variant.title);
 }
 
-function getFlavorIconKind(variant: ProductVariant): FlavorIconKind {
-  const title = variant.title.toLowerCase();
-  const group = (variant.group || "").toLowerCase();
-
-  if (group.includes("айс")) return "ice";
-  if (title.includes("мят") || title.includes("тархун")) return "mint";
-  if (title.includes("чай") || title.includes("лимонад") || title.includes("энергетик")) return "drink";
-  if (title.includes("слив") || title.includes("крем") || title.includes("молок")) return "cream";
-  if (
-    title.includes("ананас") ||
-    title.includes("манго") ||
-    title.includes("персик") ||
-    title.includes("кокос") ||
-    title.includes("драгон")
-  ) {
-    return "tropical";
-  }
-  if (
-    title.includes("грейп") ||
-    title.includes("лимон") ||
-    title.includes("лайм") ||
-    title.includes("яблок") ||
-    title.includes("апельс")
-  ) {
-    return group.includes("кисл") ? "sour" : "citrus";
+function getFlavorAccent(flavor: StilnoFlavor) {
+  if (flavor.category === "sour") {
+    return "#A9D949";
   }
 
-  return "berry";
+  if (flavor.category === "ice") {
+    return "#82D8F4";
+  }
+
+  return flavor.accent || "#C7A160";
 }
 
-function FlavorGlyph({ kind, className = "h-7 w-7" }: { kind: FlavorIconKind; className?: string }) {
-  if (kind === "mint") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <path d="M16 27V10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M16 13C9.5 11.5 6.5 7 6 4.5c5.5.2 10 3.1 10 8.5Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 16c6.7-1.5 9.5-6.1 10-8.5-5.4.2-10 3-10 8.5Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 22c-4.4-.9-7-3.7-8-6.5 4.2.2 7.7 2.3 8 6.5Z" stroke="currentColor" strokeWidth="1.8" />
-      </svg>
-    );
-  }
-
-  if (kind === "citrus" || kind === "sour") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <circle cx="16" cy="16" r="10" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 6v20M8.5 16h15M10.5 9.5l11 13M21.5 9.5l-11 13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        {kind === "sour" ? (
-          <>
-            <circle cx="6.5" cy="8" r="1.6" fill="currentColor" />
-            <circle cx="25.5" cy="24" r="1.6" fill="currentColor" />
-          </>
-        ) : null}
-      </svg>
-    );
-  }
-
-  if (kind === "tropical") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <path d="M16 6c-3.4 4.1-6 8-6 12.5A6 6 0 0 0 16 25a6 6 0 0 0 6-6.5C22 14 19.4 10.1 16 6Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 4v5M11 9l10 10M21 9 11 19" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        <path d="M11 7c1.7-2 3.4-2.9 5-2.9 1.8 0 3.4 1 5 2.9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (kind === "drink") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <path d="M8 12h16l-1.7 14H9.7L8 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-        <path d="M11 8h10M14 4h4M12 17h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M20 8 24 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (kind === "cream") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <path d="M9 24h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M10 22c.5-4.8 4-5.5 6-6.9 2-1.3 2.2-3 1.2-5.1 3.7 1.4 6 4.6 6 8 0 3.1-2.2 5-6.2 5H10Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-        <path d="M10.5 17.5c2.6 1.4 5.5 1.7 9 .9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (kind === "ice") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-        <path d="M16 4v24M6 10l20 12M26 10 6 22" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="m12 6 4 4 4-4M12 26l4-4 4 4M5 15l5-1.5L8.8 8.5M27 17l-5 1.5 1.2 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg aria-hidden="true" viewBox="0 0 32 32" className={className} fill="none">
-      <circle cx="12" cy="18" r="5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="19" cy="16" r="5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="17" cy="23" r="4" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M17 11c.4-3 2.3-5 5-6M18 11c-2.4-1.7-4.8-2-7-1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CatalogProductGlyph({
-  mode,
-  className = "h-24 w-14",
-}: {
-  mode: AssortmentCard["id"];
-  className?: string;
-}) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 74 150" className={`${className} text-current`} fill="none">
-      <path d="M29 23h16v10H29z" fill="#111" stroke="#6f6f6f" strokeWidth="1" />
-      <path d="M24 4h26l2 20H22L24 4Z" fill="#090909" stroke="#6a6a6a" strokeWidth="1.1" />
-      <rect x="19" y="28" width="36" height="114" rx="13" fill="#050505" stroke="#777" strokeWidth="1.2" />
-      <path d="M23 35c9 4 19 4 28 0" stroke="#ffffff" strokeOpacity="0.18" strokeWidth="2" />
-      <path d="M37 58v46" stroke="#ffffff" strokeOpacity="0.42" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="37" cy="50" r="4.5" stroke="#ffffff" strokeOpacity="0.58" strokeWidth="1.7" />
-      <circle cx="37" cy="122" r="2.7" fill="#ffffff" fillOpacity="0.75" />
-      <text
-        x="30"
-        y="96"
-        fill="#ffffff"
-        fillOpacity="0.8"
-        fontFamily="Arial, sans-serif"
-        fontSize="9"
-        fontWeight="700"
-        letterSpacing="1.4"
-        transform="rotate(-90 30 96)"
-      >
-        STILNO
-      </text>
-      {mode === "device-kit" ? <path d="M26 36h22" stroke="#ffffff" strokeOpacity="0.5" strokeWidth="2" strokeLinecap="round" /> : null}
-    </svg>
-  );
-}
-
-function getFlavorScenePalette(variant: ProductVariant) {
-  const kind = getFlavorIconKind(variant);
-
-  if (kind === "mint") return ["#d6d6d6", "#202020", "#ffffff"];
-  if (kind === "drink") return ["#c4c4c4", "#1d1d1d", "#f5f5f5"];
-  if (kind === "cream") return ["#e4e4e4", "#292929", "#ffffff"];
-  if (kind === "ice") return ["#f3f3f3", "#373737", "#ffffff"];
-  if (kind === "tropical") return ["#d0d0d0", "#232323", "#ffffff"];
-  if (kind === "citrus" || kind === "sour") return ["#dddddd", "#252525", "#ffffff"];
-
-  return ["#c9c9c9", "#1f1f1f", "#ffffff"];
-}
-
-function FlavorScene({ variant }: { variant: ProductVariant }) {
-  const [primary, deep, shine] = getFlavorScenePalette(variant);
-  const isIce = (variant.group || "").toLowerCase().includes("айс");
-  const title = variant.title.toLowerCase();
-  const isSlice = /грейп|лимон|лайм|апельс|яблок|кокос|ананас|манго|персик/.test(title);
-
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-y-0 right-0 hidden w-[48%] overflow-hidden rounded-r-[0.42rem] opacity-95 sm:block"
-      style={
-        {
-          "--scene-primary": primary,
-          "--scene-deep": deep,
-          "--scene-shine": shine,
-        } as CSSProperties
-      }
-    >
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0)_0%,rgba(8,8,8,0.68)_42%,rgba(8,8,8,0.12)_100%)]" />
-      <span className="absolute -right-8 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_35%_32%,var(--scene-shine),var(--scene-primary)_36%,var(--scene-deep)_66%,rgba(0,0,0,0)_70%)] opacity-70 blur-[0.5px]" />
-      <span className="absolute right-24 top-4 h-10 w-10 rounded-full bg-[radial-gradient(circle_at_35%_30%,#fff,var(--scene-primary)_38%,var(--scene-deep)_72%)] opacity-48" />
-      <span className="absolute bottom-4 right-14 h-14 w-14 rounded-full bg-[radial-gradient(circle_at_35%_30%,#fff,var(--scene-primary)_34%,var(--scene-deep)_72%)] opacity-42" />
-      <span className="absolute right-3 top-2 h-px w-48 rotate-[-18deg] bg-white/14" />
-      <span className="absolute bottom-2 right-8 h-px w-40 rotate-[17deg] bg-white/10" />
-      {isSlice ? (
-        <span className="absolute right-10 top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border border-white/28 shadow-[inset_0_0_0_10px_rgba(255,255,255,0.08)]" />
-      ) : null}
-      {isIce ? (
-        <>
-          <span className="absolute right-5 top-6 h-px w-28 rotate-45 bg-white/26" />
-          <span className="absolute right-12 bottom-7 h-px w-32 -rotate-45 bg-white/18" />
-        </>
-      ) : null}
-    </div>
-  );
-}
-
-function getCatalogGroupBanner(group: string) {
+function getCatalogGroupMeta(group: string) {
   const normalizedGroup = group.toLowerCase();
 
   if (normalizedGroup.includes("айс")) {
     return {
+      id: "ice",
       title: "X-Ice Pod",
-      label: "Регулируемый холодок",
-      icon: "ice" as FlavorIconKind,
-      accent:
-        "bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.28),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.08))]",
+      eyebrow: "Айс",
+      accent: "#82D8F4",
     };
   }
 
   if (normalizedGroup.includes("кисл")) {
     return {
+      id: "sour",
       title: "Кислые",
-      label: "Яркий кислый профиль",
-      icon: "sour" as FlavorIconKind,
-      accent:
-        "bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.18),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.06))]",
+      eyebrow: "Кислая линейка",
+      accent: "#A9D949",
     };
   }
 
   return {
-    title: "Наборы",
-    label: "Основная линейка",
-    icon: "berry" as FlavorIconKind,
-    accent:
-      "bg-[radial-gradient(circle_at_80%_45%,rgba(255,255,255,0.16),transparent_24%),linear-gradient(90deg,transparent,rgba(255,255,255,0.05))]",
+    id: "regular",
+    title: "Основная линейка",
+    eyebrow: "Regular",
+    accent: "#C7A160",
   };
 }
 
-function CatalogGroupBanner({ group }: { group: string }) {
-  const banner = getCatalogGroupBanner(group);
+function CatalogGroupHeader({ group, count }: { group: string; count: number }) {
+  const meta = getCatalogGroupMeta(group);
 
   return (
-    <div className="relative overflow-hidden rounded-[0.42rem] border border-white/18 bg-[#0e0e0f] px-6 py-4 text-white sm:col-span-2">
-      <div className={classNames("absolute inset-y-0 right-0 w-1/2", banner.accent)} />
-      <div className="relative grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
-        <p className="text-3xl font-semibold leading-none tracking-normal sm:text-4xl">{banner.title}</p>
-        <div className="flex items-center gap-3 text-sm leading-5 text-white/74">
-          <span className="grid h-9 w-9 place-items-center rounded-[0.28rem] border border-white/54">
-            <FlavorGlyph kind={banner.icon} className="h-5 w-5" />
-          </span>
-          <span>{banner.label}</span>
+    <div className="flavor-section__head">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flavor-section__eyebrow">{meta.eyebrow}</p>
+          <h3 id={`catalog-group-${meta.id}`} className="flavor-section__title">
+            {meta.title}
+          </h3>
         </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/36">
+          {count} вкусов
+        </p>
       </div>
+      <div className="stilno-section-accent-line" aria-hidden="true" />
     </div>
+  );
+}
+
+function FlavorProfileMeters({ flavor }: { flavor: StilnoFlavor }) {
+  const metrics = [
+    { label: "Сладость", value: flavor.profile.sweetness, color: flavor.colors[0] ?? getFlavorAccent(flavor) },
+    { label: "Кислота", value: flavor.profile.sourness, color: flavor.category === "sour" ? "#A9D949" : flavor.colors[1] ?? getFlavorAccent(flavor) },
+    { label: "Холод", value: flavor.profile.coolness, color: flavor.category === "ice" ? "#82D8F4" : flavor.colors[2] ?? getFlavorAccent(flavor) },
+  ];
+
+  return (
+    <div className="flavor-card__profile">
+      {metrics.map((metric) => (
+        <div key={metric.label} className="flavor-card__metric">
+          <span>{metric.label}</span>
+          <div
+            className="flavor-card__bar"
+            role="meter"
+            aria-label={`${metric.label}: ${metric.value} из 100`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={metric.value}
+          >
+            <span
+              style={catalogCssVars({
+                "--value": `${metric.value}%`,
+                "--bar-color": metric.color,
+              })}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FlavorPalette({ flavor }: { flavor: StilnoFlavor }) {
+  return (
+    <div className="flavor-card__palette" role="img" aria-label={`Палитра вкуса ${flavor.name}`}>
+      {flavor.colors.slice(0, 4).map((color, index) => (
+        <span
+          key={`${flavor.code}-${color}-${index}`}
+          className="flavor-card__dot"
+          aria-hidden="true"
+          style={catalogCssVars({ "--dot": color })}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FlavorCard({
+  variant,
+  flavor,
+  activeCard,
+}: {
+  variant: ProductVariant;
+  flavor: StilnoFlavor;
+  activeCard: AssortmentCard;
+}) {
+  const accent = getFlavorAccent(flavor);
+
+  return (
+    <article
+      data-testid={`catalog-flavor-card-${variant.id}`}
+      data-category={flavor.category}
+      className="flavor-card"
+      style={catalogCssVars({ "--accent": accent })}
+    >
+      <div className="flavor-card__top">
+        <div className="min-w-0">
+          <span className="flavor-card__brand">STILNO CLICK ONE</span>
+          <span className="flavor-card__format">{activeCard.eyebrow}</span>
+          <span className="flavor-card__code">{flavor.code}</span>
+        </div>
+        <span className="flavor-card__chip">{flavor.categoryLabel}</span>
+      </div>
+
+      <div className="flavor-card__body">
+        <h4 className="flavor-card__title">{flavor.name}</h4>
+        <p className="flavor-card__desc">{flavor.description || variant.flavorDescription}</p>
+        <div className="flavor-card__tags" aria-label={`Теги вкуса ${flavor.name}`}>
+          {flavor.tags.slice(0, 3).map((tag) => (
+            <span key={`${flavor.code}-${tag}`} className="flavor-card__tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <FlavorProfileMeters flavor={flavor} />
+      </div>
+
+      <div className="flavor-card__bottom">
+        <FlavorPalette flavor={flavor} />
+        <span className="flavor-card__age">18+</span>
+      </div>
+    </article>
   );
 }
 
@@ -2175,18 +2088,15 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
   const [activeCardId, setActiveCardId] = useState<AssortmentCard["id"]>("cartridges");
   const groupedVariants = useMemo(() => getVariantGroups(variants), [variants]);
   const activeCard = assortmentCards.find((card) => card.id === activeCardId) ?? assortmentCards[0];
-  const visibleVariantCount = groupedVariants.reduce((sum, group) => sum + group.items.length, 0);
+  const visibleVariantCount = variants.length;
 
   return (
-    <div id="catalog-products" className="mx-auto grid w-full max-w-[76rem] gap-6 pb-12 text-white sm:pb-16">
+    <div id="catalog-products" className="mx-auto grid w-full max-w-[76rem] gap-6 overflow-hidden pb-12 text-white sm:pb-16">
       <div className="grid gap-4 pt-2 sm:pt-4">
         <div className="grid gap-2">
-          <h2 className="text-4xl font-semibold leading-[0.94] tracking-normal text-white sm:text-6xl">
+          <h2 className="break-words text-[clamp(2.25rem,10vw,3.75rem)] font-semibold leading-[0.98] tracking-normal text-white sm:text-6xl sm:leading-[0.94]">
             Витрина вкусов STILNO
           </h2>
-          <p className="max-w-2xl text-sm leading-6 text-white/58 sm:text-base">
-            Премиальные вкусы. Чистые ингредиенты. Максимальное удовольствие.
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
@@ -2202,7 +2112,7 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
                   aria-pressed={isActive}
                   onClick={() => setActiveCardId(card.id)}
                   className={classNames(
-                    "min-h-10 rounded-full border px-5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+                    "min-h-10 max-w-full whitespace-normal rounded-full border px-5 py-2 text-sm font-semibold leading-5 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
                     isActive
                       ? "border-white/70 bg-white/12 text-white"
                       : "border-white/10 bg-black text-white/54 hover:border-white/34 hover:text-white",
@@ -2217,47 +2127,25 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
             {visibleVariantCount} из {variants.length} вкусов
           </p>
         </div>
+
       </div>
 
-      <div className="grid gap-2 xl:grid-cols-2">
+      <div className="grid gap-8">
         {groupedVariants.map(({ group, items }) => (
-          <section key={group} aria-labelledby={`catalog-group-${group}`} className="contents">
-            <h3 id={`catalog-group-${group}`} className="sr-only">
-              {group}
-            </h3>
-            <CatalogGroupBanner group={group} />
+          <section
+            key={group}
+            aria-labelledby={`catalog-group-${getCatalogGroupMeta(group).id}`}
+            className="flavor-section"
+            style={catalogCssVars({ "--section-accent": getCatalogGroupMeta(group).accent })}
+          >
+            <CatalogGroupHeader group={group} count={items.length} />
+            <div className="flavor-grid">
             {items.map((variant) => {
-              const description = getVariantDescription(variant);
+              const flavor = getVariantFlavor(variant);
 
-              return (
-                <article
-                  key={variant.id}
-                  data-testid={`catalog-flavor-card-${variant.id}`}
-                  className="group relative min-h-[6.6rem] overflow-hidden rounded-[0.42rem] border border-white/14 bg-[#0a0a0b] text-white transition duration-200 hover:border-white/34 hover:bg-[#111113] sm:min-h-[6.2rem]"
-                >
-                  <FlavorScene variant={variant} />
-                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.96)_0%,rgba(10,10,10,0.88)_43%,rgba(10,10,10,0.28)_100%)]" />
-                  <div className="relative grid min-h-[6.6rem] grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 px-4 py-3 sm:min-h-[6.2rem] sm:grid-cols-[6.6rem_minmax(0,1fr)] sm:gap-4 sm:px-5 sm:py-2">
-                    <div className="flex h-full items-center justify-center">
-                      <CatalogProductGlyph mode={activeCard.id} className="h-24 w-12 sm:h-24 sm:w-14" />
-                    </div>
-
-                    <div className="min-w-0">
-                      <h4 className="max-w-[16rem] text-2xl font-medium leading-[0.98] tracking-normal text-white sm:text-[1.72rem]">
-                        {formatFlavorTitle(variant.title)}
-                      </h4>
-                      <span className="sr-only">{description}</span>
-                      <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <span className="inline-flex min-h-5 items-center rounded-[0.16rem] border border-white/60 px-2 text-[0.66rem] font-semibold uppercase leading-none tracking-[0.08em] text-white">
-                          Новое
-                        </span>
-                        <span className="text-xs leading-5 text-white/42 sm:hidden">{description}</span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              );
+              return flavor ? <FlavorCard key={variant.id} variant={variant} flavor={flavor} activeCard={activeCard} /> : null;
             })}
+            </div>
           </section>
         ))}
       </div>
@@ -2275,6 +2163,27 @@ export function CatalogAssortmentCards({ product }: { product: Product }) {
           ))}
         </dl>
       </details>
+
+      <section className="rounded-[0.45rem] border border-white/12 bg-white/[0.035] p-5 text-white" aria-label="Юридическая информация STILNO">
+        <div className="grid gap-4 lg:grid-cols-[7rem_1fr] lg:items-start">
+          <div className="inline-flex h-14 w-24 items-center justify-center rounded-full border border-white/18 text-2xl font-semibold tracking-[0.08em] text-white">
+            18+
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold leading-tight text-white">Ответственная информация</h3>
+            <p className="mt-2 text-sm leading-6 text-white/58">
+              Сайт не осуществляет дистанционную розничную продажу никотинсодержащей продукции. Информация предназначена для лиц старше 18 лет.
+            </p>
+            <ul className="mt-4 grid gap-2 text-sm leading-6 text-white/52 sm:grid-cols-2">
+              {product.warnings.slice(0, 4).map((warning) => (
+                <li key={warning} className="border-t border-white/10 pt-2">
+                  {warning}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

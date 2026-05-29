@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 360 240" fill="none">
+<defs>
+<radialGradient id="g" cx="50%" cy="50%" r="58%"><stop offset="0" stop-color="#E0A73A" stop-opacity="0.22"/><stop offset="1" stop-color="#C7A160" stop-opacity="0"/></radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<ellipse cx="180" cy="120" rx="128" ry="76" fill="url(#g)"/>
+<ellipse cx="180" cy="120" rx="72" ry="41" stroke="#C7A160" stroke-opacity="0.160" stroke-width="1"/>
+<ellipse cx="180" cy="120" rx="96" ry="55" stroke="#C7A160" stroke-opacity="0.125" stroke-width="1"/>
+<ellipse cx="180" cy="120" rx="120" ry="69" stroke="#C7A160" stroke-opacity="0.090" stroke-width="1"/>
+<path d="M112 93 C 146 61, 204 107, 234 77" stroke="#E0A73A" stroke-opacity="0.34" stroke-width="2" stroke-linecap="round"/>
+<path d="M140 109 C 174 77, 232 123, 262 93" stroke="#D46F2E" stroke-opacity="0.34" stroke-width="2" stroke-linecap="round"/>
+<path d="M168 93 C 202 61, 260 107, 290 77" stroke="#C7A160" stroke-opacity="0.34" stroke-width="2" stroke-linecap="round"/>
+<path d="M196 109 C 230 77, 288 123, 318 93" stroke="#E0A73A" stroke-opacity="0.34" stroke-width="2" stroke-linecap="round"/>
+<circle cx="211.4" cy="140.5" r="4.0" fill="#E0A73A" fill-opacity="0.53"/>
+<circle cx="172.3" cy="86.4" r="5.0" fill="#D46F2E" fill-opacity="0.64"/>
+<circle cx="255.1" cy="67.4" r="5.0" fill="#C7A160" fill-opacity="0.71"/>
+<circle cx="216.0" cy="152.9" r="3.2" fill="#E0A73A" fill-opacity="0.58"/>
+<circle cx="229.7" cy="63.0" r="2.5" fill="#D46F2E" fill-opacity="0.60"/>
+<circle cx="286.2" cy="86.7" r="4.0" fill="#C7A160" fill-opacity="0.56"/>
+<circle cx="164.5" cy="134.9" r="2.5" fill="#E0A73A" fill-opacity="0.68"/>
+<circle cx="147.3" cy="82.4" r="4.0" fill="#D46F2E" fill-opacity="0.62"/>
+<circle cx="257.9" cy="78.8" r="5.0" fill="#C7A160" fill-opacity="0.45"/>
+<circle cx="102.8" cy="161.9" r="5.0" fill="#E0A73A" fill-opacity="0.59"/>
+<circle cx="206.7" cy="129.6" r="5.0" fill="#D46F2E" fill-opacity="0.50"/>
+<circle cx="80.9" cy="87.4" r="4.0" fill="#C7A160" fill-opacity="0.64"/>
+<circle cx="186.0" cy="152.8" r="3.2" fill="#E0A73A" fill-opacity="0.58"/>
+<circle cx="96.5" cy="160.5" r="3.2" fill="#D46F2E" fill-opacity="0.75"/>
+<circle cx="213.2" cy="147.2" r="5.0" fill="#C7A160" fill-opacity="0.56"/>
+<circle cx="116.3" cy="151.7" r="4.0" fill="#E0A73A" fill-opacity="0.50"/>
+<circle cx="164.8" cy="122.8" r="2.5" fill="#D46F2E" fill-opacity="0.60"/>
+<circle cx="91.6" cy="106.7" r="3.2" fill="#C7A160" fill-opacity="0.74"/>
+<text x="18" y="218" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="2" fill="#C7A160" fill-opacity="0.62">R03</text>
+</svg>

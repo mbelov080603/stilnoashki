@@ -74,6 +74,7 @@ export type ProductVariant = {
   title: string;
   flavor: string;
   flavorDescription: string;
+  flavorCode?: string;
   group: string;
   nicotineStrength: string;
   image?: string;

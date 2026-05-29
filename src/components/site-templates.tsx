@@ -94,7 +94,7 @@ function ButtonLink({
         rel={target === "_blank" ? "noreferrer" : undefined}
         style={inlineStyle}
         data-analytics={analytics}
-        className={`inline-flex min-h-11 max-w-full items-center justify-center rounded-full border px-5 py-3 text-center text-sm font-medium leading-5 transition ${style}`}
+        className={`inline-flex min-h-11 w-full max-w-full items-center justify-center whitespace-normal rounded-full border px-5 py-3 text-center text-sm font-medium leading-5 transition sm:w-auto ${style}`}
       >
         {children}
       </a>
@@ -108,7 +108,7 @@ function ButtonLink({
       rel={target === "_blank" ? "noreferrer" : undefined}
       style={inlineStyle}
       data-analytics={analytics}
-      className={`inline-flex min-h-11 max-w-full items-center justify-center rounded-full border px-5 py-3 text-center text-sm font-medium leading-5 transition ${style}`}
+      className={`inline-flex min-h-11 w-full max-w-full items-center justify-center whitespace-normal rounded-full border px-5 py-3 text-center text-sm font-medium leading-5 transition sm:w-auto ${style}`}
     >
       {children}
     </Link>
@@ -129,7 +129,7 @@ function ActionGroup({
   }
 
   return (
-    <div className="mt-8 flex max-w-full flex-col items-start gap-3 sm:flex-row sm:flex-wrap">
+    <div className="mt-8 flex max-w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-start">
       {actions.map((action, index) => (
         <ButtonLink
           key={`${action.label}-${action.href}`}
@@ -162,7 +162,7 @@ function SectionIntro({
       {contract.eyebrow ? (
         <div
           className={classNames(
-            "mb-5 flex w-fit max-w-full items-center gap-3 text-[0.68rem] uppercase tracking-[0.18em]",
+            "mb-5 flex w-fit max-w-full items-center gap-3 text-[0.68rem] uppercase tracking-[0.14em] sm:tracking-[0.18em]",
             tone === "dark" ? "text-white/44" : "text-black/44",
           )}
         >
@@ -172,7 +172,7 @@ function SectionIntro({
       ) : null}
       <TitleTag
         className={classNames(
-          "max-w-full break-words text-3xl font-semibold leading-[1.02] tracking-[-0.04em] sm:text-4xl lg:text-5xl",
+          "max-w-full break-words text-[clamp(2rem,8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.025em] sm:text-4xl sm:tracking-[-0.04em] lg:text-5xl",
           tone === "dark" ? "text-white" : "text-black",
         )}
       >
@@ -214,7 +214,7 @@ function PageHero({
         {contract.eyebrow ? (
           <div
             className={classNames(
-              "mb-5 flex w-fit max-w-full items-center gap-3 text-[0.68rem] uppercase tracking-[0.18em]",
+              "mb-5 flex w-fit max-w-full items-center gap-3 text-[0.68rem] uppercase tracking-[0.14em] sm:tracking-[0.18em]",
               tone === "dark" ? "text-white/44" : "text-black/44",
             )}
           >
@@ -224,7 +224,7 @@ function PageHero({
         ) : null}
         <h1
           className={classNames(
-            "max-w-4xl break-words text-[2.35rem] font-semibold leading-[1.06] sm:text-[3.35rem] sm:leading-[1.03] lg:text-[4.65rem] lg:leading-[1]",
+            "max-w-4xl break-words text-[clamp(2rem,9vw,2.85rem)] font-semibold leading-[1.06] tracking-[-0.025em] sm:text-[3.35rem] sm:leading-[1.03] sm:tracking-[-0.04em] lg:text-[4.65rem] lg:leading-[1]",
             tone === "dark" ? "text-white" : "text-black",
           )}
         >
@@ -241,7 +241,7 @@ function PageHero({
         {contract.detailItems?.length ? (
           <dl
             className={classNames(
-              "mt-6 grid max-w-3xl grid-cols-2 overflow-hidden rounded-[1.15rem] border sm:grid-cols-3",
+              "mt-6 grid max-w-3xl grid-cols-1 overflow-hidden rounded-[1.15rem] border sm:grid-cols-3",
               tone === "dark" ? "border-white/12 bg-white/[0.07]" : "border-black/10 bg-white",
             )}
           >
@@ -249,7 +249,7 @@ function PageHero({
               <div
                 key={`${item.label}-${item.value}`}
                 className={classNames(
-                  "min-w-0 border-t px-4 py-3 sm:px-5 [&:nth-child(-n+2)]:border-t-0 sm:[&:nth-child(-n+3)]:border-t-0",
+                  "min-w-0 border-t px-4 py-3 first:border-t-0 sm:px-5 sm:[&:nth-child(-n+3)]:border-t-0",
                   tone === "dark" ? "border-white/10" : "border-black/10",
                 )}
               >
@@ -846,53 +846,65 @@ export function HomeTemplate() {
   return (
     <section className="bg-black text-white" data-testid="home-hero">
       <StructuredData data={buildJsonLd()} />
-      <section className="relative isolate min-h-[calc(100svh-4.5rem)] overflow-hidden bg-black px-5 py-10 sm:px-6 lg:min-h-[calc(100svh-5rem)] lg:px-8">
-        <Image
-          src={assetPath("/stilno/photos/home-click-one-hero.png")}
-          alt="STILNO CLICK ONE: устройство и сменный картридж"
-          fill
-          priority
-          sizes="100vw"
-          className="absolute inset-0 -z-30 h-full w-full object-cover object-center"
-        />
-        <div className="absolute inset-0 -z-20 bg-black/54 lg:bg-black/16" aria-hidden="true" />
+      <section className="relative isolate overflow-hidden bg-black px-5 py-8 sm:px-6 lg:min-h-[calc(100svh-5rem)] lg:px-8">
         <div
-          className="absolute inset-y-0 left-0 -z-10 w-[58%] bg-gradient-to-r from-black via-black/74 to-transparent lg:w-[44%]"
+          className="absolute inset-0 -z-30 hidden bg-contain bg-center bg-no-repeat lg:block"
+          style={{ backgroundImage: `url(${assetPath(mediaAssets.homeHeroPortrait)})` }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 -z-20 hidden bg-black/8 lg:block" aria-hidden="true" />
+        <div
+          className="absolute inset-y-0 left-0 -z-10 hidden w-[58%] bg-gradient-to-r from-black via-black/74 to-transparent lg:block lg:w-[44%]"
           aria-hidden="true"
         />
         <div
-          className="absolute inset-y-0 right-0 -z-10 w-[58%] bg-gradient-to-l from-black via-black/74 to-transparent lg:w-[44%]"
+          className="absolute inset-y-0 right-0 -z-10 hidden w-[58%] bg-gradient-to-l from-black via-black/74 to-transparent lg:block lg:w-[44%]"
           aria-hidden="true"
         />
-        <div className="mx-auto grid min-h-[calc(100svh-9rem)] max-w-[96rem] items-center gap-10 py-8 lg:grid-cols-[minmax(17rem,0.74fr)_minmax(32rem,1.44fr)_minmax(17rem,0.74fr)] lg:py-12 xl:gap-12">
+        <div className="mx-auto grid max-w-[96rem] content-center gap-7 py-4 sm:gap-8 sm:py-6 lg:min-h-[calc(100svh-9rem)] lg:grid-cols-[minmax(17rem,0.74fr)_minmax(24rem,1.44fr)_minmax(17rem,0.74fr)] lg:items-center lg:py-12 xl:gap-12">
           <div className="w-full max-w-[25rem] lg:w-[25rem]">
-            <h1 className="text-[clamp(1.18rem,1.28vw,1.85rem)] font-normal leading-[1.16] tracking-normal text-white [text-shadow:0_0_18px_rgba(255,255,255,0.26)]">
+            <h1 className="max-w-full break-words text-[clamp(1.24rem,5.4vw,1.55rem)] font-normal leading-[1.15] tracking-normal text-white [text-shadow:0_0_18px_rgba(255,255,255,0.26)] sm:text-[clamp(1.55rem,3.1vw,1.9rem)] lg:text-[clamp(1.18rem,1.28vw,1.85rem)]">
               <span className="lg:block">Перезаряжаемая электронная сигарета</span>{" "}
               <span className="lg:block">доставки никотина одноразового</span>{" "}
               <span className="lg:block">использования STILNO CLICK ONE</span>
             </h1>
-            <p className="mt-6 max-w-[24rem] text-base leading-7 text-white/72 sm:text-lg">
+            <p className="mt-5 max-w-[24rem] break-words text-[0.98rem] leading-7 text-white/74 sm:mt-6 sm:text-lg">
               Вы приобретаете стартовый набор (POD + Картридж) со своим любимым вкусом, а дальше меняете только
               картриджи
             </p>
           </div>
 
+          <div className="relative mx-auto h-[min(58svh,31rem)] min-h-[22rem] w-full max-w-[24rem] overflow-hidden rounded-[1rem] border border-white/10 bg-[#050505] shadow-[0_28px_90px_rgba(0,0,0,0.42)] sm:h-[32rem] sm:max-w-[26rem] lg:hidden">
+            <Image
+              src={assetPath(mediaAssets.homeHeroPortrait)}
+              alt="STILNO CLICK ONE: устройство и сменный картридж"
+              fill
+              priority
+              sizes="(max-width: 639px) calc(100vw - 42px), (max-width: 1023px) 26rem, 1px"
+              className="object-contain object-center p-4"
+            />
+            <div
+              className="absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.08),rgba(0,0,0,0)_48%),linear-gradient(180deg,rgba(0,0,0,0)_50%,rgba(0,0,0,0.35)_100%)]"
+              aria-hidden="true"
+            />
+          </div>
+
           <div className="hidden min-h-[24rem] lg:block" aria-hidden="true" />
 
-          <aside className="max-w-[25rem] justify-self-start text-white lg:justify-self-end">
-            <ul className="grid gap-3 text-sm leading-6 text-white/76">
+          <aside className="w-full max-w-[25rem] justify-self-start rounded-[0.95rem] border border-white/10 bg-white/[0.04] p-4 text-white sm:p-5 lg:justify-self-end lg:border-0 lg:bg-transparent lg:p-0">
+            <ul className="grid gap-0 text-sm leading-6 text-white/76">
               {specificationLines.map((line) => (
-                <li key={line} className="border-b border-white/14 pb-3 font-medium text-white">
+                <li key={line} className="min-w-0 break-words border-b border-white/14 py-2.5 font-medium text-white first:pt-0 sm:py-3">
                   {line}
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold leading-tight text-white sm:text-2xl">Вкусовая линейка:</h2>
+            <div className="mt-7 sm:mt-8">
+              <h2 className="break-words text-xl font-semibold leading-tight text-white sm:text-2xl">Вкусовая линейка:</h2>
               <ul className="mt-4 grid gap-2 text-base leading-6 text-white/74">
                 {flavorLines.map((line) => (
-                  <li key={line}>{line}</li>
+                  <li key={line} className="break-words">{line}</li>
                 ))}
               </ul>
             </div>
