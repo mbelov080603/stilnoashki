@@ -29,7 +29,7 @@ export async function generateMetadata({
   const metadata = getMetadataPayload(page);
 
   return {
-    title: page.kind === "brand" ? { absolute: metadata.title } : metadata.title,
+    title: metadata.title,
     description: metadata.description,
     robots: {
       index: isIndexableDeployment && page.kind !== "thank-you",

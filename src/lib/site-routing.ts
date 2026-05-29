@@ -41,7 +41,6 @@ export function getBreadcrumbs(pathname: string[], title: string) {
   const labelMap = new Map<string, string>([
     ["stores", "Каталог"],
     ["map", "Карта магазинов"],
-    ["brand", "Бренд"],
     ["about", "О бренде"],
     ["gallery", "Галерея"],
     ["quality", "Качество"],
@@ -133,32 +132,17 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
     };
   }
 
-  if (section === "brand") {
-    if (second) {
-      return null;
-    }
-
-    return {
-      kind: "brand",
-      title: "Бренд STILNO",
-      description:
-        "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство и контроль качества.",
-      pathname: slug,
-    };
-  }
-
   if (section === "about") {
     if (second) {
       return null;
     }
 
     return {
-      kind: "brand",
-      title: "Бренд STILNO",
+      kind: "about",
+      title: "О STILNO",
       description:
         "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство и контроль качества.",
       pathname: slug,
-      canonicalPath: ["brand"],
     };
   }
 
@@ -210,14 +194,7 @@ export function resolvePage(slug: string[]): ResolvedPage | null {
       return null;
     }
 
-    return {
-      kind: "brand",
-      title: "Бренд STILNO",
-      description:
-        "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство и контроль качества.",
-      pathname: slug,
-      canonicalPath: ["brand"],
-    };
+    return null;
   }
 
   if (section === "request") {
@@ -380,10 +357,8 @@ export function getAllStaticPaths() {
       return [["stores", city.slug], ...cityStores.map((store) => ["stores", city.slug, store.slug])];
     }),
     ["about"],
-    ["brand"],
     ["gallery"],
     ["quality"],
-    ["partners"],
     ["partners", "media-kit"],
     ["partners", "geography"],
     ["request"],

@@ -32,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url: `${siteOrigin}/${slug.join("/")}`,
         lastModified: now,
         changeFrequency: slug[0] === "legal" ? ("yearly" as const) : ("weekly" as const),
-        priority: slug[0] === "stores" || slug[0] === "brand" || slug[0] === "quality" ? 0.9 : 0.7,
+        priority: slug[0] === "stores" || slug[0] === "quality" ? 0.9 : 0.7,
       })),
   ];
 }

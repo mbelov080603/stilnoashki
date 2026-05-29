@@ -111,7 +111,6 @@ export const siteSettings = {
   description:
     "Официальный сайт STILNO: бренд 18+, качество, каталог, проверка оригинальности и отдельная страница заявки.",
   primaryNav: [
-    { label: "Бренд", href: "/brand" },
     { label: "Качество", href: "/quality" },
     { label: "Каталог", href: "/stores" },
     { label: "Карта магазинов", href: "/stores/map" },
@@ -124,7 +123,6 @@ export const siteSettings = {
     variant: "primary",
   } satisfies CtaLink,
   footerLinks: [
-    { label: "Бренд", href: "/brand" },
     { label: "Галерея", href: "/gallery" },
     { label: "Вакансии", href: "/careers" },
     { label: "Материалы", href: "/articles" },
@@ -142,7 +140,6 @@ export const siteSettings = {
       label: "Бренд",
       links: [
         { label: "STILNO", href: "/" },
-        { label: "Бренд", href: "/brand" },
         { label: "Качество", href: "/quality" },
         { label: "Каталог", href: "/stores" },
       ],

@@ -173,7 +173,6 @@ export type ResolvedPage = {
     | "stores-map"
     | "city"
     | "store"
-    | "brand"
     | "about"
     | "gallery"
     | "quality"

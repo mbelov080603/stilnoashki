@@ -717,37 +717,6 @@ function FranchiseFormAside({ items }: { items: typeof faqItems }) {
   );
 }
 
-function LandingSectionIntro({
-  eyebrow,
-  title,
-  body,
-  tone = "light",
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  tone?: "light" | "dark";
-}) {
-  return (
-    <div className="max-w-3xl">
-      <p className={classNames("text-xs uppercase tracking-[0.24em]", tone === "dark" ? "text-white/42" : "text-black/42")}>
-        {eyebrow}
-      </p>
-      <h2
-        className={classNames(
-          "mt-4 text-3xl font-semibold leading-[1.03] sm:text-4xl lg:text-5xl",
-          tone === "dark" ? "text-white" : "text-black",
-        )}
-      >
-        {title}
-      </h2>
-      <p className={classNames("mt-5 text-base leading-7 sm:text-lg", tone === "dark" ? "text-white/62" : "text-black/62")}>
-        {body}
-      </p>
-    </div>
-  );
-}
-
 function ProductVisual({
   src,
   alt,
@@ -1149,136 +1118,6 @@ function GalleryTemplate(page: ResolvedPage) {
           </div>
         </div>
       </section>
-    </>
-  );
-}
-
-function BrandTemplate(page: ResolvedPage) {
-  const { hero, heroFacts, brand, quality, product } = partnersLandingContent;
-  const nextSections = [
-    {
-      title: "Качество",
-      body: "Фабричное производство, комплектующие, сборка, упаковка, маркировка и контроль партии вынесены в отдельный раздел.",
-      href: "/quality",
-      cta: "Открыть качество",
-    },
-    {
-      title: "Каталог",
-      body: "Подробный каталог STILNO собран в отдельном разделе.",
-      href: "/stores",
-      cta: "Открыть каталог",
-    },
-    {
-      title: "Заявка",
-      body: "Партнёрство, дистрибуция, розничная точка или другой запрос оформляются через отдельную страницу заявки.",
-      href: "/request",
-      cta: "Оставить заявку",
-    },
-  ];
-
-  return (
-    <>
-      <StructuredData data={buildJsonLd(page)} />
-      <div className="bg-[#000000] text-white">
-        <section className="relative overflow-hidden border-b border-white/10">
-          <div className="absolute inset-x-0 top-0 h-px bg-white/20" />
-          <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-12 sm:px-6 lg:px-8 lg:py-20 xl:grid-cols-[0.98fr_1.02fr] xl:items-center">
-            <div className="min-w-0">
-              <p className="text-xs uppercase tracking-[0.24em] text-white/44">{hero.eyebrow}</p>
-              <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[0.98] text-white sm:text-5xl lg:text-6xl">
-                {hero.title}
-              </h1>
-              <p className="mt-6 max-w-2xl text-base leading-7 text-white/66 sm:text-lg">{hero.body}</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <ButtonLink href="/stores" tone="dark" analytics="brand_catalog">
-                  Смотреть каталог
-                </ButtonLink>
-                <ButtonLink href="/request" tone="dark" variant="secondary" analytics="brand_request">
-                  Оставить заявку
-                </ButtonLink>
-              </div>
-              <div className="mt-10 grid gap-px overflow-hidden rounded-[0.75rem] border border-white/10 bg-white/10 sm:grid-cols-3">
-                {heroFacts.map((fact) => (
-                  <div key={fact} className="bg-white/[0.045] px-4 py-4 text-sm font-medium leading-5 text-white/78">
-                    {fact}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <ProductVisual
-              src={mediaAssets.partner}
-              alt="STILNO в сдержанной премиальной подаче"
-              caption={hero.note}
-              className="min-h-[20rem] sm:min-h-[30rem] xl:min-h-[35rem]"
-            />
-          </div>
-        </section>
-
-        <section className="bg-white text-black">
-          <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <LandingSectionIntro eyebrow={brand.eyebrow} title={brand.title} body={brand.body} />
-            <div className="mt-10 grid gap-px overflow-hidden rounded-[0.85rem] border border-black/10 bg-black/10 md:grid-cols-2 xl:grid-cols-4">
-              {brand.cards.map((card, index) => (
-                <article key={card.title} className="min-w-0 bg-white p-6 sm:p-7">
-                  <p className="text-xs uppercase tracking-[0.22em] text-black/34">{String(index + 1).padStart(2, "0")}</p>
-                  <h3 className="mt-8 text-2xl font-semibold leading-tight text-black">
-                    {card.title}
-                  </h3>
-                  <p className="mt-4 text-sm leading-7 text-black/60">{card.text}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y border-white/10 bg-[#000000] text-white">
-          <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <div className="grid gap-10 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
-              <div className="min-w-0">
-                <LandingSectionIntro tone="dark" eyebrow={product.eyebrow} title={product.title} body={product.body} />
-                <div className="mt-9 grid gap-4 md:grid-cols-3">
-                  {product.designCards.map((card) => (
-                    <article key={card.title} className="border-t border-white/12 pt-5">
-                      <h3 className="text-xl font-semibold text-white">{card.title}</h3>
-                      <p className="mt-3 text-sm leading-7 text-white/60">{card.text}</p>
-                    </article>
-                  ))}
-                </div>
-              </div>
-
-              <ProductVisual
-                src={mediaAssets.partner}
-                alt="Брендовая подача STILNO"
-                className="xl:min-h-[32rem]"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-white text-black">
-          <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <LandingSectionIntro
-              eyebrow="Структура сайта"
-              title="Подробности разнесены по отдельным страницам"
-              body={`${quality.title} находится в разделе «Качество». Каталог и заявка не смешиваются с брендовым рассказом.`}
-            />
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
-              {nextSections.map((section) => (
-                <article key={section.title} className="flex min-h-[15rem] flex-col rounded-[0.85rem] border border-black/10 bg-white p-6">
-                  <h3 className="text-2xl font-semibold leading-tight text-black">{section.title}</h3>
-                  <p className="mt-4 flex-1 text-sm leading-7 text-black/60">{section.body}</p>
-                  <div className="mt-6">
-                    <ButtonLink href={section.href} tone="light" variant="secondary" analytics={`brand_next_${section.title}`}>
-                      {section.cta}
-                    </ButtonLink>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
     </>
   );
 }
@@ -2178,8 +2017,6 @@ export function PageRenderer({ page }: { page: ResolvedPage }) {
       return CityTemplate(page);
     case "store":
       return StoreTemplate(page);
-    case "brand":
-      return BrandTemplate(page);
     case "about":
       return AboutTemplate(page);
     case "gallery":
@@ -2242,7 +2079,6 @@ export function getMetadataPayload(page?: ResolvedPage) {
   const titleMap: Partial<Record<ResolvedPage["kind"], string>> = {
     "stores-index": "Каталог STILNO | характеристики и розничные запросы 18+",
     "stores-map": "Карта магазинов STILNO | интерактивная карта точек",
-    brand: "Бренд STILNO | премиальный бренд электронных сигарет 18+",
     franchise: "Запуск STILNO в регионе | бренд 18+",
     quality: "Качество STILNO | фабричное производство и контроль",
     request: "Оставить заявку STILNO | официальный сайт бренда 18+",
@@ -2260,8 +2096,6 @@ export function getMetadataPayload(page?: ResolvedPage) {
       "Каталог STILNO с характеристиками, вкусами, предупреждениями, опубликованной точкой и формой розничного запроса без дистанционной продажи.",
     "stores-map":
       "Интерактивная карта магазинов и партнёрских точек STILNO с центральным офисом по адресу Ulitsa Vavilova, 69/75, Moscow, 117335.",
-    brand:
-      "STILNO — премиальный бренд электронных сигарет для взрослой аудитории 18+: сдержанный дизайн, фабричное производство, контроль качества и ответственная коммуникация.",
     franchise:
       "Запуск STILNO в регионе: город, команда, бренд-материалы, legal 18+ и отдельная заявка.",
     quality:
@@ -2289,11 +2123,7 @@ export function getMetadataPayload(page?: ResolvedPage) {
     description: descriptionMap[page.kind] ?? page.description,
     canonical: `${siteOrigin}/${canonicalPath.join("/")}`,
     image: defaultImage,
-    openGraphTitle:
-      page.kind === "brand" ? "STILNO — премиальный бренд электронных сигарет" : undefined,
-    openGraphDescription:
-      page.kind === "brand"
-        ? "Фабричное производство, контроль качества, взрослый сдержанный дизайн и отдельный каталог."
-        : undefined,
+    openGraphTitle: undefined,
+    openGraphDescription: undefined,
   };
 }

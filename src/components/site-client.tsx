@@ -894,10 +894,8 @@ function isBrandSitePath(pathname: string) {
   const normalized = pathname.replace(/\/+$/, "") || "/";
   return (
     normalized === "/" ||
-    normalized === "/partners" ||
     normalized === "/partners/geography" ||
     normalized === "/about" ||
-    normalized === "/brand" ||
     normalized === "/quality" ||
     normalized === "/stores" ||
     normalized === "/request"
@@ -1411,10 +1409,13 @@ export function AgeGate({
             </div>
           ) : null}
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div
+            className="mx-auto mt-8 flex w-full max-w-full flex-col items-stretch gap-3 sm:w-fit sm:flex-row sm:flex-wrap sm:items-center sm:justify-center"
+            data-testid="age-gate-actions"
+          >
             <button
               type="button"
-              className="min-h-11 rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5]"
+              className="min-h-11 rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5] sm:min-w-40"
               onClick={() => {
                 window.localStorage.setItem(AGE_KEY, version);
                 window.dispatchEvent(new Event("stilno:age-accepted"));
@@ -1426,7 +1427,7 @@ export function AgeGate({
             </button>
             <button
               type="button"
-              className="min-h-11 rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+              className="min-h-11 rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12] sm:min-w-40"
               onClick={() => {
                 pushAnalytics("age_gate_decline", { version });
                 setDenied(true);
@@ -1435,7 +1436,10 @@ export function AgeGate({
               Мне нет 18 лет
             </button>
           </div>
-          <p className="mt-5 text-sm leading-6 text-white/46">
+          <p
+            className="mx-auto mt-5 max-w-xl text-center text-sm leading-6 text-white/46"
+            data-testid="age-gate-legal-note"
+          >
             Подробные возрастные ограничения описаны в{" "}
             <Link
               href={legalHref}

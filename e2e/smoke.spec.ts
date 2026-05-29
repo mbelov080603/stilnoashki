@@ -6,9 +6,7 @@ const publicPaths = [
   "/",
   "/contacts",
   "/about",
-  "/brand",
   "/responsible",
-  "/partners",
   "/partners/media-kit",
   "/partners/geography",
   "/quality",
@@ -142,10 +140,31 @@ test("age gate and cookie consent can be completed in a fresh session", async ({
   await expect(dialog).toBeVisible();
   await expect(dialog.locator("[data-visual-slot]")).toHaveCount(0);
   await expect(dialog.locator("img")).toHaveCount(0);
+  const dialogBox = await dialog.boundingBox();
+  const actionsBox = await dialog.getByTestId("age-gate-actions").boundingBox();
+  expect(dialogBox).not.toBeNull();
+  expect(actionsBox).not.toBeNull();
+  expect(Math.abs(actionsBox!.x + actionsBox!.width / 2 - (dialogBox!.x + dialogBox!.width / 2))).toBeLessThanOrEqual(2);
+  await expect(dialog.getByTestId("age-gate-legal-note")).toHaveCSS("text-align", "center");
   await page.getByRole("button", { name: "Мне есть 18 лет" }).click();
   await expect(page.getByText("Cookie-файлы")).toBeVisible();
   await page.getByRole("button", { name: "Только необходимые" }).click();
   await expect(page.getByText("Cookie-файлы")).toHaveCount(0);
+});
+
+test("brand landing routes are removed from navigation", async ({ page }) => {
+  await seedConsent(page);
+
+  const brandResponse = await page.goto("/brand");
+  expect(brandResponse?.status()).toBe(404);
+  await expect(page.locator("h1").first()).toContainText("Страница не найдена");
+
+  const partnersResponse = await page.goto("/partners");
+  expect(partnersResponse?.status()).toBe(404);
+  await expect(page.locator("h1").first()).toContainText("Страница не найдена");
+
+  await page.goto("/");
+  await expect(page.locator('a[href="/brand"], a[href="/brand/"]')).toHaveCount(0);
 });
 
 test("verify page shows the reset video and instruction", async ({ page }) => {
@@ -270,20 +289,10 @@ test("multipage site positioning is visible on key pages", async ({ page }) => {
   await expect(page.locator("main")).not.toContainText("Единственный раздел с подробным каталогом STILNO");
   await expect(page.locator("main form")).toHaveCount(0);
 
-  await page.goto("/brand");
-  await expect(page.locator("h1")).toContainText("STILNO — премиальный бренд электронных сигарет");
-  await expect(page.locator("main")).toContainText("Бренд без визуального шума");
-  await expect(page.locator("main")).toContainText("Каталог не дублируется на брендовой странице");
-  await expect(page.locator("main")).toContainText("Подробности разнесены по отдельным страницам");
-  await expect(page.locator("form")).toHaveCount(0);
-
-  await page.goto("/partners");
-  await expect(page.locator("main")).toContainText("Бренд без визуального шума");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/brand");
-
   await page.goto("/about");
-  await expect(page.locator("main")).toContainText("Бренд без визуального шума");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/brand");
+  await expect(page.locator("h1")).toContainText("STILNO");
+  await expect(page.locator("main")).toContainText("STILNO выглядит как бренд");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3010/about");
 
   await page.goto("/stores");
   await expect(page.locator("h1")).toContainText("Каталог STILNO");
@@ -439,7 +448,7 @@ test("mobile menu opens key navigation", async ({ page, isMobile }) => {
   await page.getByRole("button", { name: "Открыть меню" }).click();
   const menu = page.getByRole("dialog", { name: "Мобильное меню" });
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole("link", { name: "Бренд" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Бренд" })).toHaveCount(0);
   await expect(menu.getByRole("link", { name: "Каталог" })).toBeVisible();
   await expect(menu.getByRole("link", { name: "Оставить заявку" })).toBeVisible();
 });
