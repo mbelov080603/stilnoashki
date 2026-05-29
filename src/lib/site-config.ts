@@ -82,6 +82,7 @@ export const mediaAssets = {
   lobbyProduct: "/stilno/photos/lobby-product.webp",
   lifestyleHand: "/stilno/photos/lifestyle-hand-car.webp",
   production: "/stilno/photos/production-line.webp",
+  qualityProduction: "/stilno/photos/quality-production-line.jpg",
   stores: "/stilno/photos/retail-counter.webp",
   storesPoint: "/stilno/photos/retail-counter.webp",
   partner: "/stilno/photos/business-desk.webp",

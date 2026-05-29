@@ -1164,7 +1164,7 @@ function QualityTemplate(page: ResolvedPage) {
             }}
             media={
               <ProductVisual
-                src={mediaAssets.production}
+                src={mediaAssets.qualityProduction}
                 alt="Фабричная среда производства STILNO"
                 className="min-h-[20rem] sm:min-h-[28rem] xl:min-h-[32rem]"
                 softEdges
