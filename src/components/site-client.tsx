@@ -239,6 +239,7 @@ type PartnerGeographyContact = {
   phone: string;
   address: string;
   tags: string[];
+  searchAliases?: string[];
   pin: { x: number; y: number };
 };
 
@@ -252,12 +253,29 @@ const partnerGeographyContacts: PartnerGeographyContact[] = [
     phone: "+7 999 244-28-36",
     address: "ул. Вавилова, 69/75, Москва, 117335",
     tags: ["VAPE", "B2B"],
+    searchAliases: ["город Москва", "мск", "moscow"],
     pin: { x: 128.1, y: 487.8 },
   },
 ];
 
 function normalizeSearch(value: string) {
-  return value.trim().toLocaleLowerCase("ru-RU");
+  return value.trim().toLocaleLowerCase("ru-RU").replaceAll("ё", "е");
+}
+
+function contactMatchesSearch(contact: PartnerGeographyContact, normalizedQuery: string) {
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  return [
+    contact.regionName,
+    contact.city,
+    contact.name,
+    contact.phone,
+    contact.address,
+    ...contact.tags,
+    ...(contact.searchAliases ?? []),
+  ].some((item) => normalizeSearch(item).includes(normalizedQuery));
 }
 
 function phoneHref(value: string) {
@@ -625,14 +643,7 @@ export function PartnersGeographyMap() {
     : undefined;
   const tooltipContact = tooltipRegion ? contactByRegionId.get(tooltipRegion.id) : undefined;
 
-  const filteredContacts = partnerGeographyContacts.filter((contact) => {
-    if (!normalizedQuery) {
-      return true;
-    }
-
-    return [contact.regionName, contact.city, contact.name, contact.phone, contact.address]
-      .some((item) => normalizeSearch(item).includes(normalizedQuery));
-  });
+  const filteredContacts = partnerGeographyContacts.filter((contact) => contactMatchesSearch(contact, normalizedQuery));
 
   useEffect(() => {
     if (!tooltip?.pinned) {
@@ -721,7 +732,7 @@ export function PartnersGeographyMap() {
             const matchesQuery =
               !normalizedQuery ||
               normalizeSearch(region.name).includes(normalizedQuery) ||
-              (contact ? normalizeSearch(contact.address).includes(normalizedQuery) : false);
+              (contact ? contactMatchesSearch(contact, normalizedQuery) : false);
 
             return (
               <path
@@ -773,7 +784,10 @@ export function PartnersGeographyMap() {
               role="button"
               tabIndex={0}
               aria-label={`${contact.regionName}: ${contact.name}, ${contact.phone}`}
-              className="cursor-pointer outline-none"
+              className={classNames(
+                "cursor-pointer outline-none transition-opacity duration-200",
+                contactMatchesSearch(contact, normalizedQuery) ? "opacity-100" : "opacity-25",
+              )}
               filter="url(#partner-map-pin-shadow)"
               onPointerEnter={(event) => {
                 setTooltip((current) => {
@@ -845,12 +859,13 @@ export function PartnersGeographyMap() {
 
       <div className="grid gap-5 xl:grid-cols-[0.72fr_1.28fr] xl:items-start">
         <label className="block">
-          <span className="sr-only">Поиск региона или партнера</span>
+          <span className="sr-only">Поиск региона, города или партнера</span>
           <input
+            data-testid="partner-geography-search"
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Введите название региона"
+            placeholder="Введите регион или город"
             className="h-[3.25rem] w-full rounded-[0.85rem] border border-white/12 bg-white/[0.07] px-4 text-sm text-white outline-none transition placeholder:text-white/36 focus:border-[#ff8fc5]/60"
           />
         </label>
@@ -859,6 +874,7 @@ export function PartnersGeographyMap() {
           {filteredContacts.map((contact) => (
             <article
               key={contact.id}
+              data-testid="partner-geography-contact-card"
               className="relative min-w-0 rounded-[0.75rem] border border-white/10 bg-white/[0.08] p-5 text-white transition hover:border-white/35 hover:bg-white hover:text-black"
             >
               <div className="flex flex-wrap gap-2">
@@ -876,6 +892,11 @@ export function PartnersGeographyMap() {
               </a>
             </article>
           ))}
+          {filteredContacts.length === 0 ? (
+            <div className="min-w-0 rounded-[0.75rem] border border-white/10 bg-white/[0.06] p-5 text-sm leading-6 text-white/58 md:col-span-2">
+              По этому запросу партнёрские контакты не найдены.
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

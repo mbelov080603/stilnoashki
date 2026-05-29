@@ -134,6 +134,23 @@ for (const path of publicPaths) {
   });
 }
 
+test("partner geography search supports city queries", async ({ page }) => {
+  await seedConsent(page);
+  await page.goto("/partners/geography");
+
+  const search = page.getByTestId("partner-geography-search");
+  await expect(search).toHaveAttribute("placeholder", "Введите регион или город");
+
+  await search.fill("город Москва");
+  await expect(page.getByTestId("partner-geography-contact-card")).toHaveCount(1);
+  await expect(page.getByTestId("partner-geography-contact-card")).toContainText("Михаил");
+  await expect(page.getByTestId("partner-geography-contact-card")).toContainText("ул. Вавилова");
+
+  await search.fill("Санкт-Петербург");
+  await expect(page.getByTestId("partner-geography-contact-card")).toHaveCount(0);
+  await expect(page.getByText("По этому запросу партнёрские контакты не найдены.")).toBeVisible();
+});
+
 test("age gate and cookie consent can be completed in a fresh session", async ({ page }) => {
   await page.goto("/");
   const dialog = page.getByRole("dialog", { name: /STILNO доступен/ });
