@@ -722,11 +722,13 @@ function ProductVisual({
   alt,
   caption,
   className,
+  softEdges = false,
 }: {
   src: string;
   alt: string;
   caption?: string;
   className?: string;
+  softEdges?: boolean;
 }) {
   return (
     <figure
@@ -735,15 +737,35 @@ function ProductVisual({
         className,
       )}
     >
+      {softEdges ? (
+        <Image
+          src={assetPath(src)}
+          alt=""
+          fill
+          sizes="(min-width: 1280px) 42rem, 100vw"
+          className="scale-110 object-cover opacity-35 blur-xl"
+          loading="eager"
+          unoptimized
+          aria-hidden="true"
+        />
+      ) : null}
       <Image
         src={assetPath(src)}
         alt={alt}
         fill
         sizes="(min-width: 1280px) 42rem, 100vw"
-        className="object-contain p-4 sm:p-7"
+        className={classNames(
+          softEdges ? "object-cover" : "object-contain p-4 sm:p-7",
+          softEdges
+            ? "scale-[1.03] [mask-image:radial-gradient(ellipse_at_center,#000_52%,rgba(0,0,0,0.82)_66%,rgba(0,0,0,0.34)_84%,transparent_100%)]"
+            : "",
+        )}
         loading="eager"
         unoptimized
       />
+      {softEdges ? (
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_48%,rgba(0,0,0,0.16)_70%,rgba(0,0,0,0.5)_100%)]" />
+      ) : null}
       {caption ? (
         <figcaption className="absolute inset-x-4 bottom-4 rounded-[0.6rem] border border-white/10 bg-black/56 px-4 py-3 text-xs leading-5 text-white/68 backdrop-blur">
           {caption}
@@ -1145,6 +1167,7 @@ function QualityTemplate(page: ResolvedPage) {
                 src={mediaAssets.production}
                 alt="Фабричная среда производства STILNO"
                 className="min-h-[20rem] sm:min-h-[28rem] xl:min-h-[32rem]"
+                softEdges
               />
             }
           />
@@ -1153,27 +1176,33 @@ function QualityTemplate(page: ResolvedPage) {
 
       <section className="bg-[#000000] text-white">
         <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="mb-6 rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] p-6 sm:p-8">
+            <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+              <div className="min-w-0">
+                <p className="break-words text-xs uppercase tracking-[0.22em] text-[#ff6da8]/70">Proof</p>
+                <h2 className="mt-4 max-w-xl break-words text-2xl font-semibold leading-tight text-white sm:text-3xl">
+                  {quality.proofTitle}
+                </h2>
+              </div>
+              <p className="max-w-2xl break-words text-sm leading-7 text-white/68">{quality.proofText}</p>
+            </div>
+          </div>
+
+          <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-5">
             {quality.steps.map((step, index) => (
               <article
                 key={step.title}
-                className="flex min-h-[17rem] flex-col rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6"
+                className="flex min-w-0 flex-col overflow-hidden rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:min-h-[17rem] sm:p-6 xl:aspect-square xl:min-h-0 xl:p-5 2xl:p-6"
               >
                 <p className="text-xs uppercase tracking-[0.22em] text-white/34">{String(index + 1).padStart(2, "0")}</p>
-                <h2 className="mt-6 text-2xl font-semibold leading-tight text-white">{step.title}</h2>
-                <p className="mt-4 text-sm leading-7 text-white/60">{step.text}</p>
+                <h2 className="mt-5 min-w-0 break-words text-[1.35rem] font-semibold leading-[1.14] text-white [overflow-wrap:anywhere] xl:text-[1.28rem] 2xl:text-2xl">
+                  {step.title}
+                </h2>
+                <p className="mt-4 min-w-0 break-words text-[0.84rem] leading-6 text-white/60 [overflow-wrap:anywhere] xl:text-[0.8rem] xl:leading-[1.6] 2xl:text-sm 2xl:leading-7">
+                  {step.text}
+                </p>
               </article>
             ))}
-          </div>
-
-          <div className="mt-6 rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] p-6 sm:p-8">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-              <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-[#ff6da8]/70">Proof</p>
-                <h2 className="mt-4 text-3xl font-semibold leading-tight text-white">{quality.proofTitle}</h2>
-              </div>
-              <p className="text-sm leading-7 text-white/68">{quality.proofText}</p>
-            </div>
           </div>
         </div>
       </section>
