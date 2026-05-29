@@ -312,7 +312,7 @@ const partnerFields: LeadField[] = [
   },
   {
     name: "company",
-    label: "Компания / проект",
+    label: "Компания",
     placeholder: "Название компании или точки",
     autoComplete: "organization",
   },
