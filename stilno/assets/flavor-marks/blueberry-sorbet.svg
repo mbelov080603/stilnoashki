@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 360 240" fill="none">
+<defs>
+<radialGradient id="g" cx="50%" cy="50%" r="58%"><stop offset="0" stop-color="#374C8E" stop-opacity="0.22"/><stop offset="1" stop-color="#BDEAF4" stop-opacity="0"/></radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<ellipse cx="180" cy="120" rx="128" ry="76" fill="url(#g)"/>
+<ellipse cx="180" cy="120" rx="72" ry="41" stroke="#82D8F4" stroke-opacity="0.160" stroke-width="1"/>
+<ellipse cx="180" cy="120" rx="96" ry="55" stroke="#82D8F4" stroke-opacity="0.125" stroke-width="1"/>
+<ellipse cx="180" cy="120" rx="120" ry="69" stroke="#82D8F4" stroke-opacity="0.090" stroke-width="1"/>
+<line x1="268.0" y1="120.0" x2="92.0" y2="120.0" stroke="#82D8F4" stroke-opacity="0.34" stroke-width="1.5"/>
+<line x1="256.2" y1="144.0" x2="103.8" y2="96.0" stroke="#82D8F4" stroke-opacity="0.34" stroke-width="1.5"/>
+<line x1="224.0" y1="161.6" x2="136.0" y2="78.4" stroke="#82D8F4" stroke-opacity="0.34" stroke-width="1.5"/>
+<line x1="180.0" y1="168.0" x2="180.0" y2="72.0" stroke="#82D8F4" stroke-opacity="0.34" stroke-width="1.5"/>
+<line x1="136.0" y1="161.6" x2="224.0" y2="78.4" stroke="#82D8F4" stroke-opacity="0.34" stroke-width="1.5"/>
+<line x1="103.8" y1="144.0" x2="256.2" y2="96.0" stroke="#82D8F4" stroke-opacity="0.34" stroke-width="1.5"/>
+<circle cx="180" cy="120" r="8" fill="#82D8F4" fill-opacity="0.45"/>
+<circle cx="176.4" cy="92.6" r="2.5" fill="#374C8E" fill-opacity="0.68"/>
+<circle cx="169.9" cy="74.0" r="5.0" fill="#82D8F4" fill-opacity="0.60"/>
+<circle cx="215.3" cy="108.7" r="2.5" fill="#BDEAF4" fill-opacity="0.65"/>
+<circle cx="284.9" cy="161.1" r="2.5" fill="#374C8E" fill-opacity="0.72"/>
+<circle cx="201.2" cy="108.2" r="5.0" fill="#82D8F4" fill-opacity="0.71"/>
+<circle cx="243.0" cy="60.1" r="2.5" fill="#BDEAF4" fill-opacity="0.49"/>
+<circle cx="126.7" cy="71.4" r="3.2" fill="#374C8E" fill-opacity="0.53"/>
+<circle cx="210.4" cy="150.1" r="5.0" fill="#82D8F4" fill-opacity="0.51"/>
+<circle cx="249.9" cy="108.0" r="2.5" fill="#BDEAF4" fill-opacity="0.77"/>
+<circle cx="259.8" cy="87.5" r="3.2" fill="#374C8E" fill-opacity="0.71"/>
+<circle cx="182.8" cy="121.0" r="5.0" fill="#82D8F4" fill-opacity="0.61"/>
+<circle cx="128.9" cy="166.3" r="2.5" fill="#BDEAF4" fill-opacity="0.78"/>
+<circle cx="274.0" cy="109.2" r="4.0" fill="#374C8E" fill-opacity="0.72"/>
+<circle cx="173.1" cy="176.4" r="4.0" fill="#82D8F4" fill-opacity="0.49"/>
+<circle cx="152.8" cy="145.5" r="3.2" fill="#BDEAF4" fill-opacity="0.47"/>
+<circle cx="219.4" cy="167.0" r="2.5" fill="#374C8E" fill-opacity="0.57"/>
+<circle cx="174.4" cy="114.1" r="2.5" fill="#82D8F4" fill-opacity="0.51"/>
+<circle cx="188.4" cy="128.7" r="4.0" fill="#BDEAF4" fill-opacity="0.56"/>
+<text x="18" y="218" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="2" fill="#82D8F4" fill-opacity="0.62">I07</text>
+</svg>
