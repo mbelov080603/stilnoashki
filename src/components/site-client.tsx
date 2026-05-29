@@ -1937,7 +1937,7 @@ function getCatalogGroupMeta(group: string) {
   if (normalizedGroup.includes("айс")) {
     return {
       id: "ice",
-      title: "X-Ice Pod",
+      title: "Ледяные",
       eyebrow: "Айс",
       accent: "#82D8F4",
     };
