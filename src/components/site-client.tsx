@@ -16,7 +16,6 @@ import {
   useState,
 } from "react";
 
-import { MediaSlot } from "@/components/media-slot";
 import { russiaMapViewBox, russiaRegionPaths } from "@/lib/russia-map-data";
 import { analyticsIds, companyDetails, isStaticExport } from "@/lib/site-data";
 import type {
@@ -1387,74 +1386,65 @@ export function AgeGate({
         role="dialog"
         aria-modal="true"
         aria-labelledby="age-gate-title"
-        className="relative max-h-[calc(100svh-2rem)] w-full max-w-5xl overflow-y-auto rounded-[1.15rem] border border-white/12 bg-[#000000] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:rounded-[1.35rem] sm:p-7 lg:p-8"
+        className="relative max-h-[calc(100svh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[1.15rem] border border-white/12 bg-[#000000] p-5 text-white shadow-[0_40px_110px_rgba(0,0,0,0.5)] sm:rounded-[1.35rem] sm:p-7 lg:p-8"
       >
-        <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-stretch">
-          <div className="flex min-w-0 flex-col p-2 sm:p-3">
-            <div className="mb-6 inline-flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.22em] text-white/44">
-              <span className="h-px w-10 bg-white/24" />
-              <span>18+</span>
-            </div>
-            <h2
-              id="age-gate-title"
-              className="max-w-2xl break-words text-[clamp(2rem,8.5vw,3rem)] font-semibold leading-[1.02] tracking-[-0.03em] sm:text-5xl sm:leading-[0.98] sm:tracking-[-0.055em]"
-            >
-              STILNO доступен только совершеннолетним пользователям.
-            </h2>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/62 sm:text-lg">
-              Сайт содержит справочную информацию о никотинсодержащей продукции. Подтвердите, что вам исполнилось 18 лет.
-            </p>
-
-            {denied ? (
-              <div className="mt-7 rounded-[1.15rem] border border-white/12 bg-white/[0.08] p-5">
-                <p className="text-base leading-7 text-white/76">
-                  Доступ к сайту ограничен. Продажа никотинсодержащей продукции несовершеннолетним запрещена.
-                </p>
-              </div>
-            ) : null}
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button
-                type="button"
-                className="min-h-11 rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5]"
-                onClick={() => {
-                  window.localStorage.setItem(AGE_KEY, version);
-                  window.dispatchEvent(new Event("stilno:age-accepted"));
-                  pushAnalytics("age_gate_accept", { version });
-                  setVisible(false);
-                }}
-              >
-                Мне есть 18 лет
-              </button>
-              <button
-                type="button"
-                className="min-h-11 rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12]"
-                onClick={() => {
-                  pushAnalytics("age_gate_decline", { version });
-                  setDenied(true);
-                }}
-              >
-                Мне нет 18 лет
-              </button>
-            </div>
-            <p className="mt-5 text-sm leading-6 text-white/46">
-              Подробные возрастные ограничения описаны в{" "}
-              <Link
-                href={legalHref}
-                className="underline decoration-white/24 underline-offset-4 transition hover:text-white"
-              >
-                правовой информации
-              </Link>
-              .
-            </p>
+        <div className="flex min-w-0 flex-col p-2 sm:p-3">
+          <div className="mb-6 inline-flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.22em] text-white/44">
+            <span className="h-px w-10 bg-white/24" />
+            <span>18+</span>
           </div>
-          <MediaSlot
-            slotId="age-gate-product"
-            title="STILNO"
-            note="Визуал продукта STILNO в возрастном подтверждении."
-            aspect="portrait"
-            className="hidden min-h-[34rem] border-white/10 lg:block"
-          />
+          <h2
+            id="age-gate-title"
+            className="max-w-2xl break-words text-[clamp(2rem,8.5vw,3rem)] font-semibold leading-[1.02] tracking-[-0.03em] sm:text-5xl sm:leading-[0.98] sm:tracking-[-0.055em]"
+          >
+            STILNO доступен только совершеннолетним пользователям.
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-white/62 sm:text-lg">
+            Сайт содержит справочную информацию о никотинсодержащей продукции. Подтвердите, что вам исполнилось 18 лет.
+          </p>
+
+          {denied ? (
+            <div className="mt-7 rounded-[1.15rem] border border-white/12 bg-white/[0.08] p-5">
+              <p className="text-base leading-7 text-white/76">
+                Доступ к сайту ограничен. Продажа никотинсодержащей продукции несовершеннолетним запрещена.
+              </p>
+            </div>
+          ) : null}
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <button
+              type="button"
+              className="min-h-11 rounded-full border border-[#ff6da8] bg-[#ff6da8] px-6 py-3 text-sm font-medium leading-5 text-black transition hover:bg-[#ff8fc5]"
+              onClick={() => {
+                window.localStorage.setItem(AGE_KEY, version);
+                window.dispatchEvent(new Event("stilno:age-accepted"));
+                pushAnalytics("age_gate_accept", { version });
+                setVisible(false);
+              }}
+            >
+              Мне есть 18 лет
+            </button>
+            <button
+              type="button"
+              className="min-h-11 rounded-full border border-white/18 bg-white/[0.07] px-6 py-3 text-sm leading-5 text-white transition hover:border-white/34 hover:bg-white/[0.12]"
+              onClick={() => {
+                pushAnalytics("age_gate_decline", { version });
+                setDenied(true);
+              }}
+            >
+              Мне нет 18 лет
+            </button>
+          </div>
+          <p className="mt-5 text-sm leading-6 text-white/46">
+            Подробные возрастные ограничения описаны в{" "}
+            <Link
+              href={legalHref}
+              className="underline decoration-white/24 underline-offset-4 transition hover:text-white"
+            >
+              правовой информации
+            </Link>
+            .
+          </p>
         </div>
       </div>
     </div>

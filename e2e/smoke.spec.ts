@@ -138,6 +138,10 @@ for (const path of publicPaths) {
 
 test("age gate and cookie consent can be completed in a fresh session", async ({ page }) => {
   await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: /STILNO доступен/ });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("[data-visual-slot]")).toHaveCount(0);
+  await expect(dialog.locator("img")).toHaveCount(0);
   await page.getByRole("button", { name: "Мне есть 18 лет" }).click();
   await expect(page.getByText("Cookie-файлы")).toBeVisible();
   await page.getByRole("button", { name: "Только необходимые" }).click();
