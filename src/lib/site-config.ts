@@ -75,6 +75,7 @@ export const documentLinks = {
 };
 
 export const mediaAssets = {
+  homeHeroDesktop: "/stilno/photos/home-click-one-hero.png",
   homeHeroPortrait: "/stilno/photos/home-click-one-hero-portrait.png",
   product: "/stilno/photos/product-pack-ananas-mango.jpg",
   productCloseVishnya: "/stilno/photos/product-close-vishnya.webp",

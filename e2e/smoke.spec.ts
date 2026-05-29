@@ -403,6 +403,30 @@ test("SEO metadata includes canonical and OG image", async ({ page }) => {
   );
 });
 
+test("home hero keeps desktop and mobile image assets separated", async ({ page, isMobile }) => {
+  await seedConsent(page);
+  await page.goto("/");
+
+  const desktopHeroAsset = page.locator('[data-hero-asset="desktop"]');
+  const mobileHeroAsset = page.locator('[data-hero-asset="mobile"]');
+
+  const desktopBackground = await desktopHeroAsset.evaluate((element) => {
+    return window.getComputedStyle(element).backgroundImage;
+  });
+
+  expect(desktopBackground).toContain("home-click-one-hero.png");
+  expect(desktopBackground).not.toContain("home-click-one-hero-portrait.png");
+
+  if (isMobile) {
+    await expect(desktopHeroAsset).toBeHidden();
+    await expect(mobileHeroAsset).toBeVisible();
+    await expect(mobileHeroAsset.locator("img")).toHaveAttribute("src", /home-click-one-hero-portrait\.png/);
+  } else {
+    await expect(desktopHeroAsset).toBeVisible();
+    await expect(mobileHeroAsset).toBeHidden();
+  }
+});
+
 test("mobile menu opens key navigation", async ({ page, isMobile }) => {
   test.skip(!isMobile, "mobile-only smoke");
 

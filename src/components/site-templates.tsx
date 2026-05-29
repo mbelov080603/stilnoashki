@@ -848,8 +848,9 @@ export function HomeTemplate() {
       <StructuredData data={buildJsonLd()} />
       <section className="relative isolate overflow-hidden bg-black px-5 py-8 sm:px-6 lg:min-h-[calc(100svh-5rem)] lg:px-8">
         <div
-          className="absolute inset-0 -z-30 hidden bg-contain bg-center bg-no-repeat lg:block"
-          style={{ backgroundImage: `url(${assetPath(mediaAssets.homeHeroPortrait)})` }}
+          className="absolute inset-0 -z-30 hidden bg-cover bg-center bg-no-repeat lg:block"
+          data-hero-asset="desktop"
+          style={{ backgroundImage: `url(${assetPath(mediaAssets.homeHeroDesktop)})` }}
           aria-hidden="true"
         />
         <div className="absolute inset-0 -z-20 hidden bg-black/8 lg:block" aria-hidden="true" />
@@ -874,7 +875,10 @@ export function HomeTemplate() {
             </p>
           </div>
 
-          <div className="relative mx-auto h-[min(58svh,31rem)] min-h-[22rem] w-full max-w-[24rem] overflow-hidden rounded-[1rem] border border-white/10 bg-[#050505] shadow-[0_28px_90px_rgba(0,0,0,0.42)] sm:h-[32rem] sm:max-w-[26rem] lg:hidden">
+          <div
+            className="relative mx-auto h-[min(58svh,31rem)] min-h-[22rem] w-full max-w-[24rem] overflow-hidden rounded-[1rem] border border-white/10 bg-[#050505] shadow-[0_28px_90px_rgba(0,0,0,0.42)] sm:h-[32rem] sm:max-w-[26rem] lg:hidden"
+            data-hero-asset="mobile"
+          >
             <Image
               src={assetPath(mediaAssets.homeHeroPortrait)}
               alt="STILNO CLICK ONE: устройство и сменный картридж"
