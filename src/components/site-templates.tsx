@@ -1576,27 +1576,6 @@ function PartnersGeographyTemplate(page: ResolvedPage) {
           </div>
         </div>
       </section>
-
-      <section className="border-t border-white/10 bg-[#000000] text-white">
-        <div className="mx-auto max-w-[86rem] px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-6 md:grid-cols-2">
-            <article className="rounded-[1rem] border border-white/12 bg-white/[0.04] p-6">
-              <p className="text-xs uppercase tracking-[0.22em] text-white/40">Москва</p>
-              <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">ул. Вавилова, 69/75</h2>
-              <p className="mt-3 text-sm leading-6 text-white/62">
-                Опубликованная карточка партнёрского контакта: Михаил, Москва, 117335.
-              </p>
-            </article>
-            <article className="rounded-[1rem] border border-white/12 bg-white/[0.04] p-6">
-              <p className="text-xs uppercase tracking-[0.22em] text-white/40">Регионы</p>
-              <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">Карта готова к заполнению</h2>
-              <p className="mt-3 text-sm leading-6 text-white/62">
-                Все регионы реагируют на наведение розовой подсветкой, но карточки с адресами пока не добавлены.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
