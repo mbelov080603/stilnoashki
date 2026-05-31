@@ -75,14 +75,14 @@ export const documentLinks = {
 };
 
 export const mediaAssets = {
-  homeHeroDesktop: "/stilno/photos/home-click-one-hero.png",
-  homeHeroPortrait: "/stilno/photos/home-click-one-hero-portrait.png",
-  product: "/stilno/photos/product-pack-ananas-mango.jpg",
+  homeHeroDesktop: "/stilno/photos/home-click-one-hero.webp",
+  homeHeroPortrait: "/stilno/photos/home-click-one-hero-portrait.webp",
+  product: "/stilno/photos/product-pack-ananas-mango.webp",
   productCloseVishnya: "/stilno/photos/product-close-vishnya.webp",
   lobbyProduct: "/stilno/photos/lobby-product.webp",
   lifestyleHand: "/stilno/photos/lifestyle-hand-car.webp",
   production: "/stilno/photos/production-line.webp",
-  qualityProduction: "/stilno/photos/quality-production-line.jpg",
+  qualityProduction: "/stilno/photos/quality-production-line.webp",
   stores: "/stilno/photos/retail-counter.webp",
   storesPoint: "/stilno/photos/retail-counter.webp",
   partner: "/stilno/photos/business-desk.webp",

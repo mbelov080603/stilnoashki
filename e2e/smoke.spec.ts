@@ -193,7 +193,7 @@ test("verify page shows the reset video and instruction", async ({ page }) => {
 
   const video = page.locator("video").first();
   await expect(video).toBeVisible();
-  await expect(video).toHaveAttribute("preload", "metadata");
+  await expect(video).toHaveAttribute("preload", "none");
   await expect(video.locator('source[type="video/webm"]')).toHaveAttribute(
     "src",
     /\/stilno\/video\/verification-reset\.webm$/,
@@ -444,13 +444,13 @@ test("home hero keeps desktop and mobile image assets separated", async ({ page,
     return window.getComputedStyle(element).backgroundImage;
   });
 
-  expect(desktopBackground).toContain("home-click-one-hero.png");
-  expect(desktopBackground).not.toContain("home-click-one-hero-portrait.png");
+  expect(desktopBackground).toContain("home-click-one-hero.webp");
+  expect(desktopBackground).not.toContain("home-click-one-hero-portrait.webp");
 
   if (isMobile) {
     await expect(desktopHeroAsset).toBeHidden();
     await expect(mobileHeroAsset).toBeVisible();
-    await expect(mobileHeroAsset.locator("img")).toHaveAttribute("src", /home-click-one-hero-portrait\.png/);
+    await expect(mobileHeroAsset.locator("img")).toHaveAttribute("src", /home-click-one-hero-portrait\.webp/);
   } else {
     await expect(desktopHeroAsset).toBeVisible();
     await expect(mobileHeroAsset).toBeHidden();

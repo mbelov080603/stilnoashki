@@ -473,14 +473,16 @@ function ProductPhotoCard({
   note = "Продуктовый визуал STILNO.",
   aspect = "wide",
   className,
+  priority = false,
 }: {
   slotId: string;
   title?: string;
   note?: string;
   aspect?: "square" | "wide";
   className?: string;
+  priority?: boolean;
 }) {
-  return <MediaSlot slotId={slotId} title={title} note={note} aspect={aspect} className={className} />;
+  return <MediaSlot slotId={slotId} title={title} note={note} aspect={aspect} className={className} priority={priority} />;
 }
 
 function EditorialImageCard({
@@ -488,13 +490,15 @@ function EditorialImageCard({
   title = "STILNO",
   note = "Визуальная система STILNO.",
   className,
+  priority = false,
 }: {
   slotId: string;
   title?: string;
   note?: string;
   className?: string;
+  priority?: boolean;
 }) {
-  return <MediaSlot slotId={slotId} title={title} note={note} aspect="wide" className={className} />;
+  return <MediaSlot slotId={slotId} title={title} note={note} aspect="wide" className={className} priority={priority} />;
 }
 
 const franchiseProcessDetails = [
@@ -559,8 +563,6 @@ const franchiseHeroSignals = [
 ];
 
 function FranchiseProductLineup({ priority = false, compact = false }: { priority?: boolean; compact?: boolean }) {
-  void priority;
-
   return (
     <MediaSlot
       slotId={compact ? "franchise-lineup-compact" : "franchise-lineup"}
@@ -568,6 +570,7 @@ function FranchiseProductLineup({ priority = false, compact = false }: { priorit
       note="Групповая подача брендовых материалов."
       aspect={compact ? "square" : "wide"}
       className={compact ? "min-h-[13rem] sm:min-h-[16rem]" : "min-h-[21rem] sm:min-h-[28rem]"}
+      priority={priority}
     />
   );
 }
@@ -727,12 +730,14 @@ function ProductVisual({
   caption,
   className,
   softEdges = false,
+  priority = false,
 }: {
   src: string;
   alt: string;
   caption?: string;
   className?: string;
   softEdges?: boolean;
+  priority?: boolean;
 }) {
   return (
     <figure
@@ -741,18 +746,6 @@ function ProductVisual({
         className,
       )}
     >
-      {softEdges ? (
-        <Image
-          src={assetPath(src)}
-          alt=""
-          fill
-          sizes="(min-width: 1280px) 42rem, 100vw"
-          className="scale-110 object-cover opacity-35 blur-xl"
-          loading="eager"
-          unoptimized
-          aria-hidden="true"
-        />
-      ) : null}
       <Image
         src={assetPath(src)}
         alt={alt}
@@ -764,7 +757,9 @@ function ProductVisual({
             ? "scale-[1.03] [mask-image:radial-gradient(ellipse_at_center,#000_52%,rgba(0,0,0,0.82)_66%,rgba(0,0,0,0.34)_84%,transparent_100%)]"
             : "",
         )}
-        loading="eager"
+        preload={priority}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
         unoptimized
       />
       {softEdges ? (
@@ -878,7 +873,9 @@ export function HomeTemplate() {
               src={assetPath(mediaAssets.homeHeroPortrait)}
               alt="STILNO CLICK ONE: устройство и сменный картридж"
               fill
-              priority
+              preload
+              loading="eager"
+              decoding="async"
               sizes="(max-width: 639px) calc(100vw - 42px), (max-width: 1023px) 26rem, 1px"
               className="object-contain object-center p-4"
             />
@@ -1058,6 +1055,7 @@ function AboutTemplate(page: ResolvedPage) {
             note="Основной визуальный код бренда STILNO."
             aspect="wide"
             className="min-h-[20rem] border-white/10 sm:min-h-[28rem] lg:aspect-[16/11] xl:min-h-[34rem]"
+            priority
           />
         }
       />
@@ -1113,6 +1111,7 @@ function GalleryTemplate(page: ResolvedPage) {
             note="Главный визуал галереи STILNO."
             aspect="wide"
             className="min-h-[20rem] border-white/10 sm:min-h-[28rem] lg:aspect-[16/11] xl:min-h-[34rem]"
+            priority
           />
         }
       />
@@ -1172,6 +1171,7 @@ function QualityTemplate(page: ResolvedPage) {
                 alt="Фабричная среда производства STILNO"
                 className="min-h-[20rem] sm:min-h-[28rem] xl:min-h-[32rem]"
                 softEdges
+                priority
               />
             }
           />
@@ -1182,17 +1182,17 @@ function QualityTemplate(page: ResolvedPage) {
         <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div
             data-testid="quality-proof-panel"
-            className="mb-6 overflow-hidden rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] lg:h-[11rem]"
+            className="mb-5 overflow-hidden rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] sm:mb-6"
           >
-            <div className="grid gap-0 lg:h-full lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-              <div className="min-w-0 border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
-                <p className="break-words text-xs uppercase tracking-[0.22em] text-[#ff6da8]/70">Proof</p>
-                <h2 className="mt-4 max-w-xl break-words text-2xl font-semibold leading-tight text-white sm:text-3xl lg:max-h-[4.9rem] lg:overflow-hidden">
+            <div className="grid gap-0 lg:min-h-[11rem] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+              <div className="min-w-0 border-b border-white/10 p-5 sm:p-8 lg:border-b-0 lg:border-r">
+                <p className="break-words text-[0.66rem] uppercase tracking-[0.22em] text-[#ff6da8]/70 sm:text-xs">Proof</p>
+                <h2 className="mt-4 max-w-xl break-words text-[1.55rem] font-semibold leading-[1.14] text-white sm:text-3xl lg:text-[1.8rem]">
                   {quality.proofTitle}
                 </h2>
               </div>
-              <div className="flex min-w-0 p-6 sm:p-8 lg:min-h-0 lg:items-center">
-                <p className="scrollbar-none min-w-0 break-words text-sm leading-7 text-white/68 lg:max-h-[7.2rem] lg:overflow-y-auto lg:overscroll-contain">
+              <div className="flex min-w-0 p-5 sm:p-8 lg:items-center">
+                <p className="min-w-0 break-words text-[0.92rem] leading-7 text-white/68 [overflow-wrap:anywhere] sm:text-base lg:text-sm">
                   {quality.proofText}
                 </p>
               </div>
@@ -1204,16 +1204,16 @@ function QualityTemplate(page: ResolvedPage) {
               <article
                 key={step.title}
                 data-testid="quality-step-card"
-                className="grid min-w-0 content-start grid-rows-[auto_auto_auto] gap-y-4 overflow-hidden rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 xl:h-[20.25rem] xl:grid-rows-[1.25rem_4.75rem_minmax(0,1fr)] xl:gap-y-0 xl:p-6 2xl:h-[19.5rem]"
+                className="flex min-w-0 flex-col rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 xl:p-5 2xl:p-6"
               >
-                <p className="text-xs uppercase tracking-[0.22em] text-white/34">
+                <p className="text-[0.68rem] uppercase tracking-[0.2em] text-white/34 sm:text-xs">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h2 className="min-w-0 break-words text-[1.35rem] font-semibold leading-[1.16] text-white xl:self-center xl:overflow-hidden xl:text-[1.15rem] 2xl:text-[1.18rem]">
+                <h2 className="mt-5 min-w-0 break-words text-[1.3rem] font-semibold leading-[1.16] text-white [hyphens:auto] [overflow-wrap:anywhere] sm:text-[1.45rem] md:text-[1.35rem] xl:min-h-[5.5rem] xl:text-[1.06rem] xl:leading-[1.18] 2xl:min-h-[5.85rem] 2xl:text-[1.14rem]">
                   {step.title}
                 </h2>
-                <div className="min-w-0 xl:min-h-0 xl:overflow-hidden">
-                  <p className="scrollbar-none min-w-0 break-words text-[0.86rem] leading-[1.72] text-white/62 xl:max-h-full xl:overflow-y-auto xl:overscroll-contain xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
+                <div className="mt-5 min-w-0">
+                  <p className="min-w-0 break-words text-[0.9rem] leading-[1.72] text-white/62 [hyphens:auto] [overflow-wrap:anywhere] sm:text-[0.95rem] md:text-[0.9rem] xl:text-[0.74rem] xl:leading-[1.66] 2xl:text-[0.78rem] 2xl:leading-[1.7]">
                     {step.text}
                   </p>
                 </div>
@@ -1413,7 +1413,7 @@ function VerifyTemplate(page: ResolvedPage) {
               className="block aspect-video h-auto w-full bg-black object-contain"
               controls
               playsInline
-              preload="metadata"
+              preload="none"
               poster={assetPath("/stilno/video/verification-reset-poster.jpg")}
               aria-label="Видеоинструкция по сбросу показаний остатка жидкости STILNO"
             >
@@ -1462,7 +1462,7 @@ function SupportTemplate(page: ResolvedPage) {
               { label: "Написать в поддержку", href: `mailto:${companyDetails.supportEmail}`, variant: "secondary" },
             ],
           }}
-          media={<EditorialImageCard slotId="support-system" title="Сервис STILNO" />}
+          media={<EditorialImageCard slotId="support-system" title="Сервис STILNO" priority />}
           compact
         />
 
@@ -1544,7 +1544,7 @@ function MediaKitTemplate(page: ResolvedPage) {
               },
             ],
           }}
-          media={<EditorialImageCard slotId="partner-media-kit" title="B2B-материалы STILNO" />}
+          media={<EditorialImageCard slotId="partner-media-kit" title="B2B-материалы STILNO" priority />}
           compact
         />
 

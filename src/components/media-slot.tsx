@@ -137,12 +137,14 @@ export function MediaSlot({
   note,
   aspect = "wide",
   className,
+  priority = false,
 }: {
   slotId: string;
   title?: string;
   note?: string;
   aspect?: MediaSlotAspect;
   className?: string;
+  priority?: boolean;
 }) {
   const role = getRole(slotId);
   const visual = getVisual(slotId, role);
@@ -166,7 +168,9 @@ export function MediaSlot({
         sizes="(min-width: 1280px) 44rem, 100vw"
         className={fitClassName}
         style={{ objectPosition: visual.position ?? "50% 50%" }}
-        loading="eager"
+        preload={priority}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
         unoptimized
       />
       {note ? <figcaption className="sr-only">{note}</figcaption> : null}
