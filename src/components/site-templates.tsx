@@ -1192,7 +1192,7 @@ function QualityTemplate(page: ResolvedPage) {
                 </h2>
               </div>
               <div className="flex min-h-0 min-w-0 items-center p-6 sm:p-8">
-                <p className="max-h-[7.2rem] min-w-0 overflow-y-auto break-words pr-2 text-sm leading-7 text-white/68 [scrollbar-width:thin]">
+                <p className="scrollbar-none max-h-[7.2rem] min-w-0 overflow-y-auto overscroll-contain break-words text-sm leading-7 text-white/68">
                   {quality.proofText}
                 </p>
               </div>
@@ -1213,7 +1213,7 @@ function QualityTemplate(page: ResolvedPage) {
                   {step.title}
                 </h2>
                 <div className="min-h-0 min-w-0 overflow-hidden">
-                  <p className="max-h-full min-w-0 overflow-y-auto break-words pr-1 text-[0.86rem] leading-[1.72] text-white/62 [scrollbar-width:thin] xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
+                  <p className="scrollbar-none max-h-full min-w-0 overflow-y-auto overscroll-contain break-words text-[0.86rem] leading-[1.72] text-white/62 xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
                     {step.text}
                   </p>
                 </div>

@@ -88,6 +88,17 @@ textarea {
   background: rgba(0, 0, 0, 0.22);
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .text-balance {
   text-wrap: balance;
 }
