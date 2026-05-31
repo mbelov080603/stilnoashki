@@ -227,7 +227,7 @@ function PageHero({
         <h1
           className={classNames(
             titleScale === "compact"
-              ? "max-w-[43rem] break-words text-[clamp(2rem,7vw,2.8rem)] font-semibold leading-[1.08] tracking-[-0.025em] sm:text-[2.75rem] sm:leading-[1.06] sm:tracking-[-0.035em] lg:text-[2.96rem] lg:leading-[1.06]"
+              ? "max-w-[43rem] break-words text-[clamp(1.75rem,7.6vw,2.8rem)] font-semibold leading-[1.08] tracking-[-0.025em] sm:text-[2.75rem] sm:leading-[1.06] sm:tracking-[-0.035em] lg:text-[2.96rem] lg:leading-[1.06]"
               : "max-w-4xl break-words text-[clamp(2rem,9vw,2.85rem)] font-semibold leading-[1.06] tracking-[-0.025em] sm:text-[3.35rem] sm:leading-[1.03] sm:tracking-[-0.04em] lg:text-[4.65rem] lg:leading-[1]",
             tone === "dark" ? "text-white" : "text-black",
           )}
@@ -1182,17 +1182,17 @@ function QualityTemplate(page: ResolvedPage) {
         <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div
             data-testid="quality-proof-panel"
-            className="mb-6 h-[19rem] overflow-hidden rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] sm:h-[15.5rem] lg:h-[11rem]"
+            className="mb-6 overflow-hidden rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] lg:h-[11rem]"
           >
-            <div className="grid h-full gap-0 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+            <div className="grid gap-0 lg:h-full lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
               <div className="min-w-0 border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
                 <p className="break-words text-xs uppercase tracking-[0.22em] text-[#ff6da8]/70">Proof</p>
-                <h2 className="mt-4 max-h-[4.9rem] max-w-xl overflow-hidden break-words text-2xl font-semibold leading-tight text-white sm:text-3xl">
+                <h2 className="mt-4 max-w-xl break-words text-2xl font-semibold leading-tight text-white sm:text-3xl lg:max-h-[4.9rem] lg:overflow-hidden">
                   {quality.proofTitle}
                 </h2>
               </div>
-              <div className="flex min-h-0 min-w-0 items-center p-6 sm:p-8">
-                <p className="scrollbar-none max-h-[7.2rem] min-w-0 overflow-y-auto overscroll-contain break-words text-sm leading-7 text-white/68">
+              <div className="flex min-w-0 p-6 sm:p-8 lg:min-h-0 lg:items-center">
+                <p className="scrollbar-none min-w-0 break-words text-sm leading-7 text-white/68 lg:max-h-[7.2rem] lg:overflow-y-auto lg:overscroll-contain">
                   {quality.proofText}
                 </p>
               </div>
@@ -1204,16 +1204,16 @@ function QualityTemplate(page: ResolvedPage) {
               <article
                 key={step.title}
                 data-testid="quality-step-card"
-                className="grid h-[17rem] min-w-0 grid-rows-[1.25rem_4.75rem_minmax(0,1fr)] overflow-hidden rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 xl:h-[20.25rem] xl:p-6 2xl:h-[19.5rem]"
+                className="grid min-w-0 content-start grid-rows-[auto_auto_auto] gap-y-4 overflow-hidden rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 xl:h-[20.25rem] xl:grid-rows-[1.25rem_4.75rem_minmax(0,1fr)] xl:gap-y-0 xl:p-6 2xl:h-[19.5rem]"
               >
                 <p className="text-xs uppercase tracking-[0.22em] text-white/34">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h2 className="min-w-0 self-center overflow-hidden break-words text-[1.35rem] font-semibold leading-[1.16] text-white xl:text-[1.15rem] 2xl:text-[1.18rem]">
+                <h2 className="min-w-0 break-words text-[1.35rem] font-semibold leading-[1.16] text-white xl:self-center xl:overflow-hidden xl:text-[1.15rem] 2xl:text-[1.18rem]">
                   {step.title}
                 </h2>
-                <div className="min-h-0 min-w-0 overflow-hidden">
-                  <p className="scrollbar-none max-h-full min-w-0 overflow-y-auto overscroll-contain break-words text-[0.86rem] leading-[1.72] text-white/62 xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
+                <div className="min-w-0 xl:min-h-0 xl:overflow-hidden">
+                  <p className="scrollbar-none min-w-0 break-words text-[0.86rem] leading-[1.72] text-white/62 xl:max-h-full xl:overflow-y-auto xl:overscroll-contain xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
                     {step.text}
                   </p>
                 </div>
