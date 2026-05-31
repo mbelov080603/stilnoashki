@@ -184,6 +184,49 @@ test("brand landing routes are removed from navigation", async ({ page }) => {
   await expect(page.locator('a[href="/brand"], a[href="/brand/"]')).toHaveCount(0);
 });
 
+test("quality page long copy stays inside cards without nested scrollbars", async ({ page }) => {
+  await seedConsent(page);
+  await page.goto("/quality");
+
+  await expect(page.getByRole("heading", { name: /STILNO: российские электронные сигареты/ })).toBeVisible();
+  await expect(page.getByTestId("quality-proof-panel")).toBeVisible();
+  await expect(page.getByTestId("quality-step-card")).toHaveCount(5);
+
+  const layout = await page.evaluate(() => {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="quality-step-card"]'));
+    const nestedScrollers = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-testid="quality-proof-panel"], [data-testid="quality-step-card"], [data-testid="quality-step-card"] *',
+      ),
+    )
+      .filter((element) => {
+        const style = window.getComputedStyle(element);
+        return /(auto|scroll)/.test(`${style.overflow}${style.overflowY}`) && element.scrollHeight - element.clientHeight > 1;
+      })
+      .map((element) => element.getAttribute("data-testid") || element.tagName.toLowerCase());
+
+    const overflowingText = cards.flatMap((card, cardIndex) => {
+      const cardBox = card.getBoundingClientRect();
+      return Array.from(card.querySelectorAll<HTMLElement>("h2,p,li"))
+        .filter((element) => {
+          const box = element.getBoundingClientRect();
+          return box.left < cardBox.left - 1 || box.right > cardBox.right + 1;
+        })
+        .map((element) => `${cardIndex + 1}:${element.tagName.toLowerCase()}`);
+    });
+
+    return {
+      viewportOverflow: document.documentElement.scrollWidth - window.innerWidth,
+      nestedScrollers,
+      overflowingText,
+    };
+  });
+
+  expect(layout.viewportOverflow).toBeLessThanOrEqual(1);
+  expect(layout.nestedScrollers).toEqual([]);
+  expect(layout.overflowingText).toEqual([]);
+});
+
 test("verify page shows the reset video and instruction", async ({ page }) => {
   await seedConsent(page);
   await page.goto("/verify");
@@ -450,7 +493,10 @@ test("home hero keeps desktop and mobile image assets separated", async ({ page,
   if (isMobile) {
     await expect(desktopHeroAsset).toBeHidden();
     await expect(mobileHeroAsset).toBeVisible();
-    await expect(mobileHeroAsset.locator("img")).toHaveAttribute("src", /home-click-one-hero-portrait\.webp/);
+    await expect(mobileHeroAsset.locator('source[media="(max-width: 1023px)"]')).toHaveAttribute(
+      "srcset",
+      /home-click-one-hero-portrait\.webp/,
+    );
   } else {
     await expect(desktopHeroAsset).toBeVisible();
     await expect(mobileHeroAsset).toBeHidden();

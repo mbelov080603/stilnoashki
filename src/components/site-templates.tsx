@@ -197,12 +197,14 @@ function PageHero({
   media,
   compact = false,
   titleScale = "default",
+  mobileMediaFirst = true,
 }: {
   contract: PageHeroContract;
   tone?: "dark" | "light";
   media?: React.ReactNode;
   compact?: boolean;
   titleScale?: "default" | "compact";
+  mobileMediaFirst?: boolean;
 }) {
   return (
     <div
@@ -212,7 +214,7 @@ function PageHero({
         compact ? "py-2" : "",
       )}
     >
-      <div className={classNames("min-w-0", media ? "order-2 xl:order-1" : "")}>
+      <div className={classNames("min-w-0", media ? (mobileMediaFirst ? "order-2 xl:order-1" : "order-1") : "")}>
         {contract.eyebrow ? (
           <div
             className={classNames(
@@ -285,7 +287,7 @@ function PageHero({
         ) : null}
         <ActionGroup actions={contract.actions} tone={tone} />
       </div>
-      {media ? <div className="order-1 min-w-0 xl:order-2">{media}</div> : null}
+      {media ? <div className={classNames("min-w-0 xl:order-2", mobileMediaFirst ? "order-1" : "order-2")}>{media}</div> : null}
     </div>
   );
 }
@@ -759,6 +761,7 @@ function ProductVisual({
         )}
         preload={priority}
         loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
         decoding="async"
         unoptimized
       />
@@ -869,16 +872,17 @@ export function HomeTemplate() {
             className="relative mx-auto h-[min(58svh,31rem)] min-h-[22rem] w-full max-w-[24rem] overflow-hidden rounded-[1rem] border border-white/10 bg-[#050505] shadow-[0_28px_90px_rgba(0,0,0,0.42)] sm:h-[32rem] sm:max-w-[26rem] lg:hidden"
             data-hero-asset="mobile"
           >
-            <Image
-              src={assetPath(mediaAssets.homeHeroPortrait)}
-              alt="STILNO CLICK ONE: устройство и сменный картридж"
-              fill
-              preload
-              loading="eager"
-              decoding="async"
-              sizes="(max-width: 639px) calc(100vw - 42px), (max-width: 1023px) 26rem, 1px"
-              className="object-contain object-center p-4"
-            />
+            <picture className="absolute inset-0 block">
+              <source media="(max-width: 1023px)" srcSet={assetPath(mediaAssets.homeHeroPortrait)} />
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAAAAACw="
+                alt="STILNO CLICK ONE: устройство и сменный картридж"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-contain object-center p-4"
+              />
+            </picture>
             <div
               className="absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.08),rgba(0,0,0,0)_48%),linear-gradient(180deg,rgba(0,0,0,0)_50%,rgba(0,0,0,0.35)_100%)]"
               aria-hidden="true"
@@ -1147,6 +1151,81 @@ function GalleryTemplate(page: ResolvedPage) {
   );
 }
 
+function splitQualityParagraphs(text: string) {
+  if (text.length < 170) {
+    return [text];
+  }
+
+  return text
+    .split(/(?<=\.)\s+(?=[А-ЯA-ZЁ])/u)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}
+
+function parseQualityListText(text: string) {
+  const delimiterIndex = text.indexOf(": ");
+  if (delimiterIndex === -1 || text.length < 190) {
+    return {
+      intro: "",
+      items: [] as string[],
+      closing: "",
+      paragraphs: splitQualityParagraphs(text),
+    };
+  }
+
+  let listText = text.slice(delimiterIndex + 2).trim();
+  let closing = "";
+  const closingMarkers = [". Такой подход", ". Каждая партия"];
+
+  for (const marker of closingMarkers) {
+    const markerIndex = listText.indexOf(marker);
+    if (markerIndex !== -1) {
+      closing = listText.slice(markerIndex + 2).trim();
+      listText = listText.slice(0, markerIndex + 1).trim();
+      break;
+    }
+  }
+
+  return {
+    intro: text.slice(0, delimiterIndex + 1).trim(),
+    items: listText
+      .replace(/\.$/, "")
+      .split(";")
+      .map((item) => item.trim())
+      .filter(Boolean),
+    closing,
+    paragraphs: [] as string[],
+  };
+}
+
+function QualityStepBody({ text }: { text: string }) {
+  const copy = parseQualityListText(text);
+
+  return (
+    <div className="mt-5 grid min-w-0 gap-3 text-[0.94rem] leading-[1.64] text-white/66 [overflow-wrap:anywhere] sm:text-base sm:leading-[1.66] lg:text-[0.96rem] xl:text-base">
+      {copy.paragraphs.map((paragraph) => (
+        <p key={paragraph} className="min-w-0 break-words">
+          {paragraph}
+        </p>
+      ))}
+      {copy.intro ? <p className="min-w-0 break-words">{copy.intro}</p> : null}
+      {copy.items.length ? (
+        <ul className="grid min-w-0 gap-2.5">
+          {copy.items.map((item) => (
+            <li
+              key={item}
+              className="relative min-w-0 break-words pl-4 before:absolute before:left-0 before:top-[0.74em] before:h-1 before:w-1 before:rounded-full before:bg-[#ff6da8]"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {copy.closing ? <p className="min-w-0 break-words text-white/78">{copy.closing}</p> : null}
+    </div>
+  );
+}
+
 function QualityTemplate(page: ResolvedPage) {
   const { quality } = partnersLandingContent;
 
@@ -1165,11 +1244,12 @@ function QualityTemplate(page: ResolvedPage) {
               title: quality.title,
               body: quality.body,
             }}
+            mobileMediaFirst={false}
             media={
               <ProductVisual
                 src={mediaAssets.qualityProduction}
                 alt="Фабричная среда производства STILNO"
-                className="min-h-[20rem] sm:min-h-[28rem] xl:min-h-[32rem]"
+                className="min-h-[15rem] sm:min-h-[23rem] lg:min-h-[28rem] xl:min-h-[32rem]"
                 softEdges
                 priority
               />
@@ -1199,24 +1279,20 @@ function QualityTemplate(page: ResolvedPage) {
             </div>
           </div>
 
-          <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid items-stretch gap-4 md:grid-cols-2 2xl:grid-cols-3">
             {quality.steps.map((step, index) => (
               <article
                 key={step.title}
                 data-testid="quality-step-card"
-                className="flex min-w-0 flex-col rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 xl:p-5 2xl:p-6"
+                className="flex min-w-0 flex-col rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 lg:p-7"
               >
                 <p className="text-[0.68rem] uppercase tracking-[0.2em] text-white/34 sm:text-xs">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h2 className="mt-5 min-w-0 break-words text-[1.3rem] font-semibold leading-[1.16] text-white [hyphens:auto] [overflow-wrap:anywhere] sm:text-[1.45rem] md:text-[1.35rem] xl:min-h-[5.5rem] xl:text-[1.06rem] xl:leading-[1.18] 2xl:min-h-[5.85rem] 2xl:text-[1.14rem]">
+                <h2 className="mt-5 min-w-0 break-words text-[clamp(1.24rem,5.7vw,1.55rem)] font-semibold leading-[1.14] text-white [overflow-wrap:anywhere] sm:text-[1.5rem] md:text-[1.38rem] lg:text-[1.48rem]">
                   {step.title}
                 </h2>
-                <div className="mt-5 min-w-0">
-                  <p className="min-w-0 break-words text-[0.9rem] leading-[1.72] text-white/62 [hyphens:auto] [overflow-wrap:anywhere] sm:text-[0.95rem] md:text-[0.9rem] xl:text-[0.74rem] xl:leading-[1.66] 2xl:text-[0.78rem] 2xl:leading-[1.7]">
-                    {step.text}
-                  </p>
-                </div>
+                <QualityStepBody text={step.text} />
               </article>
             ))}
           </div>
@@ -1903,6 +1979,7 @@ function ArticleTemplate(page: ResolvedPage) {
             slotId={`article-${article.slug}`}
             title={article.title}
             note="Сюда можно добавить новую обложку материала."
+            priority
           />
         </div>
         <div className="mt-10 rounded-[1rem] border border-black/10 bg-white p-8">

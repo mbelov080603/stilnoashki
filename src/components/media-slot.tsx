@@ -149,6 +149,7 @@ export function MediaSlot({
   const role = getRole(slotId);
   const visual = getVisual(slotId, role);
   const fitClassName = visual.fit === "contain" ? "object-contain" : "object-cover";
+  const eager = priority || visual.src === mediaAssets.partner;
 
   return (
     <figure
@@ -169,7 +170,8 @@ export function MediaSlot({
         className={fitClassName}
         style={{ objectPosition: visual.position ?? "50% 50%" }}
         preload={priority}
-        loading={priority ? "eager" : "lazy"}
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : undefined}
         decoding="async"
         unoptimized
       />
