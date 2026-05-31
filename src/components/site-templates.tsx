@@ -196,11 +196,13 @@ function PageHero({
   tone = "light",
   media,
   compact = false,
+  titleScale = "default",
 }: {
   contract: PageHeroContract;
   tone?: "dark" | "light";
   media?: React.ReactNode;
   compact?: boolean;
+  titleScale?: "default" | "compact";
 }) {
   return (
     <div
@@ -224,7 +226,9 @@ function PageHero({
         ) : null}
         <h1
           className={classNames(
-            "max-w-4xl break-words text-[clamp(2rem,9vw,2.85rem)] font-semibold leading-[1.06] tracking-[-0.025em] sm:text-[3.35rem] sm:leading-[1.03] sm:tracking-[-0.04em] lg:text-[4.65rem] lg:leading-[1]",
+            titleScale === "compact"
+              ? "max-w-[43rem] break-words text-[clamp(2rem,7vw,2.8rem)] font-semibold leading-[1.08] tracking-[-0.025em] sm:text-[2.75rem] sm:leading-[1.06] sm:tracking-[-0.035em] lg:text-[2.96rem] lg:leading-[1.06]"
+              : "max-w-4xl break-words text-[clamp(2rem,9vw,2.85rem)] font-semibold leading-[1.06] tracking-[-0.025em] sm:text-[3.35rem] sm:leading-[1.03] sm:tracking-[-0.04em] lg:text-[4.65rem] lg:leading-[1]",
             tone === "dark" ? "text-white" : "text-black",
           )}
         >
@@ -1156,11 +1160,11 @@ function QualityTemplate(page: ResolvedPage) {
           <PageHero
             tone="dark"
             compact
+            titleScale="compact"
             contract={{
               eyebrow: quality.eyebrow,
               title: quality.title,
               body: quality.body,
-              actions: [{ label: "Оставить заявку", href: "/request", variant: "primary" }],
             }}
             media={
               <ProductVisual
