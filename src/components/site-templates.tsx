@@ -1176,17 +1176,22 @@ function QualityTemplate(page: ResolvedPage) {
 
       <section className="bg-[#000000] text-white">
         <div className="mx-auto max-w-[90rem] px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="mb-6 rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] p-6 sm:p-8">
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-center">
-              <div className="min-w-0">
+          <div
+            data-testid="quality-proof-panel"
+            className="mb-6 h-[19rem] overflow-hidden rounded-[0.85rem] border border-[#ff6da8]/24 bg-white/[0.06] sm:h-[15.5rem] lg:h-[11rem]"
+          >
+            <div className="grid h-full gap-0 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+              <div className="min-w-0 border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
                 <p className="break-words text-xs uppercase tracking-[0.22em] text-[#ff6da8]/70">Proof</p>
-                <h2 className="mt-4 max-w-xl break-words text-2xl font-semibold leading-tight text-white sm:text-3xl">
+                <h2 className="mt-4 max-h-[4.9rem] max-w-xl overflow-hidden break-words text-2xl font-semibold leading-tight text-white sm:text-3xl">
                   {quality.proofTitle}
                 </h2>
               </div>
-              <p className="max-w-[46rem] break-words text-sm leading-7 text-white/68 lg:justify-self-end">
-                {quality.proofText}
-              </p>
+              <div className="flex min-h-0 min-w-0 items-center p-6 sm:p-8">
+                <p className="max-h-[7.2rem] min-w-0 overflow-y-auto break-words pr-2 text-sm leading-7 text-white/68 [scrollbar-width:thin]">
+                  {quality.proofText}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -1194,17 +1199,20 @@ function QualityTemplate(page: ResolvedPage) {
             {quality.steps.map((step, index) => (
               <article
                 key={step.title}
-                className="flex min-w-0 flex-col rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:min-h-[17rem] sm:p-6 xl:min-h-[20.25rem] xl:p-6 2xl:min-h-[19.5rem]"
+                data-testid="quality-step-card"
+                className="grid h-[17rem] min-w-0 grid-rows-[1.25rem_4.75rem_minmax(0,1fr)] overflow-hidden rounded-[0.85rem] border border-white/12 bg-white/[0.055] p-5 sm:p-6 xl:h-[20.25rem] xl:p-6 2xl:h-[19.5rem]"
               >
                 <p className="text-xs uppercase tracking-[0.22em] text-white/34">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h2 className="mt-6 min-w-0 break-words text-[1.35rem] font-semibold leading-[1.16] text-white xl:text-[1.15rem] 2xl:text-[1.18rem]">
+                <h2 className="min-w-0 self-center overflow-hidden break-words text-[1.35rem] font-semibold leading-[1.16] text-white xl:text-[1.15rem] 2xl:text-[1.18rem]">
                   {step.title}
                 </h2>
-                <p className="mt-5 min-w-0 break-words text-[0.86rem] leading-[1.72] text-white/62 xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
-                  {step.text}
-                </p>
+                <div className="min-h-0 min-w-0 overflow-hidden">
+                  <p className="max-h-full min-w-0 overflow-y-auto break-words pr-1 text-[0.86rem] leading-[1.72] text-white/62 [scrollbar-width:thin] xl:text-[0.78rem] xl:leading-[1.72] 2xl:text-[0.82rem]">
+                    {step.text}
+                  </p>
+                </div>
               </article>
             ))}
           </div>
