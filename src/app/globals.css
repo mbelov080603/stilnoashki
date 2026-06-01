@@ -223,8 +223,7 @@ textarea {
 }
 
 .flavor-card__brand,
-.flavor-card__format,
-.flavor-card__code {
+.flavor-card__format {
   display: block;
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -245,14 +244,6 @@ textarea {
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-}
-
-.flavor-card__code {
-  margin-top: 0.28rem;
-  color: var(--stilno-subtle);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
 }
 
 .flavor-card__chip {
@@ -290,6 +281,11 @@ textarea {
   display: none !important;
 }
 
+.flavor-card__desc,
+.flavor-card__code {
+  display: none !important;
+}
+
 .flavor-card__title {
   margin: 0;
   max-width: 100%;
@@ -299,13 +295,6 @@ textarea {
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.08;
-}
-
-.flavor-card__desc {
-  margin: 0.5rem 0 0;
-  color: var(--stilno-muted);
-  font-size: 0.86rem;
-  line-height: 1.48;
 }
 
 .flavor-card__tags {
